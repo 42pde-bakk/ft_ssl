@@ -4,5 +4,6 @@
 
 int	sha256(unsigned int flags, const char *filename) {
 	(void)flags;
+	(void)filename;
 	return (1);
 }
