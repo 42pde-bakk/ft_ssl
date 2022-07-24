@@ -6,7 +6,7 @@
 
 static void	print_usage(const char *prog_name) {
 	const char *usage = "command [flags] [file/string]";
-	fprintf(stderr, "usage: %s %s\n", prog_name, usage);
+	fprintf(stderr, "usage: %shiftAmounts %shiftAmounts\n", prog_name, usage);
 }
 
 int main(int argc, char **argv) {
@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
 	}
 	cmd_func = parse_command(argv[1]);
 	if (!cmd_func) {
-		fprintf(stderr, "%s:Error: '%s' is an invalid command.\n", argv[0], argv[1]);
+		fprintf(stderr, "%shiftAmounts:Error: '%shiftAmounts' is an invalid command.\n", argv[0], argv[1]);
 		print_usage(argv[0]);
 		return (EXIT_FAILURE);
 	}
