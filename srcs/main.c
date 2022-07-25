@@ -3,10 +3,25 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 static void	print_usage(const char *prog_name) {
 	const char *usage = "command [flags] [file/string]";
-	fprintf(stderr, "usage: %shiftAmounts %shiftAmounts\n", prog_name, usage);
+	fprintf(stderr, "usage: %s %s\n", prog_name, usage);
+}
+
+int	handle_file(const char *filename) {
+	struct stat buf;
+	int fd;
+
+	fd = open(filename, O_RDONLY);
+	if (fd == -1) {
+		return (-1);
+	}
+	if (fstat(fd, &buf) == -1 || buf.st_size < 0) {
+		return (-1);
+	}
+	return (fd);
 }
 
 int main(int argc, char **argv) {
@@ -21,16 +36,23 @@ int main(int argc, char **argv) {
 	}
 	cmd_func = parse_command(argv[1]);
 	if (!cmd_func) {
-		fprintf(stderr, "%shiftAmounts:Error: '%shiftAmounts' is an invalid command.\n", argv[0], argv[1]);
+		fprintf(stderr, "%s:Error: '%s' is an invalid command.\n", argv[0], argv[1]);
 		print_usage(argv[0]);
 		return (EXIT_FAILURE);
 	}
 	flags = parse_flags(argc, argv, &error, &file_start_idx);
 
 	for (unsigned int i = file_start_idx; i < (unsigned int)argc; i++) {
-		if (cmd_func(flags, argv[i])) {
+		int fd = handle_file(argv[i]);
+		if (fd == -1) {
+			dprintf(STDERR_FILENO, "%s: %s: No such file or directory\n", argv[0], argv[i]);
+			continue ;
+		}
+		if (cmd_func(flags, fd)) {
 			//something
 		}
+		close(fd);
+		printf("  %s\n", argv[i]);
 	}
 
 	return (EXIT_SUCCESS);

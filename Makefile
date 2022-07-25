@@ -8,8 +8,8 @@ OBJ_EXT = o
 INC_EXT = h
 #SRCS = $(wildcard $(SRC_DIR)/*.c)
 INCLUDE = -I $(INC_DIR)
-SRCS = $(shell find $(SRC_DIR)/ -type f -name "*.${SRC_EXT}")
-HEADERS = $(shell find $(INC_DIR)/ -type f -name "*.$(INC_EXT)")
+SRCS = $(shell find $(SRC_DIR) -type f -name "*.$(SRC_EXT)")
+HEADERS = $(shell find $(INC_DIR) -type f -name "*.$(INC_EXT)")
 OBJECTSS = $(SRCS:.c=.o)
 OBJS = $(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%,$(OBJECTSS))
 
@@ -43,7 +43,7 @@ $(NAME): $(LIBS) $(OBJS) $(HEADERS)
 	$(MAKE) -C $< && cp $</$@ .
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
-	mkdir -p "$(@D)"
+	@mkdir -p "$(@D)"
 	$(CC) -c $(CFLAGS) $(INCLUDE) $< -o $@
 
 clean:

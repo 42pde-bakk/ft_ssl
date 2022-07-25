@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 #include "md5.h"
 
 /*
@@ -130,7 +131,6 @@ void print_hash(uint8_t *digest){
 	for (uint8_t i = 0; i < DIGEST_LENGTH; i++) {
 		printf("%02x", digest[i]);
 	}
-	printf("\n");
 }
 
 char	*md5_digest(char *string) {
@@ -143,6 +143,10 @@ char	*md5_digest(char *string) {
 	md5_finalize(&md5Context);
 
 	digest = calloc(DIGEST_LENGTH + 1, sizeof(uint8_t));
+	if (!digest) {
+		perror("malloc");
+		return (NULL);
+	}
 //	printf("malloced for %zu, %p, %s\n", (DIGEST_LENGTH + 1) * sizeof(uint8_t), ());
 	memcpy(digest, md5Context.digest, DIGEST_LENGTH * sizeof(uint8_t));
 
@@ -151,27 +155,36 @@ char	*md5_digest(char *string) {
 
 int	md5sum_string(unsigned int flags, const char *str) {
 	(void)flags;
-	(void)str;
-	const char string[] = "The quick brown fox jumped over the lazy dog's back";
 
-	char	*digest = md5_digest((char *)string);
+	char	*digest = md5_digest((char *)str);
+	if (!digest) {
+		return (1);
+	}
 	print_hash((uint8_t *)digest);
 	free(digest);
 	return (0);
 }
 
-int	md5sum_file(unsigned int flags, const char *filename) {
+int	md5sum_file(unsigned int flags, int fd) {
+	ssize_t ret;
+	char	BUF[BLOCK_SIZE + 1];
+	t_MD5Context	md5Context;
+	uint8_t			*digest = calloc(DIGEST_LENGTH, sizeof(uint8_t));
 	(void)flags;
-	return (md5sum_string(flags, filename));
-//	int fd = open(str, O_RDONLY);
-//	size_t len = lseek(str, 0, SEEK_END);
-//	dprintf(2, "lseek = %zu\n", len);
-//	void	*data = mmap(0, len, PROT_READ, MAP_PRIVATE | MAP_SHARED, str, 0);
-//	if (data == MAP_FAILED) {
-//		perror("mmap");
-//		return (EXIT_FAILURE);
-//	}
-//	int ret = calc_md5sum((char *)data);
-//	munmap(data, len);
-//	return (ret);
+
+	bzero(BUF, sizeof(BUF));
+	if (!digest) {
+		perror("calloc");
+		return (1);
+	}
+	md5_init(&md5Context);
+	while ((ret = read(fd, BUF, BLOCK_SIZE)) > 0) {
+		md5_update(&md5Context, (uint8_t *)BUF, ret);
+	}
+	md5_finalize(&md5Context);
+
+	memcpy(digest, md5Context.digest, DIGEST_LENGTH * sizeof(uint8_t));
+	print_hash((uint8_t *)digest);
+	free(digest);
+	return (0);
 }

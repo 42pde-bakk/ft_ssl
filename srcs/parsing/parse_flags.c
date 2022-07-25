@@ -9,7 +9,7 @@ unsigned int parse_flags(int argc, char **argv, int *error, unsigned int *file_s
 	unsigned int flags = 0u;
 	int	i;
 
-	for (i = 1; i < argc && argv[i]; i++) {
+	for (i = 2; i < argc && argv[i]; i++) {
 		if (argv[i][0] != '-' || strncmp(argv[i], "--", sizeof("--")) == 0) {
 			break ;
 		}
