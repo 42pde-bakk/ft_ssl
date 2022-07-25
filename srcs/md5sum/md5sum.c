@@ -33,6 +33,7 @@ void	md5_step(t_MD5Context *md5Context, const uint32_t *input) {
 				D = d0;
 
 	for (uint8_t i = 0; i < 64; i++) {
+//		dprintf(2, "md5_step, i = %hhu\n", i);
 		uint32_t f, g;
 		if (i <= 15) {
 			f = F(B, C, D);
@@ -47,16 +48,19 @@ void	md5_step(t_MD5Context *md5Context, const uint32_t *input) {
 			f = I(B, C, D);
 			g = (7 * i) % 16;
 		}
+//		dprintf(2, "f = %u, g = %u\n", f, g);
 		f = f + A + k[i] + input[g];
 		A = D;
 		D = C;
 		C = B;
 		B = B + leftrotate(f, shiftAmounts[i]);
+//		dprintf(2, "A = %u, B = %u, C = %u, D = %u\n", A, B, C, D);
 	}
-	md5Context->buffer[0] = A;
-	md5Context->buffer[1] = B;
-	md5Context->buffer[2] = C;
-	md5Context->buffer[3] = D;
+	md5Context->buffer[0] += A;
+	md5Context->buffer[1] += B;
+	md5Context->buffer[2] += C;
+	md5Context->buffer[3] += D;
+//	dprintf(2, "buffer = [%u, %u, %u, %u]\n", md5Context->buffer[0], md5Context->buffer[1], md5Context->buffer[2], md5Context->buffer[3]);
 }
 
 void	md5_update(t_MD5Context *md5Context, const uint8_t *input_buffer, const size_t buffer_len) {
@@ -66,6 +70,7 @@ void	md5_update(t_MD5Context *md5Context, const uint8_t *input_buffer, const siz
 
 	for (uint64_t i = 0; i < buffer_len; ++i) {
 		md5Context->input[offset] = input_buffer[i];
+//		dprintf(2, "ctx->input[%u] = %hhu\n", offset, md5Context->input[offset]);
 		offset++;
 
 		if (offset % 64 == 0) {
@@ -74,8 +79,10 @@ void	md5_update(t_MD5Context *md5Context, const uint8_t *input_buffer, const siz
 						   (uint32_t)(md5Context->input[(j * 4) + 2]) << 16 |
 						   (uint32_t)(md5Context->input[(j * 4) + 1]) <<  8 |
 						   (uint32_t)(md5Context->input[(j * 4)]);
+//				dprintf(2, "input[%u] = %u\n", j, input[j]);
 			}
 			md5_step(md5Context, input);
+			offset = 0;
 		}
 	}
 }
@@ -90,18 +97,24 @@ void	md5_finalize(t_MD5Context *md5Context) {
 	} else {
 		padding_len = (56 + 64) - offset;
 	}
+//	dprintf(2, "offset = %u, padding_length = %u\n", offset, padding_len);
 
 	md5_update(md5Context, padding, padding_len);
 	md5Context->size -= padding_len;
+//	dprintf(2, "size = %llu\n", md5Context->size);
+
 
 	for (uint8_t i = 0; i < DIGEST_LENGTH - 2; i++) {
 		input[i] = (uint32_t)(md5Context->input[(i * 4) + 3]) << 24 |
 				   (uint32_t)(md5Context->input[(i * 4) + 2]) << 16 |
 				   (uint32_t)(md5Context->input[(i * 4) + 1]) <<  8 |
 				   (uint32_t)(md5Context->input[(i * 4)]);
+//		dprintf(2, "input[%hhu] = %u\n", i, input[i]);
 	}
 	input[DIGEST_LENGTH - 2] = md5Context->size * 8;
 	input[DIGEST_LENGTH - 1] = (md5Context->size * 8) >> 32;
+//	dprintf(2, "input[%d] = %u\n", DIGEST_LENGTH - 2, input[DIGEST_LENGTH - 2]);
+//	dprintf(2, "input[%d] = %u\n", DIGEST_LENGTH - 1, input[DIGEST_LENGTH - 1]);
 
 	md5_step(md5Context, input);
 
@@ -126,18 +139,15 @@ char	*md5_digest(char *string) {
 
 	md5_init(&md5Context);
 	md5_update(&md5Context, (uint8_t *)string, strlen(string));
+//	dprintf(2, "size = %llu, buffer = [%u, %u, %u, %u]\n", md5Context.size, md5Context.buffer[0], md5Context.buffer[1], md5Context.buffer[2], md5Context.buffer[3]);
 	md5_finalize(&md5Context);
 
 	digest = calloc(DIGEST_LENGTH + 1, sizeof(uint8_t));
 //	printf("malloced for %zu, %p, %s\n", (DIGEST_LENGTH + 1) * sizeof(uint8_t), ());
 	memcpy(digest, md5Context.digest, DIGEST_LENGTH * sizeof(uint8_t));
-	print_hash(md5Context.digest);
 
 	return (digest);
 }
-
-
-
 
 int	md5sum_string(unsigned int flags, const char *str) {
 	(void)flags;
@@ -145,7 +155,7 @@ int	md5sum_string(unsigned int flags, const char *str) {
 	const char string[] = "The quick brown fox jumped over the lazy dog's back";
 
 	char	*digest = md5_digest((char *)string);
-	printf("digest = %s\n", digest);
+	print_hash((uint8_t *)digest);
 	free(digest);
 	return (0);
 }
