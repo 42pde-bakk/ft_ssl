@@ -32,4 +32,6 @@ if [[ ! -f "ft_ssl" ]];then
 fi
 
 echo "The quick brown fox jumped over the lazy dog's back" > /tmp/fox.txt
+touch /tmp/empty.txt
 test_md5 /tmp/fox.txt
+test_md5 /tmp/empty.txt
