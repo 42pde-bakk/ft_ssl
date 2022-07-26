@@ -28,12 +28,13 @@ void	md5_init(t_MD5Context *md5Context) {
 }
 
 void	md5_step(t_MD5Context *md5Context, const uint32_t *input) {
-	uint32_t	A = a0,
-				B = b0,
-				C = c0,
-				D = d0;
+	uint32_t	A = md5Context->buffer[0],
+				B = md5Context->buffer[1],
+				C = md5Context->buffer[2],
+				D = md5Context->buffer[3];
 
 	for (uint8_t i = 0; i < 64; i++) {
+
 //		dprintf(2, "md5_step, i = %hhu\n", i);
 		uint32_t f, g;
 		if (i <= 15) {
@@ -98,6 +99,7 @@ void	md5_finalize(t_MD5Context *md5Context) {
 	} else {
 		padding_len = (56 + 64) - offset;
 	}
+//	dprintf(2, "finalizing!\n");
 //	dprintf(2, "offset = %u, padding_length = %u\n", offset, padding_len);
 
 	md5_update(md5Context, padding, padding_len);
@@ -180,6 +182,7 @@ int	md5sum_file(unsigned int flags, int fd) {
 	md5_init(&md5Context);
 	while ((ret = read(fd, BUF, BLOCK_SIZE)) > 0) {
 		md5_update(&md5Context, (uint8_t *)BUF, ret);
+//		dprintf(2, "main. buffer = [%u, %u, %u, %u]\n", md5Context.buffer[0], md5Context.buffer[1], md5Context.buffer[2], md5Context.buffer[3]);
 	}
 	md5_finalize(&md5Context);
 

@@ -27,7 +27,8 @@ def check_hashes(my_stdout: str, md5sum_stdout: str) -> bool:
 def test_md5():
     test_cases = [
         'README.md',
-        # 'haha hihi'
+        'haha hihi',
+        'test.py'
     ]
     return_status = 0
     for test_case in test_cases:
