@@ -1,6 +1,7 @@
 import sys
 import subprocess
 from typing import Tuple
+from colored import fg, attr
 
 
 def run_process(arg: str) -> Tuple[int, str, str]:
@@ -30,14 +31,14 @@ def test_md5():
     ]
     return_status = 0
     for test_case in test_cases:
-        test_outcome = 'OK'
+        test_outcome = f"{fg('green')}OK{attr(0)}"
         my_ret, my_stdout, my_stderr = run_process(f'./ft_ssl md5 {test_case}')
         og_ret, og_stdout, og_stderr = run_process(f'md5sum {test_case}')
         # print(f'ret = {my_ret}')
         # print(f'stdout ="{my_stdout}"')
         # print(f'stderr ="{my_stderr}"')
         if my_ret != og_ret or not check_hashes(my_stdout, og_stdout):
-            test_outcome = 'KO'
+            test_outcome = f"{fg('red')}KO{attr(0)}"
             return_status = 1
         print(f'[{test_outcome}] on "./ft_ssl md5 {test_case}"')
 
