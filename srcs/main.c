@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
 	unsigned int	flags;
 	int				error;
 	cmd_func_t		cmd_func;
-	uint8_t			ret = 0;
+	unsigned int	ret = 0;
 
 	if (argc == 1) {
 		print_usage(argv[0]);
