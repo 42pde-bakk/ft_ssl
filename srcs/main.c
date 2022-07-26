@@ -29,6 +29,7 @@ int main(int argc, char **argv) {
 	unsigned int	flags;
 	int				error;
 	cmd_func_t		cmd_func;
+	uint8_t			ret = 0;
 
 	if (argc == 1) {
 		print_usage(argv[0]);
@@ -46,14 +47,13 @@ int main(int argc, char **argv) {
 		int fd = handle_file(argv[i]);
 		if (fd == -1) {
 			dprintf(STDERR_FILENO, "%s: %s: No such file or directory\n", argv[0], argv[i]);
+			ret |= 1;
 			continue ;
 		}
-		if (cmd_func(flags, fd)) {
-			//something
-		}
+		ret |= cmd_func(flags, fd);
 		close(fd);
 		printf("  %s\n", argv[i]);
 	}
 
-	return (EXIT_SUCCESS);
+	return (ret);
 }
