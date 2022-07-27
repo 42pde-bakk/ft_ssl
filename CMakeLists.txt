@@ -8,4 +8,4 @@ file(GLOB_RECURSE SOURCE_FILES "srcs/*/*.c" "srcs/*.c")
 file(GLOB HEADER_FILES "include/*.h")
 
 add_executable(ft_ssl ${SOURCE_FILES} ${HEADER_FILES})
-include_directories(include)
+include_directories(include libft/include)

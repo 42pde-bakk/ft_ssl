@@ -3,36 +3,64 @@
 //
 
 #include <string.h>
+#include <getopt.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <ctype.h>
 #include "flags.h"
+#include "vector.h"
 
-unsigned int parse_flags(int argc, char **argv, int *error, unsigned int *file_start_idx) {
-	unsigned int flags = 0u;
-	int	i;
 
-	for (i = 2; i < argc && argv[i]; i++) {
-		if (argv[i][0] != '-' || strncmp(argv[i], "--", sizeof("--")) == 0) {
-			break ;
-		}
-		for (unsigned int i2 = 1; argv[i][i2]; i2++) {
-			switch (argv[i][i2]) {
-				case FLAG_APPEND_CHAR:
-					flags |= FLAG_APPEND_VALUE;
-					break ;
-				case FLAG_QUIET_CHAR:
-					flags |= FLAG_QUIET_VALUE;
-					break ;
-				case FLAG_REVERSE_CHAR:
-					flags |= FLAG_REVERSE_VALUE;
-					break ;
-				case FLAG_SUM_CHAR:
-					flags |= FLAG_SUM_VALUE;
-					break ;
-				default:
-					*error = 1;
-					break ;
-			}
+unsigned int parse_flags(int argc, char** argv, unsigned int* file_start_idx, t_ptrvector* string_vector) {
+	unsigned int flags = 0;
+	int opt;
+
+	while ((opt = getopt(argc, argv, "pqrs:")) != -1) {
+		switch (opt) {
+			case 'p':
+				flags |= FLAG_P;
+//				printf("option: %c\n", opt);
+				break ;
+			case 'q':
+				flags |= FLAG_QUIET;
+//				printf("option: %c\n", opt);
+				break ;
+			case 'r':
+				flags |= FLAG_REVERSE;
+//				printf("option: %c\n", opt);
+				break ;
+			case 's':
+				flags |= FLAG_STRING;
+//				printf("string: %s\n", optarg);
+				ptrvector_pushback(string_vector, optarg);
+				break ;
+			case '?':
+				if (optopt == 's')
+					fprintf(stderr, "Option -%c requires an argument.\n", optopt);
+				else if (isprint(optopt))
+					fprintf(stderr, "Unknown option `-%c'.\n", optopt);
+				else
+					fprintf(stderr, "Unknown option character `\\x%x'.\n", optopt);
+				return ((unsigned int)-1);
+			default:
+				dprintf(STDERR_FILENO, "%s: invalid option -- '%c'\n", argv[0], optopt);
+				return ((unsigned int)-1);
 		}
 	}
-	*file_start_idx = i;
+	if (flags & FLAG_QUIET) {
+		flags &= ~FLAG_REVERSE;
+	}
+//	dprintf(2, "argc = %d, optind = %d\n", argc, optind);
+//	for (int index = optind; index < argc; index++) {
+//		if (argv[index][0] == '-' && argv[index][1] != 's') {
+//			fprintf(stderr, "Please provide the flags before providing the files/strings");
+//		}
+////		printf("extra arguments: %s\n", argv[index]);
+//	}
+	*file_start_idx = optind + 1;
+//	assert(argv[optind] && argv[optind][0] != '-');
+//	dprintf(2, "file_start_idx = %d\n", optind);
+
 	return (flags);
 }

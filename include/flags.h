@@ -5,14 +5,13 @@
 #ifndef FT_SSL_FLAGS_H
 #define FT_SSL_FLAGS_H
 
-#define FLAG_APPEND_CHAR 'p'
-#define FLAG_QUIET_CHAR 'q'
-#define FLAG_REVERSE_CHAR 'r'
-#define FLAG_SUM_CHAR 's'
 
-#define FLAG_APPEND_VALUE 0b1000
-#define FLAG_QUIET_VALUE 0b0100
-#define FLAG_REVERSE_VALUE 0b0010
-#define FLAG_SUM_VALUE 0b0001
+// MD5 and SHA256 flags
+#define FLAG_DOUBLE_UNDERSCORE	0b10000
+#define FLAG_P					0b01000
+#define FLAG_QUIET				0b00100
+#define FLAG_REVERSE			0b00010
+#define FLAG_STRING				0b00001
+
 
 #endif //FT_SSL_FLAGS_H

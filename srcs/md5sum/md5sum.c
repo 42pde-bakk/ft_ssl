@@ -129,55 +129,36 @@ void	md5_finalize(t_MD5Context *md5Context) {
 	}
 }
 
-void print_hash(uint8_t *digest){
-	for (uint8_t i = 0; i < DIGEST_LENGTH; i++) {
-		printf("%02x", digest[i]);
-	}
-}
-
-char	*md5_digest(char *string) {
+int md5sum_string(const char* str, char **save_digest) {
 	t_MD5Context	md5Context;
 	char			*digest;
 
 	md5_init(&md5Context);
-	md5_update(&md5Context, (uint8_t *)string, strlen(string));
+	md5_update(&md5Context, (uint8_t *)str, strlen(str));
 //	dprintf(2, "size = %llu, buffer = [%u, %u, %u, %u]\n", md5Context.size, md5Context.buffer[0], md5Context.buffer[1], md5Context.buffer[2], md5Context.buffer[3]);
 	md5_finalize(&md5Context);
 
 	digest = calloc(DIGEST_LENGTH + 1, sizeof(uint8_t));
 	if (!digest) {
 		perror("malloc");
-		return (NULL);
+		return (EXIT_FAILURE);
 	}
-//	printf("malloced for %zu, %p, %s\n", (DIGEST_LENGTH + 1) * sizeof(uint8_t), ());
 	memcpy(digest, md5Context.digest, DIGEST_LENGTH * sizeof(uint8_t));
-
-	return (digest);
+	*save_digest = digest;
+	return (EXIT_SUCCESS);
 }
 
-int	md5sum_string(unsigned int flags, const char *str) {
-	(void)flags;
-
-	char	*digest = md5_digest((char *)str);
-	if (!digest) {
-		return (1);
-	}
-	print_hash((uint8_t *)digest);
-	free(digest);
-	return (0);
-}
-
-int	md5sum_file(unsigned int flags, int fd) {
+int md5sum_file(int fd, char **save_digest) {
 	ssize_t ret;
 	char	BUF[BLOCK_SIZE + 1];
 	t_MD5Context	md5Context;
-	uint8_t			*digest = calloc(DIGEST_LENGTH, sizeof(uint8_t));
-	(void)flags;
+	char	*digest;
 
+	digest = calloc(DIGEST_LENGTH, sizeof(uint8_t));
 	bzero(BUF, sizeof(BUF));
 	if (!digest) {
 		perror("calloc");
-		return (1);
+		return (EXIT_FAILURE);
 	}
 	md5_init(&md5Context);
 	while ((ret = read(fd, BUF, BLOCK_SIZE)) > 0) {
@@ -187,7 +168,8 @@ int	md5sum_file(unsigned int flags, int fd) {
 	md5_finalize(&md5Context);
 
 	memcpy(digest, md5Context.digest, DIGEST_LENGTH * sizeof(uint8_t));
-	print_hash((uint8_t *)digest);
-	free(digest);
-	return (0);
+	*save_digest = digest;
+//	print_hash((uint8_t *)digest);
+//	free(digest);
+	return (EXIT_SUCCESS);
 }

@@ -7,11 +7,12 @@ SRC_EXT = c
 OBJ_EXT = o
 INC_EXT = h
 #SRCS = $(wildcard $(SRC_DIR)/*.c)
-INCLUDE = -I $(INC_DIR)
+INCLUDE = -I $(INC_DIR) -I libft/include
 SRCS = $(shell find $(SRC_DIR) -type f -name "*.$(SRC_EXT)")
 HEADERS = $(shell find $(INC_DIR) -type f -name "*.$(INC_EXT)")
 OBJECTSS = $(SRCS:.c=.o)
 OBJS = $(patsubst $(SRC_DIR)/%,$(OBJ_DIR)/%,$(OBJECTSS))
+LIBS = libft.a
 
 # COLORS
 PINK = \x1b[35;01m
