@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 static size_t	count_escapable_chars(const char *haystack) {
 	size_t	count = 0;
@@ -22,12 +23,16 @@ static size_t	count_escapable_chars(const char *haystack) {
 
 char	*get_escaped_string(char *str) {
 	const size_t	escapableCharsCount = count_escapable_chars(str);
-	const size_t	len = strlen(str) + escapableCharsCount + 1;
+	const size_t	len = strlen(str) + escapableCharsCount + 1 + 2; // +2 for " at beginning and end
 	size_t	i = 0,
-			i2 = 0;
+			i2 = 1;
 	char	*buffer;
 
 	buffer = calloc(len, sizeof(char));
+	if (!buffer) {
+		return (NULL);
+	}
+	buffer[0] = '"';
 	while (str[i]) {
 		if (str[i] >= '\a' && str[i] <= '\r') {
 			buffer[i2] = '\\';
@@ -64,5 +69,6 @@ char	*get_escaped_string(char *str) {
 			i++;
 		}
 	}
+	buffer[i2] = '"';
 	return (buffer);
 }
