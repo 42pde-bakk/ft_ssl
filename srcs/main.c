@@ -46,7 +46,9 @@ int	handle_stdin(t_handler handler, const unsigned int flags) {
 			return (EXIT_FAILURE);
 		}
 		if (!(flags & FLAG_QUIET)) {
-			fprintf(stdout, "(%s)= ", flags & FLAG_P ? get_escaped_string(buf) : "stdin");
+			char *escaped_string = get_escaped_string(buf);
+			fprintf(stdout, "(%s)= ", flags & FLAG_P ? escaped_string : "stdin");
+			free(escaped_string);
 		}
 		ret = handler.handle_string(buf, &digest);
 		print_hash((uint8_t *)digest);
@@ -80,7 +82,11 @@ static int handle_string(t_handler handler, char *str, const unsigned int flags)
 	int ret;
 	char *digest;
 	if (!(flags & FLAG_QUIET) && !(flags & FLAG_REVERSE)) {
-		fprintf(stdout, "(%s)= ", flags & FLAG_P ? str : "stdin");
+		char *upper = string_toupper((char *)handler.cmd);
+		char *escaped_string = get_escaped_string(str);
+		fprintf(stdout, "%s (%s) = ", upper, escaped_string);
+		free(escaped_string);
+		free(upper);
 	}
 	ret = handler.handle_string(str, &digest);
 	print_hash((uint8_t *)digest);
@@ -120,7 +126,7 @@ int main(int argc, char **argv) {
 	ret |= handle_stdin(handler, flags);
 
 	for (unsigned int i = 0; i < vec->size; i++) {
-		fprintf(stderr, "vec->arr[%u] = %s\n", i, (char*)vec->arr[i]);
+//		fprintf(stderr, "vec->arr[%u] = %s\n", i, (char*)vec->arr[i]);
 		ret |= handle_string(handler, (char *)vec->arr[i], flags);
 	}
 

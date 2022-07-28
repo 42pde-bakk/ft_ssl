@@ -31,7 +31,7 @@
   },
   {
     "command": "echo \"be sure to handle edge cases carefully\" | ./ft_ssl md5 -p /tmp/file",
-    "expected_stdout": "(\"be sure to handle edge cases carefully\")= 3553dc7dc5963b583c056d1b9fa3349c\nMD5 (/tmp/file) = 53d53ea94217b259c11a5a2d104ec58a\n",
+    "expected_stdout": "(\"be sure to handle edge cases carefully\\n\")= 3553dc7dc5963b583c056d1b9fa3349c\nMD5 (/tmp/file) = 53d53ea94217b259c11a5a2d104ec58a\n",
     "expected_stderr": ""
   },
   {

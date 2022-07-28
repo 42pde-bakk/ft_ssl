@@ -18,8 +18,8 @@ def run_process(arg: str) -> Tuple[int, str, str]:
 
 def hard_code(testcase: dict) -> None:
     my_ret, my_stdout, my_stderr = run_process(f'{testcase["command"]}')
-    assert(testcase['expected_stdout'] == my_stdout), f'STDOUT: got \'{my_stdout.encode("unicode_escape")}\', expected: \'{testcase["expected_stdout"].encode("unicode_escape")}\''
-    assert(testcase['expected_stderr'] == my_stderr), "stderr not same"
+    assert(testcase['expected_stdout'] == my_stdout), f'STDOUT:\n\tgot \'{my_stdout.encode("unicode_escape")}\',\n\texpected: \'{testcase["expected_stdout"].encode("unicode_escape")}\''
+    assert(testcase['expected_stderr'] == my_stderr), f'STDERR:n\n\ttgot \'{my_stderr.encode("unicode_escape")}\',\n\texpected: \'{testcase["expected_stderr"].encode("unicode_escape")}\''
 
 
 def test_md5():
@@ -34,7 +34,7 @@ def test_md5():
             test_outcome = f"{fg('red')}KO{attr(0)}"
             print(f'exception: {e}')
             return_status = 1
-        print(f'[{test_outcome}] on "./ft_ssl md5 {test_case}"')
+        print(f'[{test_outcome}] on "{test_case["command"]}"')
         if return_status:
             break
     return return_status
