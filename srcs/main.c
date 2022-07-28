@@ -10,11 +10,6 @@
 #include "vector.h"
 #include "libft.h"
 
-static void	print_usage(const char *prog_name) {
-	const char *usage = "command [flags] [file/string]";
-	fprintf(stderr, "usage: %s %s\n", prog_name, usage);
-}
-
 static int	open_file(const char *filename) {
 	struct stat buf;
 	int fd;
@@ -36,7 +31,7 @@ static void print_hash(uint8_t *digest) {
 	}
 }
 
-int	handle_stdin(t_handler handler, const int argc, const unsigned int flags) {
+int	handle_stdin(t_handler handler, bool no_files_given, const unsigned int flags) {
 	int ret;
 	char	*digest;
 	char *result = calloc(1, sizeof(char));
@@ -44,7 +39,8 @@ int	handle_stdin(t_handler handler, const int argc, const unsigned int flags) {
 	if (!result) {
 		return (EXIT_FAILURE);
 	}
-	if (!isatty(STDIN_FILENO) || flags & FLAG_P || argc == 2) {
+//	fprintf(stderr, "handle_stdin: %d || %d || %d\n", !isatty(STDIN_FILENO), flags & FLAG_P, argc);
+	if (!isatty(STDIN_FILENO) && (flags & FLAG_P || no_files_given)) { // shouldn't check argc, but the amount of actual files/strings given
 		char *tmp = calloc(BUFSIZ + 1, sizeof(char));
 		if (!tmp) {
 			free(result);
@@ -63,13 +59,17 @@ int	handle_stdin(t_handler handler, const int argc, const unsigned int flags) {
 			perror("stdin read");
 			return (EXIT_FAILURE);
 		}
+		char *escaped_string = get_escaped_string(result);
+		if (!escaped_string)
+			return (EXIT_FAILURE);
 		if (!(flags & FLAG_QUIET)) {
-			char *escaped_string = get_escaped_string(result);
 			fprintf(stdout, "(%s)= ", flags & FLAG_P ? escaped_string : "stdin");
-			free(escaped_string);
+		} else if (flags & FLAG_P) {
+			fprintf(stdout, "%s", result);
 		}
 		ret = handler.handle_string(result, &digest);
 		print_hash((uint8_t *)digest);
+		free(escaped_string);
 		free(digest);
 		free(result);
 		fprintf(stdout, "\n");
@@ -100,20 +100,20 @@ static int handle_file(t_handler handler, const int fd, const char *filename, co
 static int handle_string(t_handler handler, char *str, const unsigned int flags) {
 	int ret;
 	char *digest;
+	char *escaped_string = get_escaped_string(str);
 	if (!(flags & FLAG_QUIET) && !(flags & FLAG_REVERSE)) {
 		char *upper = string_toupper((char *)handler.cmd);
-		char *escaped_string = get_escaped_string(str);
 		fprintf(stdout, "%s (%s) = ", upper, escaped_string);
-		free(escaped_string);
 		free(upper);
 	}
 	ret = handler.handle_string(str, &digest);
 	print_hash((uint8_t *)digest);
 	free(digest);
 	if (!(flags & FLAG_QUIET) && (flags & FLAG_REVERSE)) {
-		fprintf(stdout, " %s", str);
+		fprintf(stdout, " %s", escaped_string);
 	}
 	fprintf(stdout, "\n");
+	free(escaped_string);
 	return (ret);
 }
 
@@ -123,9 +123,10 @@ int main(int argc, char **argv) {
 	t_handler		handler;
 	t_ptrvector		*vec = ptrvector_init(5, false);
 	unsigned int	ret = 0;
+	const char		*program_name = get_program_name(argv[0]);
 
 	if (argc == 1) {
-		print_usage(argv[0]);
+		print_usage(program_name);
 		return (EXIT_SUCCESS);
 	}
 	if (!vec) {
@@ -134,18 +135,16 @@ int main(int argc, char **argv) {
 	}
 	handler = parse_command(argv[1]);
 	if (!handler.cmd) {
-		fprintf(stderr, "%s:Error: '%s' is an invalid command.\n", argv[0], argv[1]);
-		print_usage(argv[0]);
+		print_error(program_name, argv[1]);
 		return (EXIT_FAILURE);
 	}
 	flags = parse_flags(argc - 1, argv + 1, &file_start_idx, vec);
 	if (flags == (unsigned int)-1)
 		return (EXIT_FAILURE);
 
-	ret |= handle_stdin(handler, argc, flags);
+	ret |= handle_stdin(handler, (unsigned int)argc == file_start_idx, flags);
 
 	for (unsigned int i = 0; i < vec->size; i++) {
-//		fprintf(stderr, "vec->arr[%u] = %s\n", i, (char*)vec->arr[i]);
 		ret |= handle_string(handler, (char *)vec->arr[i], flags);
 	}
 
@@ -155,7 +154,7 @@ int main(int argc, char **argv) {
 
 		fd = open_file(filename);
 		if (fd == -1) {
-			dprintf(STDERR_FILENO, "%s: %s: No such file or directory\n", argv[0], filename);
+			fprintf(stderr, "%s: %s: %s: No such file or directory\n", program_name, handler.cmd, filename);
 			ret |= 1;
 			continue ;
 		}

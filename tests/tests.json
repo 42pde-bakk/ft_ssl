@@ -41,18 +41,18 @@
   },
   {
     "command": "echo \"but eventually you will understand\" | ./ft_ssl md5 -p -r /tmp/file",
-    "expected_stdout": "(\"but eventually you will understand\")= dcdd84e0f635694d2a943fa8d3905281\n53d53ea94217b259c11a5a2d104ec58a /tmp/file\n",
+    "expected_stdout": "(\"but eventually you will understand\\n\")= dcdd84e0f635694d2a943fa8d3905281\n53d53ea94217b259c11a5a2d104ec58a /tmp/file\n",
     "expected_stderr": ""
   },
   {
     "command": " echo \"GL HF let's go\" | ./ft_ssl md5 -p -s \"foo\" /tmp/file",
-    "expected_stdout": "(\"GL HF let's go\")= d1e3cc342b6da09480b27ec57ff243e2\nMD5 (\"foo\") = acbd18db4cc2f85cedef654fccc4a4d8\nMD5 (/tmp/file) = 53d53ea94217b259c11a5a2d104ec58a\n",
+    "expected_stdout": "(\"GL HF let's go\\n\")= d1e3cc342b6da09480b27ec57ff243e2\nMD5 (\"foo\") = acbd18db4cc2f85cedef654fccc4a4d8\nMD5 (/tmp/file) = 53d53ea94217b259c11a5a2d104ec58a\n",
     "expected_stderr": ""
   },
   {
     "command": " echo \"one more thing\" | ./ft_ssl md5 -r -p -s \"foo\" /tmp/file -s \"bar\"",
-    "expected_stdout": "(\"one more thing\")= a0bd1876c6f011dd50fae52827f445f5\nacbd18db4cc2f85cedef654fccc4a4d8 \"foo\"\n53d53ea94217b259c11a5a2d104ec58a /tmp/file\n",
-    "expected_stderr": "ft_ssl: md5: -s: No such /tmp/file or directory\nft_ssl: md5: bar: No such /tmp/file or directory\n"
+    "expected_stdout": "(\"one more thing\\n\")= a0bd1876c6f011dd50fae52827f445f5\nacbd18db4cc2f85cedef654fccc4a4d8 \"foo\"\n53d53ea94217b259c11a5a2d104ec58a /tmp/file\n",
+    "expected_stderr": "ft_ssl: md5: -s: No such file or directory\nft_ssl: md5: bar: No such file or directory\n"
   },
   {
     "command": "echo \"just to be extra clear\" | ./ft_ssl md5 -r -q -p -s \"foo\" /tmp/file",

@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include "func_ptrs.h"
 
-static const t_handler handlers[] = {
+const t_handler handlers[] = {
 		{
 			.cmd = "md5",
 			.handle_file = md5sum_file,
