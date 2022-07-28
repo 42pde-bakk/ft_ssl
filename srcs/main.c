@@ -41,6 +41,7 @@ int	handle_stdin(t_handler handler, bool no_files_given, const unsigned int flag
 	}
 //	fprintf(stderr, "handle_stdin: %d || %d || %d\n", !isatty(STDIN_FILENO), flags & FLAG_P, argc);
 	if (!isatty(STDIN_FILENO) && (flags & FLAG_P || no_files_given)) { // shouldn't check argc, but the amount of actual files/strings given
+		fprintf(stderr, "not a tty, name = %s\n", ttyname(STDIN_FILENO));
 		char *tmp = calloc(BUFSIZ + 1, sizeof(char));
 		if (!tmp) {
 			free(result);
