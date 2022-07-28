@@ -32,8 +32,8 @@ static void print_hash(uint8_t *digest) {
 }
 
 int	handle_stdin(t_handler handler, bool no_files_given, const unsigned int flags) {
-	size_t ret;
-	size_t total_read = 0;
+	ssize_t	ret;
+	ssize_t	total_read = 0;
 	char	*digest;
 	char *result = calloc(1, sizeof(char));
 
