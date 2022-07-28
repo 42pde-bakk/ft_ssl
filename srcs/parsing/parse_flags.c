@@ -44,7 +44,7 @@ unsigned int parse_flags(int argc, char** argv, unsigned int* file_start_idx, t_
 					fprintf(stderr, "Unknown option character `\\x%x'.\n", optopt);
 				return ((unsigned int)-1);
 			default:
-				dprintf(STDERR_FILENO, "%s: invalid option -- '%c'\n", argv[0], optopt);
+				fprintf(stderr, "%s: invalid option -- '%c'\n", argv[0], optopt);
 				return ((unsigned int)-1);
 		}
 	}
