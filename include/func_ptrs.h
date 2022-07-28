@@ -12,8 +12,6 @@ typedef struct s_handler {
 	const char * cmd;
 	file_handler handle_file;
 	string_handler handle_string;
-//	int (*handle_file)(int fd, unsigned int flags);
-//	int (*handle_string)(const char *str, unsigned int flags);
 }	t_handler;
 
 
