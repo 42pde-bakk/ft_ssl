@@ -32,7 +32,8 @@ static void print_hash(uint8_t *digest) {
 }
 
 int	handle_stdin(t_handler handler, bool no_files_given, const unsigned int flags) {
-	int ret;
+	size_t ret;
+	size_t total_read = 0;
 	char	*digest;
 	char *result = calloc(1, sizeof(char));
 
@@ -41,13 +42,14 @@ int	handle_stdin(t_handler handler, bool no_files_given, const unsigned int flag
 	}
 //	fprintf(stderr, "handle_stdin: %d || %d || %d\n", !isatty(STDIN_FILENO), flags & FLAG_P, argc);
 	if (!isatty(STDIN_FILENO) && (flags & FLAG_P || no_files_given)) { // shouldn't check argc, but the amount of actual files/strings given
-		fprintf(stderr, "not a tty, name = %s\n", ttyname(STDIN_FILENO));
 		char *tmp = calloc(BUFSIZ + 1, sizeof(char));
 		if (!tmp) {
 			free(result);
 			return (EXIT_FAILURE);
 		}
-		while ((ret = (int)read(STDIN_FILENO, tmp, BUFSIZ)) > 0) {
+		while ((ret = read(STDIN_FILENO, tmp, BUFSIZ)) > 0) {
+			if (ret > 0)
+				total_read += ret;
 			result = ft_strjoin(result, tmp);
 			if (!result) {
 				free(result);
@@ -58,11 +60,18 @@ int	handle_stdin(t_handler handler, bool no_files_given, const unsigned int flag
 		}
 		if (ret < 0) {
 			perror("stdin read");
+			free(result);
 			return (EXIT_FAILURE);
 		}
+		if (total_read == 0) {
+			free(result);
+			return (EXIT_SUCCESS);
+		}
 		char *escaped_string = get_escaped_string(result);
-		if (!escaped_string)
+		if (!escaped_string) {
+			free(result);
 			return (EXIT_FAILURE);
+		}
 		if (!(flags & FLAG_QUIET)) {
 			fprintf(stdout, "(%s)= ", flags & FLAG_P ? escaped_string : "stdin");
 		} else if (flags & FLAG_P) {
@@ -74,7 +83,7 @@ int	handle_stdin(t_handler handler, bool no_files_given, const unsigned int flag
 		free(digest);
 		free(result);
 		fprintf(stdout, "\n");
-		return (ret);
+		return ((int)ret);
 	}
 	return (EXIT_SUCCESS);
 }
