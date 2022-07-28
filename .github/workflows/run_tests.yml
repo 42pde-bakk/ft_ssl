@@ -19,4 +19,4 @@ jobs:
     - name: python tester
       run: |
         pip install -r requirements.txt
-        python3 test.py
+        python3 tests/test.py

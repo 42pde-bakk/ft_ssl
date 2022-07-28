@@ -34,7 +34,6 @@ void	md5_step(t_MD5Context *md5Context, const uint32_t *input) {
 				D = md5Context->buffer[3];
 
 	for (uint8_t i = 0; i < 64; i++) {
-
 //		dprintf(2, "md5_step, i = %hhu\n", i);
 		uint32_t f, g;
 		if (i <= 15) {
