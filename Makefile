@@ -53,6 +53,8 @@ clean:
 
 fclean: clean
 	/bin/rm -f $(NAME)
+	#$(foreach lib,$(LIBS),$($(MAKE) fclean -C $(lib)))
+	$(MAKE) fclean -C libft
 
 re:
 	$(MAKE) fclean

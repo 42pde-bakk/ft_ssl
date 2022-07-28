@@ -16,7 +16,8 @@ unsigned int parse_flags(int argc, char** argv, unsigned int* file_start_idx, t_
 	unsigned int flags = 0;
 	int opt;
 
-	while ((opt = getopt(argc, argv, "pqrs:")) != -1) {
+	while ((opt = getopt(argc, argv, "+pqrs:")) != -1) {
+//		fprintf(stdout, "opt = %c (%d)\n", (char)opt, (int)opt);
 		switch (opt) {
 			case 'p':
 				flags |= FLAG_P;
