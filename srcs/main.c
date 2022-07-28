@@ -8,6 +8,7 @@
 #include "flags.h"
 #include "utils.h"
 #include "vector.h"
+#include "libft.h"
 
 static void	print_usage(const char *prog_name) {
 	const char *usage = "command [flags] [file/string]";
@@ -35,24 +36,42 @@ static void print_hash(uint8_t *digest) {
 	}
 }
 
-int	handle_stdin(t_handler handler, const unsigned int flags) {
+int	handle_stdin(t_handler handler, const int argc, const unsigned int flags) {
 	int ret;
-	char buf[BUFSIZ] = {0};
 	char	*digest;
-	if (!isatty(STDIN_FILENO) || flags & FLAG_DOUBLE_UNDERSCORE) {
-		ret = (int)read(STDIN_FILENO, buf, BUFSIZ);
-		if (ret <= 0) {
+	char *result = calloc(1, sizeof(char));
+
+	if (!result) {
+		return (EXIT_FAILURE);
+	}
+	if (!isatty(STDIN_FILENO) || flags & FLAG_P || argc == 2) {
+		char *tmp = calloc(BUFSIZ + 1, sizeof(char));
+		if (!tmp) {
+			free(result);
+			return (EXIT_FAILURE);
+		}
+		while ((ret = (int)read(STDIN_FILENO, tmp, BUFSIZ)) > 0) {
+			result = ft_strjoin(result, tmp);
+			if (!result) {
+				free(result);
+				free(tmp);
+				return (EXIT_FAILURE);
+			}
+			ft_bzero(tmp, BUFSIZ + 1);
+		}
+		if (ret < 0) {
 			perror("stdin read");
 			return (EXIT_FAILURE);
 		}
 		if (!(flags & FLAG_QUIET)) {
-			char *escaped_string = get_escaped_string(buf);
+			char *escaped_string = get_escaped_string(result);
 			fprintf(stdout, "(%s)= ", flags & FLAG_P ? escaped_string : "stdin");
 			free(escaped_string);
 		}
-		ret = handler.handle_string(buf, &digest);
+		ret = handler.handle_string(result, &digest);
 		print_hash((uint8_t *)digest);
 		free(digest);
+		free(result);
 		fprintf(stdout, "\n");
 		return (ret);
 	}
@@ -123,7 +142,7 @@ int main(int argc, char **argv) {
 	if (flags == (unsigned int)-1)
 		return (EXIT_FAILURE);
 
-	ret |= handle_stdin(handler, flags);
+	ret |= handle_stdin(handler, argc, flags);
 
 	for (unsigned int i = 0; i < vec->size; i++) {
 //		fprintf(stderr, "vec->arr[%u] = %s\n", i, (char*)vec->arr[i]);

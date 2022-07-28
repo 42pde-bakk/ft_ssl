@@ -51,16 +51,7 @@ unsigned int parse_flags(int argc, char** argv, unsigned int* file_start_idx, t_
 	if (flags & FLAG_QUIET) {
 		flags &= ~FLAG_REVERSE;
 	}
-//	dprintf(2, "argc = %d, optind = %d\n", argc, optind);
-//	for (int index = optind; index < argc; index++) {
-//		if (argv[index][0] == '-' && argv[index][1] != 's') {
-//			fprintf(stderr, "Please provide the flags before providing the files/strings");
-//		}
-////		printf("extra arguments: %s\n", argv[index]);
-//	}
 	*file_start_idx = optind + 1;
-//	assert(argv[optind] && argv[optind][0] != '-');
-//	dprintf(2, "file_start_idx = %d\n", optind);
 
 	return (flags);
 }

@@ -23,7 +23,6 @@ static const t_handler handlers[] = {
 
 t_handler 	parse_command(const char *const cmd) {
 	const size_t handler_amount = sizeof(handlers) / sizeof(t_handler);
-//	fprintf(stderr, "handler_amount = %zu\n", handler_amount);
 	for (size_t i = 0; i < handler_amount; i++) {
 		const char * const str = handlers[i].cmd;
 		if (str && strncmp(cmd, str, strlen(str)) == 0) {
