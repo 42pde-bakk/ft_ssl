@@ -8,17 +8,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <fcntl.h>
-#include <sys/stat.h>
 #include "md5.h"
-
-/*
- * Rotates a 32-bit word left by n bits
- */
-
-uint32_t leftrotate(uint32_t x, uint32_t n) {
-	return (x << n) | (x >> (32 - n));
-}
+#include "utils.h"
 
 void	md5_init(t_MD5Context *md5Context) {
 	bzero(md5Context, sizeof(t_MD5Context));
@@ -65,7 +56,7 @@ void	md5_step(t_MD5Context *md5Context, const uint32_t *input) {
 }
 
 void	md5_update(t_MD5Context *md5Context, const uint8_t *input_buffer, const size_t buffer_len) {
-	uint32_t	input[DIGEST_LENGTH];
+	uint32_t	input[MD5_DIGEST_LENGTH];
 	uint32_t	offset = md5Context->size % 64;
 	md5Context->size += buffer_len;
 
@@ -75,11 +66,8 @@ void	md5_update(t_MD5Context *md5Context, const uint8_t *input_buffer, const siz
 		offset++;
 
 		if (offset % 64 == 0) {
-			for (uint32_t j = 0; j < DIGEST_LENGTH; ++j) {
-				input[j] = (uint32_t)(md5Context->input[(j * 4) + 3]) << 24 |
-						   (uint32_t)(md5Context->input[(j * 4) + 2]) << 16 |
-						   (uint32_t)(md5Context->input[(j * 4) + 1]) <<  8 |
-						   (uint32_t)(md5Context->input[(j * 4)]);
+			for (uint32_t j = 0; j < MD5_DIGEST_LENGTH; ++j) {
+				input[j] = four_chars_to_uint32(&md5Context->input[j * 4]);
 //				dprintf(2, "input[%u] = %u\n", j, input[j]);
 			}
 			md5_step(md5Context, input);
@@ -89,7 +77,7 @@ void	md5_update(t_MD5Context *md5Context, const uint8_t *input_buffer, const siz
 }
 
 void	md5_finalize(t_MD5Context *md5Context) {
-	uint32_t	input[DIGEST_LENGTH];
+	uint32_t	input[MD5_DIGEST_LENGTH];
 	uint32_t	offset = md5Context->size % 64;
 	uint32_t	padding_len;
 
@@ -106,17 +94,17 @@ void	md5_finalize(t_MD5Context *md5Context) {
 //	dprintf(2, "size = %llu\n", md5Context->size);
 
 
-	for (uint8_t i = 0; i < DIGEST_LENGTH - 2; i++) {
+	for (uint8_t i = 0; i < MD5_DIGEST_LENGTH - 2; i++) {
 		input[i] = (uint32_t)(md5Context->input[(i * 4) + 3]) << 24 |
 				   (uint32_t)(md5Context->input[(i * 4) + 2]) << 16 |
 				   (uint32_t)(md5Context->input[(i * 4) + 1]) <<  8 |
 				   (uint32_t)(md5Context->input[(i * 4)]);
 //		dprintf(2, "input[%hhu] = %u\n", i, input[i]);
 	}
-	input[DIGEST_LENGTH - 2] = md5Context->size * 8;
-	input[DIGEST_LENGTH - 1] = (md5Context->size * 8) >> 32;
-//	dprintf(2, "input[%d] = %u\n", DIGEST_LENGTH - 2, input[DIGEST_LENGTH - 2]);
-//	dprintf(2, "input[%d] = %u\n", DIGEST_LENGTH - 1, input[DIGEST_LENGTH - 1]);
+	input[MD5_DIGEST_LENGTH - 2] = md5Context->size * 8;
+	input[MD5_DIGEST_LENGTH - 1] = (md5Context->size * 8) >> 32;
+//	dprintf(2, "input[%d] = %u\n", MD5_DIGEST_LENGTH - 2, input[MD5_DIGEST_LENGTH - 2]);
+//	dprintf(2, "input[%d] = %u\n", MD5_DIGEST_LENGTH - 1, input[MD5_DIGEST_LENGTH - 1]);
 
 	md5_step(md5Context, input);
 
@@ -137,12 +125,12 @@ int md5sum_string(const char* str, char **save_digest) {
 //	dprintf(2, "size = %llu, buffer = [%u, %u, %u, %u]\n", md5Context.size, md5Context.buffer[0], md5Context.buffer[1], md5Context.buffer[2], md5Context.buffer[3]);
 	md5_finalize(&md5Context);
 
-	digest = calloc(DIGEST_LENGTH + 1, sizeof(uint8_t));
+	digest = calloc(MD5_DIGEST_LENGTH + 1, sizeof(uint8_t));
 	if (!digest) {
 		perror("malloc");
 		return (EXIT_FAILURE);
 	}
-	memcpy(digest, md5Context.digest, DIGEST_LENGTH * sizeof(uint8_t));
+	memcpy(digest, md5Context.digest, MD5_DIGEST_LENGTH * sizeof(uint8_t));
 	*save_digest = digest;
 	return (EXIT_SUCCESS);
 }
@@ -153,7 +141,7 @@ int md5sum_file(int fd, char **save_digest) {
 	t_MD5Context	md5Context;
 	char	*digest;
 
-	digest = calloc(DIGEST_LENGTH, sizeof(uint8_t));
+	digest = calloc(MD5_DIGEST_LENGTH, sizeof(uint8_t));
 	bzero(BUF, sizeof(BUF));
 	if (!digest) {
 		perror("calloc");
@@ -166,7 +154,7 @@ int md5sum_file(int fd, char **save_digest) {
 	}
 	md5_finalize(&md5Context);
 
-	memcpy(digest, md5Context.digest, DIGEST_LENGTH * sizeof(uint8_t));
+	memcpy(digest, md5Context.digest, MD5_DIGEST_LENGTH * sizeof(uint8_t));
 	*save_digest = digest;
 //	print_hash((uint8_t *)digest);
 //	free(digest);
