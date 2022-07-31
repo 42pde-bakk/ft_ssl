@@ -7,7 +7,7 @@
 #include <stdint.h>
 
 #define SHA256_DIGEST_SIZE 32
-#define SHA256_BLOCK_SIZE 512
+#define SHA256_BLOCK_SIZE 256
 
 typedef struct s_sha256Context {
 	uint32_t 	h[8];

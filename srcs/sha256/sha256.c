@@ -38,6 +38,14 @@ void	sha256_init(t_sha256Context *sha256Context) {
 	}
 }
 
+uint32_t get_s0(const uint32_t item) {
+	return (rightrotate(item, 7) ^ rightrotate(item, 18) ^ (item >> 3));
+}
+
+uint32_t get_s1(const uint32_t item) {
+	return (rightrotate(item, 17) ^ rightrotate(item, 19) ^ (item >> 10));
+}
+
 void	sha256_transform(t_sha256Context *sha256Context) {
 	uint32_t hash[8];
 	uint32_t w[64];
@@ -49,11 +57,15 @@ void	sha256_transform(t_sha256Context *sha256Context) {
 		if (i < 16) {
 			// copy chunk into first 16 words w[0..15] of the message schedule array
 			w[i] = four_chars_to_uint32(&sha256Context->data[i * 4]);
+//			printf("w[%u] = %#x\n", i, w[i]);
 		} else {
 			// Extend the first 16 words into the remaining 48 words w[16..63] of the message schedule array:
-			const uint32_t s0 = rightrotate(w[i - 15], 7) ^ rightrotate(w[i - 15], 18) ^ (w[i - 15] >> 3);
-			const uint32_t s1 = rightrotate(w[i - 2], 17) ^ rightrotate(w[i - 2], 19) ^ (w[i - 2] >> 10);
+			const uint32_t s0 = get_s0(w[i - 15]);
+			const uint32_t s1 = get_s1(w[i - 2]);
+//			printf("w[i] = %#x + %#x + %#x + %#x\n",  w[i - 16], s0, w[i - 7], s1);
+
 			w[i] = w[i - 16] + s0 + w[i - 7] + s1;
+//			printf("s0 = %#x, s1 = %#x, w[%u] = %#x\n", s0, s1, i, w[i]);
 		}
 	}
 
@@ -135,14 +147,14 @@ char	*sha256_finalize(t_sha256Context *sha256Context) {
 	// Since this implementation uses little endian byte ordering and SHA uses big endian,
 	// reverse all the bytes when copying the final state to the output hash.
 	for (i = 0; i < 4; ++i) {
-		digest[i]      = (sha256Context->h[0] >> (24 - i * 8)) & 0x000000ff;
-		digest[i + 4]  = (sha256Context->h[1] >> (24 - i * 8)) & 0x000000ff;
-		digest[i + 8]  = (sha256Context->h[2] >> (24 - i * 8)) & 0x000000ff;
-		digest[i + 12] = (sha256Context->h[3] >> (24 - i * 8)) & 0x000000ff;
-		digest[i + 16] = (sha256Context->h[4] >> (24 - i * 8)) & 0x000000ff;
-		digest[i + 20] = (sha256Context->h[5] >> (24 - i * 8)) & 0x000000ff;
-		digest[i + 24] = (sha256Context->h[6] >> (24 - i * 8)) & 0x000000ff;
-		digest[i + 28] = (sha256Context->h[7] >> (24 - i * 8)) & 0x000000ff;
+		digest[i]      = (int8_t)((sha256Context->h[0] >> (24 - i * 8)) & 0x000000ff);
+		digest[i + 4]  = (int8_t)((sha256Context->h[1] >> (24 - i * 8)) & 0x000000ff);
+		digest[i + 8]  = (int8_t)((sha256Context->h[2] >> (24 - i * 8)) & 0x000000ff);
+		digest[i + 12] = (int8_t)((sha256Context->h[3] >> (24 - i * 8)) & 0x000000ff);
+		digest[i + 16] = (int8_t)((sha256Context->h[4] >> (24 - i * 8)) & 0x000000ff);
+		digest[i + 20] = (int8_t)((sha256Context->h[5] >> (24 - i * 8)) & 0x000000ff);
+		digest[i + 24] = (int8_t)((sha256Context->h[6] >> (24 - i * 8)) & 0x000000ff);
+		digest[i + 28] = (int8_t)((sha256Context->h[7] >> (24 - i * 8)) & 0x000000ff);
 	}
 	return (digest);
 }
@@ -153,9 +165,9 @@ int sha256_string(const char* str, char **save_digest) {
 
 	sha256_init(&sha256Context);
 	sha256_update(&sha256Context, (uint8_t *)str, strlen(str));
-	for (unsigned int i = 0; i < 8; i++) {
-		fprintf(stderr, "h[%u] = %u\n", i, sha256Context.h[i]);
-	}
+//	for (unsigned int i = 0; i < 8; i++) {
+//		fprintf(stderr, "h[%u] = %#x\n", i, sha256Context.h[i]);
+//	}
 	digest = sha256_finalize(&sha256Context);
 	if (!digest)
 		return (EXIT_FAILURE);
