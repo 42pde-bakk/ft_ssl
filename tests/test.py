@@ -68,7 +68,7 @@ def main():
 	with open('/tmp/file', 'w') as f:
 		f.write("And above all,\n")
 	with open('/tmp/website', 'w') as f:
-		f.write("https://www.42.fr/")
+		f.write("https://www.42.fr/\n")
 
 	with open('tests/tests.json', 'r') as f:
 		test_file = json.load(f)
