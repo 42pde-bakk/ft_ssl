@@ -27,6 +27,9 @@ CFLAGS = -Wall -Werror -Wextra
 ifdef DEBUG
  CFLAGS += -g3 -fsanitize=address
 endif
+ifdef BONUS
+ CFLAGS += -D BONUS=1
+endif
 SHELL := /bin/bash
 export SHELL
 export DEBUG
@@ -64,3 +67,7 @@ debug: DEBUG=1
 debug:
 	$(MAKE) fclean
 	$(MAKE) all
+
+bonus: BONUS=1
+bonus:
+	$(MAKE) re
