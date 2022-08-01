@@ -25,7 +25,6 @@ void	md5_step(t_MD5Context *md5Context, const uint32_t *input) {
 				D = md5Context->buffer[3];
 
 	for (uint8_t i = 0; i < 64; i++) {
-//		dprintf(2, "md5_step, i = %hhu\n", i);
 		uint32_t f, g;
 		if (i <= 15) {
 			f = F(B, C, D);
@@ -40,19 +39,16 @@ void	md5_step(t_MD5Context *md5Context, const uint32_t *input) {
 			f = I(B, C, D);
 			g = (7 * i) % 16;
 		}
-//		dprintf(2, "f = %u, g = %u\n", f, g);
 		f = f + A + k[i] + input[g];
 		A = D;
 		D = C;
 		C = B;
 		B = B + leftrotate(f, shiftAmounts[i]);
-//		dprintf(2, "A = %u, B = %u, C = %u, D = %u\n", A, B, C, D);
 	}
 	md5Context->buffer[0] += A;
 	md5Context->buffer[1] += B;
 	md5Context->buffer[2] += C;
 	md5Context->buffer[3] += D;
-//	dprintf(2, "buffer = [%u, %u, %u, %u]\n", md5Context->buffer[0], md5Context->buffer[1], md5Context->buffer[2], md5Context->buffer[3]);
 }
 
 void	md5_update(t_MD5Context *md5Context, const uint8_t *input_buffer, const size_t buffer_len) {
@@ -62,13 +58,11 @@ void	md5_update(t_MD5Context *md5Context, const uint8_t *input_buffer, const siz
 
 	for (uint64_t i = 0; i < buffer_len; ++i) {
 		md5Context->input[offset] = input_buffer[i];
-//		dprintf(2, "ctx->input[%u] = %hhu\n", offset, md5Context->input[offset]);
 		offset++;
 
 		if (offset % 64 == 0) {
 			for (uint32_t j = 0; j < MD5_DIGEST_LENGTH; ++j) {
-				input[j] = four_chars_to_uint32(&md5Context->input[j * 4]);
-//				dprintf(2, "input[%u] = %u\n", j, input[j]);
+				input[j] = four_chars_to_uint32_md5(&md5Context->input[j * 4]);
 			}
 			md5_step(md5Context, input);
 			offset = 0;
@@ -86,28 +80,16 @@ void	md5_finalize(t_MD5Context *md5Context) {
 	} else {
 		padding_len = (56 + 64) - offset;
 	}
-//	dprintf(2, "finalizing!\n");
-//	dprintf(2, "offset = %u, padding_length = %u\n", offset, padding_len);
-
 	md5_update(md5Context, padding, padding_len);
 	md5Context->size -= padding_len;
-//	dprintf(2, "size = %llu\n", md5Context->size);
-
 
 	for (uint8_t i = 0; i < MD5_DIGEST_LENGTH - 2; i++) {
-		input[i] = (uint32_t)(md5Context->input[(i * 4) + 3]) << 24 |
-				   (uint32_t)(md5Context->input[(i * 4) + 2]) << 16 |
-				   (uint32_t)(md5Context->input[(i * 4) + 1]) <<  8 |
-				   (uint32_t)(md5Context->input[(i * 4)]);
-//		dprintf(2, "input[%hhu] = %u\n", i, input[i]);
+		input[i] = four_chars_to_uint32_md5(&md5Context->input[i * 4]);
 	}
 	input[MD5_DIGEST_LENGTH - 2] = md5Context->size * 8;
 	input[MD5_DIGEST_LENGTH - 1] = (md5Context->size * 8) >> 32;
-//	dprintf(2, "input[%d] = %u\n", MD5_DIGEST_LENGTH - 2, input[MD5_DIGEST_LENGTH - 2]);
-//	dprintf(2, "input[%d] = %u\n", MD5_DIGEST_LENGTH - 1, input[MD5_DIGEST_LENGTH - 1]);
 
 	md5_step(md5Context, input);
-
 	for (uint8_t i = 0; i < 4; i++) {
 		md5Context->digest[(i * 4) + 0] = (uint8_t)((md5Context->buffer[i] & 0x000000FF));
 		md5Context->digest[(i * 4) + 1] = (uint8_t)((md5Context->buffer[i] & 0x0000FF00) >>  8);
@@ -122,7 +104,6 @@ int md5sum_string(const char* str, char **save_digest) {
 
 	md5_init(&md5Context);
 	md5_update(&md5Context, (uint8_t *)str, strlen(str));
-//	dprintf(2, "size = %llu, buffer = [%u, %u, %u, %u]\n", md5Context.size, md5Context.buffer[0], md5Context.buffer[1], md5Context.buffer[2], md5Context.buffer[3]);
 	md5_finalize(&md5Context);
 
 	digest = calloc(MD5_DIGEST_LENGTH + 1, sizeof(uint8_t));
@@ -150,13 +131,10 @@ int md5sum_file(int fd, char **save_digest) {
 	md5_init(&md5Context);
 	while ((ret = read(fd, BUF, BLOCK_SIZE)) > 0) {
 		md5_update(&md5Context, (uint8_t *)BUF, ret);
-//		dprintf(2, "main. buffer = [%u, %u, %u, %u]\n", md5Context.buffer[0], md5Context.buffer[1], md5Context.buffer[2], md5Context.buffer[3]);
 	}
 	md5_finalize(&md5Context);
 
 	memcpy(digest, md5Context.digest, MD5_DIGEST_LENGTH * sizeof(uint8_t));
 	*save_digest = digest;
-//	print_hash((uint8_t *)digest);
-//	free(digest);
 	return (EXIT_SUCCESS);
 }

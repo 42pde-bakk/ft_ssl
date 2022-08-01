@@ -23,6 +23,7 @@ uint32_t leftrotate(uint32_t x, uint32_t n);
 uint32_t rightrotate(uint32_t x, uint32_t n);
 
 // copy_four_chars_to_uint32.c
-uint32_t	four_chars_to_uint32(const uint8_t *ptr);
+uint32_t	four_chars_to_uint32_sha256(const uint8_t *ptr);
+uint32_t	four_chars_to_uint32_md5(const uint8_t *ptr);
 
 #endif //FT_SSL_UTILS_H

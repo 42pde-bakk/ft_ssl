@@ -56,7 +56,7 @@ void	sha256_transform(t_sha256Context *sha256Context) {
 	for (unsigned int i = 0; i < 64; i++) {
 		if (i < 16) {
 			// copy chunk into first 16 words w[0..15] of the message schedule array
-			w[i] = four_chars_to_uint32(&sha256Context->data[i * 4]);
+			w[i] = four_chars_to_uint32_sha256(&sha256Context->data[i * 4]);
 //			printf("w[%u] = %#x\n", i, w[i]);
 		} else {
 			// Extend the first 16 words into the remaining 48 words w[16..63] of the message schedule array:
