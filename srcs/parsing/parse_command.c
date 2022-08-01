@@ -24,7 +24,7 @@ t_handler 	parse_command(const char *const cmd) {
 	const size_t handler_amount = sizeof(handlers) / sizeof(t_handler);
 	for (size_t i = 0; i < handler_amount; i++) {
 		const char * const str = handlers[i].cmd;
-		if (str && strncmp(cmd, str, strlen(str)) == 0) {
+		if (str && strcmp(cmd, str) == 0) {
 			return (handlers[i]);
 		}
 	}
