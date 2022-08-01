@@ -2,12 +2,14 @@
 // Created by Peer de Bakker on 7/4/22.
 //
 
+#include "ft_ssl.h"
 #include "parsing.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <string.h>
 #include "flags.h"
 #include "utils.h"
 #include "vector.h"
@@ -27,39 +29,51 @@ static int	open_file(const char *filename) {
 	return (fd);
 }
 
-int	handle_stdin(t_handler handler, bool no_files_given, const unsigned int flags) {
-	ssize_t	ret;
-	ssize_t	total_read = 0;
-	char *result = calloc(1, sizeof(char));
+char	*read_stdin(const bool return_on_enter) {
+	ssize_t ret,
+			total_read  = 0;
+	char	*result = calloc(1, sizeof(char));
+	char	*tmp = calloc(BUFSIZ + 1, sizeof(char));
 
-	if (!result) {
-		return (EXIT_FAILURE);
+	if (!tmp || !result) {
+		free(result);
+		free(tmp);
+		return (NULL);
 	}
-	if (!isatty(STDIN_FILENO) && (flags & FLAG_P || no_files_given)) {
-		char *tmp = calloc(BUFSIZ + 1, sizeof(char));
-		if (!tmp) {
+	while ((ret = read(STDIN_FILENO, tmp, BUFSIZ)) > 0) {
+		if (ret > 0)
+			total_read += ret;
+		result = ft_strjoin(result, tmp);
+		if (!result) {
 			free(result);
+			free(tmp);
+			return (NULL);
+		}
+		ft_bzero(tmp, BUFSIZ + 1);
+		if (return_on_enter) {
+			break ;
+		}
+	}
+	if (ret < 0) {
+		perror("stdin read");
+		free(result);
+		return (NULL);
+	}
+	return (result);
+//	if (total_read == 0) {
+//		free(result);
+//		return (result);
+//	}
+}
+
+int handle_stdin(t_handler handler, bool no_files_given, const unsigned int flags, bool bonus) {
+	ssize_t	ret;
+	char	*result;
+
+	if ((!isatty(STDIN_FILENO) && (flags & FLAG_P || no_files_given)) || bonus) {
+		result = read_stdin(false);
+		if (!result) {
 			return (EXIT_FAILURE);
-		}
-		while ((ret = read(STDIN_FILENO, tmp, BUFSIZ)) > 0) {
-			if (ret > 0)
-				total_read += ret;
-			result = ft_strjoin(result, tmp);
-			if (!result) {
-				free(result);
-				free(tmp);
-				return (EXIT_FAILURE);
-			}
-			ft_bzero(tmp, BUFSIZ + 1);
-		}
-		if (ret < 0) {
-			perror("stdin read");
-			free(result);
-			return (EXIT_FAILURE);
-		}
-		if (total_read == 0) {
-			free(result);
-			return (EXIT_SUCCESS);
 		}
 		char *escaped_string = get_escaped_string(result);
 		if (!escaped_string) {
@@ -80,6 +94,45 @@ int	handle_stdin(t_handler handler, bool no_files_given, const unsigned int flag
 	return (EXIT_SUCCESS);
 }
 
+int	handle_bonus(t_handler *handler, const char *program_name) {
+	bool valid = false;
+	unsigned int flags;
+	t_ptrvector *args = ptrvector_init(8, false);
+
+	while (!valid) {
+		// first read once to get the command and flags
+		char	*result = read_stdin(true);
+		if (!result) {
+			ptrvector_destroy(args);
+			return (EXIT_FAILURE);
+		}
+		char	*token = strtok(result, WHITESPACE_STRING);
+		if (!token) {
+			free(result);
+			ptrvector_destroy(args);
+			return (EXIT_FAILURE);
+		}
+		while (token != NULL) {
+			ptrvector_pushback(args, token);
+			token = strtok(NULL, WHITESPACE_STRING);
+		}
+		ptrvector_pushback(args, NULL);
+		flags = parse_flags((int)(args->size - 1), (char **)args->arr, NULL, NULL);
+		*handler = parse_command(args->arr[0]);
+		if (handler->cmd == NULL || flags == (unsigned int)-1) {
+			print_error(program_name, args->arr[0]);
+			ptrvector_destroy(args);
+			args = ptrvector_init(8, false);
+			continue ;
+		}
+		free(result);
+		valid = true;
+	}
+	ptrvector_destroy(args);
+	// read again for the input string
+	return (handle_stdin(*handler, true, flags, true));
+}
+
 static int handle_file(t_handler handler, const int fd, const char *filename, const unsigned int flags) {
 	int ret;
 
@@ -97,8 +150,8 @@ static int handle_file(t_handler handler, const int fd, const char *filename, co
 }
 
 static int handle_string(t_handler handler, char *str, const unsigned int flags) {
-	int ret;
-	char *escaped_string = get_escaped_string(str);
+	int		ret;
+	char	*escaped_string = get_escaped_string(str);
 
 	if (!(flags & FLAG_QUIET) && !(flags & FLAG_REVERSE)) {
 		char *upper = string_toupper((char *)handler.cmd);
@@ -123,8 +176,14 @@ int main(int argc, char **argv) {
 	const char		*program_name = get_program_name(argv[0]);
 
 	if (argc == 1) {
-		print_usage(program_name);
-		return (EXIT_SUCCESS);
+		if (!BONUS) {
+			print_usage(program_name);
+			return (EXIT_FAILURE);
+		} else {
+			dprintf(2, "tty: %d\n", isatty(STDIN_FILENO));
+			handle_bonus(&handler, program_name);
+			return (EXIT_SUCCESS);
+		}
 	}
 	if (!vec) {
 		perror("malloc");
@@ -135,11 +194,11 @@ int main(int argc, char **argv) {
 		print_error(program_name, argv[1]);
 		return (EXIT_FAILURE);
 	}
-	flags = parse_flags(argc - 1, argv + 1, &file_start_idx, vec);
+	flags = parse_flags(argc - 1, &argv[1], &file_start_idx, vec);
 	if (flags == (unsigned int)-1)
 		return (EXIT_FAILURE);
 
-	ret |= handle_stdin(handler, (unsigned int)argc == file_start_idx, flags);
+	ret |= handle_stdin(handler, (unsigned int) argc == file_start_idx, flags, false);
 
 	for (unsigned int i = 0; i < vec->size; i++) {
 		ret |= handle_string(handler, (char *)vec->arr[i], flags);
