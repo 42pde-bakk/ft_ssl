@@ -18,7 +18,6 @@
 
 typedef struct s_MD5Context {
 	uint64_t	size;
-	uint32_t	count[2];
 	uint32_t	buffer[4];
 	uint8_t		input[64]; // 512-bit chunk
 	uint8_t		digest[MD5_DIGEST_LENGTH];

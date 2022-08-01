@@ -107,8 +107,8 @@ void	sha256_update(t_sha256Context *sha256Context, const uint8_t *input_buffer, 
 	}
 }
 
-char	*sha256_finalize(t_sha256Context *sha256Context) {
-	char *digest = calloc(SHA256_DIGEST_SIZE, sizeof(char));
+void	sha256_finalize(t_sha256Context *sha256Context) {
+//	char *digest = calloc(SHA256_DIGEST_SIZE, sizeof(char));
 
 	uint32_t i;
 
@@ -147,50 +147,47 @@ char	*sha256_finalize(t_sha256Context *sha256Context) {
 	// Since this implementation uses little endian byte ordering and SHA uses big endian,
 	// reverse all the bytes when copying the final state to the output hash.
 	for (i = 0; i < 4; ++i) {
-		digest[i]      = (int8_t)((sha256Context->h[0] >> (24 - i * 8)) & 0x000000ff);
-		digest[i + 4]  = (int8_t)((sha256Context->h[1] >> (24 - i * 8)) & 0x000000ff);
-		digest[i + 8]  = (int8_t)((sha256Context->h[2] >> (24 - i * 8)) & 0x000000ff);
-		digest[i + 12] = (int8_t)((sha256Context->h[3] >> (24 - i * 8)) & 0x000000ff);
-		digest[i + 16] = (int8_t)((sha256Context->h[4] >> (24 - i * 8)) & 0x000000ff);
-		digest[i + 20] = (int8_t)((sha256Context->h[5] >> (24 - i * 8)) & 0x000000ff);
-		digest[i + 24] = (int8_t)((sha256Context->h[6] >> (24 - i * 8)) & 0x000000ff);
-		digest[i + 28] = (int8_t)((sha256Context->h[7] >> (24 - i * 8)) & 0x000000ff);
+		sha256Context->digest[i]      = (int8_t)((sha256Context->h[0] >> (24 - i * 8)) & 0x000000ff);
+		sha256Context->digest[i + 4]  = (int8_t)((sha256Context->h[1] >> (24 - i * 8)) & 0x000000ff);
+		sha256Context->digest[i + 8]  = (int8_t)((sha256Context->h[2] >> (24 - i * 8)) & 0x000000ff);
+		sha256Context->digest[i + 12] = (int8_t)((sha256Context->h[3] >> (24 - i * 8)) & 0x000000ff);
+		sha256Context->digest[i + 16] = (int8_t)((sha256Context->h[4] >> (24 - i * 8)) & 0x000000ff);
+		sha256Context->digest[i + 20] = (int8_t)((sha256Context->h[5] >> (24 - i * 8)) & 0x000000ff);
+		sha256Context->digest[i + 24] = (int8_t)((sha256Context->h[6] >> (24 - i * 8)) & 0x000000ff);
+		sha256Context->digest[i + 28] = (int8_t)((sha256Context->h[7] >> (24 - i * 8)) & 0x000000ff);
 	}
-	return (digest);
 }
 
-int sha256_string(const char* str, char **save_digest) {
+static void print_hash(const uint8_t *digest) {
+	for (uint8_t i = 0; i < SHA256_DIGEST_SIZE; i++) {
+		fprintf(stdout, "%02x", digest[i]);
+	}
+}
+
+int sha256_string(const char* str) {
 	t_sha256Context sha256Context;
-	char	*digest;
 
 	sha256_init(&sha256Context);
 	sha256_update(&sha256Context, (uint8_t *)str, strlen(str));
-//	for (unsigned int i = 0; i < 8; i++) {
-//		fprintf(stderr, "h[%u] = %#x\n", i, sha256Context.h[i]);
-//	}
-	digest = sha256_finalize(&sha256Context);
-	if (!digest)
-		return (EXIT_FAILURE);
-	*save_digest = digest;
+
+	sha256_finalize(&sha256Context);
+	print_hash(sha256Context.digest);
 	return (EXIT_SUCCESS);
 }
 
-int sha256_file(int fd, char **save_digest) {
+int sha256_file(int fd) {
 	t_sha256Context sha256Context;
 	ssize_t ret;
 	char	BUF[SHA256_BLOCK_SIZE + 1];
-	char	*digest;
 
 	sha256_init(&sha256Context);
 	bzero(BUF, sizeof(BUF));
 
 	while ((ret = read(fd, BUF, SHA256_BLOCK_SIZE)) > 0) {
 		sha256_update(&sha256Context, (uint8_t *)BUF, ret);
-//		dprintf(2, "main. buffer = [%u, %u, %u, %u]\n", md5Context.buffer[0], md5Context.buffer[1], md5Context.buffer[2], md5Context.buffer[3]);
 	}
-	digest = sha256_finalize(&sha256Context);
-	if (!digest)
-		return (EXIT_FAILURE);
-	*save_digest = digest;
+
+	sha256_finalize(&sha256Context);
+	print_hash(sha256Context.digest);
 	return (EXIT_SUCCESS);
 }

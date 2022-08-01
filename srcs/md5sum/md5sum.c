@@ -11,14 +11,14 @@
 #include "md5.h"
 #include "utils.h"
 
-void	md5_init(t_MD5Context *md5Context) {
+static void	md5_init(t_MD5Context *md5Context) {
 	bzero(md5Context, sizeof(t_MD5Context));
 	for (uint8_t i = 0; i < 4; ++i) {
 		md5Context->buffer[i] = abcd[i];
 	}
 }
 
-void	md5_step(t_MD5Context *md5Context, const uint32_t *input) {
+static void	md5_step(t_MD5Context *md5Context, const uint32_t *input) {
 	uint32_t	A = md5Context->buffer[0],
 				B = md5Context->buffer[1],
 				C = md5Context->buffer[2],
@@ -51,7 +51,7 @@ void	md5_step(t_MD5Context *md5Context, const uint32_t *input) {
 	md5Context->buffer[3] += D;
 }
 
-void	md5_update(t_MD5Context *md5Context, const uint8_t *input_buffer, const size_t buffer_len) {
+static void	md5_update(t_MD5Context *md5Context, const uint8_t *input_buffer, const size_t buffer_len) {
 	uint32_t	input[MD5_DIGEST_LENGTH];
 	uint32_t	offset = md5Context->size % 64;
 	md5Context->size += buffer_len;
@@ -70,7 +70,7 @@ void	md5_update(t_MD5Context *md5Context, const uint8_t *input_buffer, const siz
 	}
 }
 
-void	md5_finalize(t_MD5Context *md5Context) {
+static void	md5_finalize(t_MD5Context *md5Context) {
 	uint32_t	input[MD5_DIGEST_LENGTH];
 	uint32_t	offset = md5Context->size % 64;
 	uint32_t	padding_len;
@@ -98,43 +98,35 @@ void	md5_finalize(t_MD5Context *md5Context) {
 	}
 }
 
-int md5sum_string(const char* str, char **save_digest) {
+static void print_hash(const uint8_t *digest) {
+	for (uint8_t i = 0; i < MD5_DIGEST_LENGTH; i++) {
+		fprintf(stdout, "%02x", digest[i]);
+	}
+}
+
+int md5sum_string(const char* str) {
 	t_MD5Context	md5Context;
-	char			*digest;
 
 	md5_init(&md5Context);
 	md5_update(&md5Context, (uint8_t *)str, strlen(str));
 	md5_finalize(&md5Context);
 
-	digest = calloc(MD5_DIGEST_LENGTH + 1, sizeof(uint8_t));
-	if (!digest) {
-		perror("malloc");
-		return (EXIT_FAILURE);
-	}
-	memcpy(digest, md5Context.digest, MD5_DIGEST_LENGTH * sizeof(uint8_t));
-	*save_digest = digest;
+	print_hash(md5Context.digest);
 	return (EXIT_SUCCESS);
 }
 
-int md5sum_file(int fd, char **save_digest) {
+int md5sum_file(int fd) {
+	t_MD5Context	md5Context;
 	ssize_t ret;
 	char	BUF[MD5_BLOCK_SIZE + 1];
-	t_MD5Context	md5Context;
-	char	*digest;
 
-	digest = calloc(MD5_DIGEST_LENGTH, sizeof(uint8_t));
-	bzero(BUF, sizeof(BUF));
-	if (!digest) {
-		perror("calloc");
-		return (EXIT_FAILURE);
-	}
 	md5_init(&md5Context);
+	bzero(BUF, sizeof(BUF));
 	while ((ret = read(fd, BUF, MD5_BLOCK_SIZE)) > 0) {
 		md5_update(&md5Context, (uint8_t *)BUF, ret);
 	}
 	md5_finalize(&md5Context);
 
-	memcpy(digest, md5Context.digest, MD5_DIGEST_LENGTH * sizeof(uint8_t));
-	*save_digest = digest;
+	print_hash(md5Context.digest);
 	return (EXIT_SUCCESS);
 }
