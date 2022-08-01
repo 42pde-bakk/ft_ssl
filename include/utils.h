@@ -6,6 +6,7 @@
 #define FT_SSL_UTILS_H
 
 #include <stdint.h>
+#include <stddef.h>
 
 // string_toupper.c
 char	*string_toupper(char *str);
