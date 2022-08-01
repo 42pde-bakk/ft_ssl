@@ -14,6 +14,7 @@ typedef struct s_sha256Context {
 	uint8_t		data[64];
 	uint32_t	data_len;
 	uint64_t	bitlen;
+	uint8_t		digest[SHA256_DIGEST_SIZE];
 }	t_sha256Context;
 
 #endif //FT_SSL_SHA256_H

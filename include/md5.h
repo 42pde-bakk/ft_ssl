@@ -9,7 +9,7 @@
 #include <stddef.h>
 
 #define MD5_DIGEST_LENGTH 16
-#define BLOCK_SIZE 512
+#define MD5_BLOCK_SIZE 512
 
 #define F(B, C, D) ((B & C) | (~B & D)) //f0
 #define G(B, C, D) ((B & D) | (C & ~D))	//f1
@@ -18,9 +18,8 @@
 
 typedef struct s_MD5Context {
 	uint64_t	size;
-	uint32_t	count[2];
 	uint32_t	buffer[4];
-	uint8_t		input[64];
+	uint8_t		input[64]; // 512-bit chunk
 	uint8_t		digest[MD5_DIGEST_LENGTH];
 }	t_MD5Context;
 

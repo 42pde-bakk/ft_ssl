@@ -1,6 +1,11 @@
 {
   "MD5": [
     {
+      "command": "./ft_ssl md5 -q -s \"be sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\"",
+      "expected_stdout": "10aa2c6851c8a4f61b100dc32dd8d4f3\n",
+      "expected_stderr": ""
+    },
+    {
       "command": "echo \"42 is nice\" | ./ft_ssl md5",
       "expected_stdout": "(stdin)= 35f1d6de0302e2086a4e472266efb3a9\n",
       "expected_stderr": ""

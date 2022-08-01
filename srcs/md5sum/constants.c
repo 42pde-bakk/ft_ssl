@@ -11,6 +11,8 @@ const uint32_t shiftAmounts[64] = {
 	6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21
 };
 
+// Use binary integer part of the sines of integers (Radians) as constants
+// (Or just use the following precomputed table):
 const uint32_t	k[64] = {
 	0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
 	0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
@@ -51,4 +53,3 @@ const uint32_t d0 = 0x10325476;
 const uint32_t abcd[4] = {
 		a0, b0, c0, d0
 };
-

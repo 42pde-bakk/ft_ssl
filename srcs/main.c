@@ -1,6 +1,9 @@
+//
+// Created by Peer de Bakker on 7/4/22.
+//
+
 #include "parsing.h"
 #include <stdio.h>
-#include <stdint.h>
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -24,24 +27,15 @@ static int	open_file(const char *filename) {
 	return (fd);
 }
 
-
-static void print_hash(uint8_t *digest, const size_t digest_length) {
-	for (uint8_t i = 0; i < digest_length; i++) {
-		fprintf(stdout, "%02x", digest[i]);
-	}
-}
-
 int	handle_stdin(t_handler handler, bool no_files_given, const unsigned int flags) {
 	ssize_t	ret;
 	ssize_t	total_read = 0;
-	char	*digest;
 	char *result = calloc(1, sizeof(char));
 
 	if (!result) {
 		return (EXIT_FAILURE);
 	}
-//	fprintf(stderr, "handle_stdin: %d || %d || %d\n", !isatty(STDIN_FILENO), flags & FLAG_P, argc);
-	if (!isatty(STDIN_FILENO) && (flags & FLAG_P || no_files_given)) { // shouldn't check argc, but the amount of actual files/strings given
+	if (!isatty(STDIN_FILENO) && (flags & FLAG_P || no_files_given)) {
 		char *tmp = calloc(BUFSIZ + 1, sizeof(char));
 		if (!tmp) {
 			free(result);
@@ -77,10 +71,8 @@ int	handle_stdin(t_handler handler, bool no_files_given, const unsigned int flag
 		} else if (flags & FLAG_P) {
 			fprintf(stdout, "%s", result);
 		}
-		ret = handler.handle_string(result, &digest);
-		print_hash((uint8_t *)digest, handler.digest_length);
+		ret = handler.handle_string(result);
 		free(escaped_string);
-		free(digest);
 		free(result);
 		fprintf(stdout, "\n");
 		return ((int)ret);
@@ -90,16 +82,13 @@ int	handle_stdin(t_handler handler, bool no_files_given, const unsigned int flag
 
 static int handle_file(t_handler handler, const int fd, const char *filename, const unsigned int flags) {
 	int ret;
-	char *digest;
 
 	if (!(flags & FLAG_QUIET) && !(flags & FLAG_REVERSE)) {
 		char *upper = string_toupper((char *)handler.cmd);
 		fprintf(stdout, "%s (%s) = ", upper, filename);
 		free(upper);
 	}
-	ret = handler.handle_file(fd, &digest);
-	print_hash((uint8_t *)digest, handler.digest_length);
-	free(digest);
+	ret = handler.handle_file(fd);
 	if (!(flags & FLAG_QUIET) && (flags & FLAG_REVERSE)) {
 		fprintf(stdout, " %s", filename);
 	}
@@ -109,16 +98,14 @@ static int handle_file(t_handler handler, const int fd, const char *filename, co
 
 static int handle_string(t_handler handler, char *str, const unsigned int flags) {
 	int ret;
-	char *digest;
 	char *escaped_string = get_escaped_string(str);
+
 	if (!(flags & FLAG_QUIET) && !(flags & FLAG_REVERSE)) {
 		char *upper = string_toupper((char *)handler.cmd);
 		fprintf(stdout, "%s (%s) = ", upper, escaped_string);
 		free(upper);
 	}
-	ret = handler.handle_string(str, &digest);
-	print_hash((uint8_t *)digest, handler.digest_length);
-	free(digest);
+	ret = handler.handle_string(str);
 	if (!(flags & FLAG_QUIET) && (flags & FLAG_REVERSE)) {
 		fprintf(stdout, " %s", escaped_string);
 	}
