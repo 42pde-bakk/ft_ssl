@@ -25,8 +25,8 @@ static int	open_file(const char *filename) {
 }
 
 
-static void print_hash(uint8_t *digest) {
-	for (uint8_t i = 0; i < 16; i++) {
+static void print_hash(uint8_t *digest, const size_t digest_length) {
+	for (uint8_t i = 0; i < digest_length; i++) {
 		fprintf(stdout, "%02x", digest[i]);
 	}
 }
@@ -78,7 +78,7 @@ int	handle_stdin(t_handler handler, bool no_files_given, const unsigned int flag
 			fprintf(stdout, "%s", result);
 		}
 		ret = handler.handle_string(result, &digest);
-		print_hash((uint8_t *)digest);
+		print_hash((uint8_t *)digest, handler.digest_length);
 		free(escaped_string);
 		free(digest);
 		free(result);
@@ -98,7 +98,7 @@ static int handle_file(t_handler handler, const int fd, const char *filename, co
 		free(upper);
 	}
 	ret = handler.handle_file(fd, &digest);
-	print_hash((uint8_t *)digest);
+	print_hash((uint8_t *)digest, handler.digest_length);
 	free(digest);
 	if (!(flags & FLAG_QUIET) && (flags & FLAG_REVERSE)) {
 		fprintf(stdout, " %s", filename);
@@ -117,7 +117,7 @@ static int handle_string(t_handler handler, char *str, const unsigned int flags)
 		free(upper);
 	}
 	ret = handler.handle_string(str, &digest);
-	print_hash((uint8_t *)digest);
+	print_hash((uint8_t *)digest, handler.digest_length);
 	free(digest);
 	if (!(flags & FLAG_QUIET) && (flags & FLAG_REVERSE)) {
 		fprintf(stdout, " %s", escaped_string);

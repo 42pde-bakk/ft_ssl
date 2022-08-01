@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#define DIGEST_LENGTH 16
+#define MD5_DIGEST_LENGTH 16
 #define BLOCK_SIZE 512
 
 #define F(B, C, D) ((B & C) | (~B & D)) //f0
@@ -21,7 +21,7 @@ typedef struct s_MD5Context {
 	uint32_t	count[2];
 	uint32_t	buffer[4];
 	uint8_t		input[64];
-	uint8_t		digest[DIGEST_LENGTH];
+	uint8_t		digest[MD5_DIGEST_LENGTH];
 }	t_MD5Context;
 
 
