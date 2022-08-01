@@ -16,10 +16,13 @@ typedef struct s_handler {
 	string_handler handle_string;
 }	t_handler;
 
-
 int md5sum_string(const char* str);
 int md5sum_file(int fd);
+
 int sha256_string(const char* str);
 int sha256_file(int fd);
+
+int sha224_string(const char* str);
+int sha224_file(int fd);
 
 #endif //FT_SSL_FUNC_PTRS_H

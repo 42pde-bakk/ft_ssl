@@ -5,7 +5,6 @@
 #include <stdint.h>
 #include <unistd.h>
 #include <sys/mman.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "md5.h"
@@ -98,12 +97,6 @@ static void	md5_finalize(t_MD5Context *md5Context) {
 	}
 }
 
-static void print_hash(const uint8_t *digest) {
-	for (uint8_t i = 0; i < MD5_DIGEST_LENGTH; i++) {
-		fprintf(stdout, "%02x", digest[i]);
-	}
-}
-
 int md5sum_string(const char* str) {
 	t_MD5Context	md5Context;
 
@@ -111,7 +104,7 @@ int md5sum_string(const char* str) {
 	md5_update(&md5Context, (uint8_t *)str, strlen(str));
 	md5_finalize(&md5Context);
 
-	print_hash(md5Context.digest);
+	print_hash(md5Context.digest, MD5_DIGEST_LENGTH);
 	return (EXIT_SUCCESS);
 }
 
@@ -127,6 +120,6 @@ int md5sum_file(int fd) {
 	}
 	md5_finalize(&md5Context);
 
-	print_hash(md5Context.digest);
+	print_hash(md5Context.digest, MD5_DIGEST_LENGTH);
 	return (EXIT_SUCCESS);
 }

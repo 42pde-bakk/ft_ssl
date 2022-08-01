@@ -5,48 +5,17 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <stdio.h>
 #include "sha256.h"
 #include "utils.h"
 
-static const uint32_t	h[8] = {
-		0x6a09e667,
-		0xbb67ae85,
-		0x3c6ef372,
-		0xa54ff53a,
-		0x510e527f,
-		0x9b05688c,
-		0x1f83d9ab,
-		0x5be0cd19
-};
-
-static const uint32_t k[64] = {
-		0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
-		0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
-		0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
-		0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
-		0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
-		0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
-		0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
-		0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
-};
-
-void	sha256_init(t_sha256Context *sha256Context) {
-	bzero(sha256Context, sizeof(t_sha256Context));
+void sha256_init(t_sha2Context* sha256Context, const uint32_t* hash_values) {
+	bzero(sha256Context, sizeof(t_sha2Context));
 	for (unsigned int i = 0; i < 8; i++) {
-		sha256Context->h[i] = h[i];
+		sha256Context->h[i] = hash_values[i];
 	}
 }
 
-uint32_t get_s0(const uint32_t item) {
-	return (rightrotate(item, 7) ^ rightrotate(item, 18) ^ (item >> 3));
-}
-
-uint32_t get_s1(const uint32_t item) {
-	return (rightrotate(item, 17) ^ rightrotate(item, 19) ^ (item >> 10));
-}
-
-void	sha256_transform(t_sha256Context *sha256Context) {
+void	sha256_transform(t_sha2Context *sha256Context) {
 	uint32_t hash[8];
 	uint32_t w[64];
 
@@ -73,7 +42,7 @@ void	sha256_transform(t_sha256Context *sha256Context) {
 	for (unsigned int i = 0; i < 64; i++) {
 		uint32_t S1 = rightrotate(hash[4], 6) ^ rightrotate(hash[4], 11) ^ rightrotate(hash[4], 25);
 		uint32_t ch = (hash[4] & hash[5]) ^ ((~hash[4]) & hash[6]);
-		uint32_t temp1 = hash[7] + S1 + ch + k[i] + w[i];
+		uint32_t temp1 = hash[7] + S1 + ch + k_sha2[i] + w[i];
 		uint32_t S0 = rightrotate(hash[0], 2) ^ rightrotate(hash[0], 13) ^ rightrotate(hash[0], 22);
 		uint32_t maj = (hash[0] & hash[1]) ^ (hash[0] & hash[2]) ^ (hash[1] & hash[2]);
 		uint32_t temp2 = S0 + maj;
@@ -94,7 +63,7 @@ void	sha256_transform(t_sha256Context *sha256Context) {
 	}
 }
 
-void	sha256_update(t_sha256Context *sha256Context, const uint8_t *input_buffer, const size_t buffer_len) {
+void	sha256_update(t_sha2Context *sha256Context, const uint8_t *input_buffer, const size_t buffer_len) {
 	for (unsigned int i = 0; i < buffer_len; i++) {
 		sha256Context->data[sha256Context->data_len] = input_buffer[i];
 		sha256Context->data_len++;
@@ -107,7 +76,7 @@ void	sha256_update(t_sha256Context *sha256Context, const uint8_t *input_buffer, 
 	}
 }
 
-void	sha256_finalize(t_sha256Context *sha256Context) {
+void	sha256_finalize(t_sha2Context *sha256Context) {
 //	char *digest = calloc(SHA256_DIGEST_SIZE, sizeof(char));
 
 	uint32_t i;
@@ -158,29 +127,23 @@ void	sha256_finalize(t_sha256Context *sha256Context) {
 	}
 }
 
-static void print_hash(const uint8_t *digest) {
-	for (uint8_t i = 0; i < SHA256_DIGEST_SIZE; i++) {
-		fprintf(stdout, "%02x", digest[i]);
-	}
-}
-
 int sha256_string(const char* str) {
-	t_sha256Context sha256Context;
+	t_sha2Context sha256Context;
 
-	sha256_init(&sha256Context);
+	sha256_init(&sha256Context, sha256_h);
 	sha256_update(&sha256Context, (uint8_t *)str, strlen(str));
 
 	sha256_finalize(&sha256Context);
-	print_hash(sha256Context.digest);
+	print_hash(sha256Context.digest, SHA256_DIGEST_SIZE);
 	return (EXIT_SUCCESS);
 }
 
 int sha256_file(int fd) {
-	t_sha256Context sha256Context;
+	t_sha2Context sha256Context;
 	ssize_t ret;
 	char	BUF[SHA256_BLOCK_SIZE + 1];
 
-	sha256_init(&sha256Context);
+	sha256_init(&sha256Context, sha256_h);
 	bzero(BUF, sizeof(BUF));
 
 	while ((ret = read(fd, BUF, SHA256_BLOCK_SIZE)) > 0) {
@@ -188,6 +151,34 @@ int sha256_file(int fd) {
 	}
 
 	sha256_finalize(&sha256Context);
-	print_hash(sha256Context.digest);
+	print_hash(sha256Context.digest, SHA256_DIGEST_SIZE);
+	return (EXIT_SUCCESS);
+}
+
+int sha224_string(const char* str) {
+	t_sha2Context sha256Context;
+
+	sha256_init(&sha256Context, sha224_h);
+	sha256_update(&sha256Context, (uint8_t *)str, strlen(str));
+
+	sha256_finalize(&sha256Context);
+	print_hash(sha256Context.digest, SHA224_DIGEST_SIZE);
+	return (EXIT_SUCCESS);
+}
+
+int sha224_file(int fd) {
+	t_sha2Context sha256Context;
+	ssize_t ret;
+	char	BUF[SHA256_BLOCK_SIZE + 1];
+
+	sha256_init(&sha256Context,sha224_h);
+	bzero(BUF, sizeof(BUF));
+
+	while ((ret = read(fd, BUF, SHA256_BLOCK_SIZE)) > 0) {
+		sha256_update(&sha256Context, (uint8_t *)BUF, ret);
+	}
+
+	sha256_finalize(&sha256Context);
+	print_hash(sha256Context.digest, SHA224_DIGEST_SIZE);
 	return (EXIT_SUCCESS);
 }
