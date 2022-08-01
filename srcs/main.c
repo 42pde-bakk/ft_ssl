@@ -63,11 +63,11 @@ char	*read_stdin(const bool return_on_enter) {
 	return (result);
 }
 
-int handle_stdin(t_handler handler, bool no_files_given, const unsigned int flags, bool bonus) {
+int handle_stdin(t_handler handler, bool no_files_given, const unsigned int flags, bool force_read) {
 	ssize_t	ret;
 	char	*result;
 
-	if ((!isatty(STDIN_FILENO) && (flags & FLAG_P || no_files_given)) || bonus) {
+	if ((!isatty(STDIN_FILENO) && (flags & FLAG_P || no_files_given)) || force_read) {
 		result = read_stdin(false);
 		if (!result) {
 			return (EXIT_FAILURE);
@@ -176,6 +176,7 @@ int main(int argc, char **argv) {
 		if (BONUS) {
 			return (handle_bonus(&handler, program_name));
 		} else {
+			// I guess I could treat it like md5sum treats no-args, but the subject has an example that wants this:
 			print_usage(program_name);
 			return (EXIT_FAILURE);
 		}
