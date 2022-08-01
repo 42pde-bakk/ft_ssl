@@ -54,10 +54,9 @@ char	*read_stdin(const bool return_on_enter) {
 			break ;
 		}
 	}
-	if (ret <= 0) {
-		if (ret < 0) {
-			perror("stdin read");
-		}
+	if (ret < 0 || total_read == 0) {
+		if (ret < 0)
+			perror("read");
 		free(result);
 		return (NULL);
 	}
