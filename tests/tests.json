@@ -86,6 +86,12 @@
       "command": "./ft_ssl sha256 -s \"The quick brown fox jumps over the lazy dog.\"",
       "expected_stdout": "SHA256 (\"The quick brown fox jumps over the lazy dog.\") = ef537f25c895bfa782526529a9b63d97aa631564d5d789c2b765448c8635fb6c\n",
       "expected_stderr": ""
+    },
+    {
+      "command": "echo \"be sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\" | ./ft_ssl sha256",
+      "expected_stdout": "(stdin)= ffa3b3e6f150b593ce30f0e8ba7ac98236c0dedbe75f41270b03419cc5ac047f\n",
+      "expected_stderr": ""
     }
+
   ]
 }
