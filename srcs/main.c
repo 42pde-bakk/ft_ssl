@@ -54,24 +54,21 @@ char	*read_stdin(const bool return_on_enter) {
 			break ;
 		}
 	}
-	if (ret < 0) {
-		perror("stdin read");
+	if (ret <= 0) {
+		if (ret < 0) {
+			perror("stdin read");
+		}
 		free(result);
 		return (NULL);
 	}
 	return (result);
-//	if (total_read == 0) {
-//		free(result);
-//		return (result);
-//	}
 }
 
 int handle_stdin(t_handler handler, bool no_files_given, const unsigned int flags, bool bonus) {
 	ssize_t	ret;
 	char	*result;
-	(void)bonus;
 
-	if (!isatty(STDIN_FILENO) && (flags & FLAG_P || no_files_given)) {
+	if ((!isatty(STDIN_FILENO) && (flags & FLAG_P || no_files_given)) || bonus) {
 		result = read_stdin(false);
 		if (!result) {
 			return (EXIT_FAILURE);
