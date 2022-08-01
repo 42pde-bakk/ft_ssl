@@ -69,8 +69,9 @@ char	*read_stdin(const bool return_on_enter) {
 int handle_stdin(t_handler handler, bool no_files_given, const unsigned int flags, bool bonus) {
 	ssize_t	ret;
 	char	*result;
+	(void)bonus;
 
-	if ((!isatty(STDIN_FILENO) && (flags & FLAG_P || no_files_given)) || bonus) {
+	if (!isatty(STDIN_FILENO) && (flags & FLAG_P || no_files_given)) {
 		result = read_stdin(false);
 		if (!result) {
 			return (EXIT_FAILURE);
@@ -176,13 +177,11 @@ int main(int argc, char **argv) {
 	const char		*program_name = get_program_name(argv[0]);
 
 	if (argc == 1) {
-		if (!BONUS) {
+		if (BONUS) {
+			return (handle_bonus(&handler, program_name));
+		} else {
 			print_usage(program_name);
 			return (EXIT_FAILURE);
-		} else {
-			dprintf(2, "tty: %d\n", isatty(STDIN_FILENO));
-			handle_bonus(&handler, program_name);
-			return (EXIT_SUCCESS);
 		}
 	}
 	if (!vec) {
