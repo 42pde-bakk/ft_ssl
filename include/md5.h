@@ -9,7 +9,7 @@
 #include <stddef.h>
 
 #define MD5_DIGEST_LENGTH 16
-#define BLOCK_SIZE 512
+#define MD5_BLOCK_SIZE 512
 
 #define F(B, C, D) ((B & C) | (~B & D)) //f0
 #define G(B, C, D) ((B & D) | (C & ~D))	//f1

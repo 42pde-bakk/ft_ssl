@@ -118,7 +118,7 @@ int md5sum_string(const char* str, char **save_digest) {
 
 int md5sum_file(int fd, char **save_digest) {
 	ssize_t ret;
-	char	BUF[BLOCK_SIZE + 1];
+	char	BUF[MD5_BLOCK_SIZE + 1];
 	t_MD5Context	md5Context;
 	char	*digest;
 
@@ -129,7 +129,7 @@ int md5sum_file(int fd, char **save_digest) {
 		return (EXIT_FAILURE);
 	}
 	md5_init(&md5Context);
-	while ((ret = read(fd, BUF, BLOCK_SIZE)) > 0) {
+	while ((ret = read(fd, BUF, MD5_BLOCK_SIZE)) > 0) {
 		md5_update(&md5Context, (uint8_t *)BUF, ret);
 	}
 	md5_finalize(&md5Context);
