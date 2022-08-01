@@ -1,11 +1,6 @@
 {
   "MD5": [
     {
-      "command": "./ft_ssl md5 -q -s \"be sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\"",
-      "expected_stdout": "10aa2c6851c8a4f61b100dc32dd8d4f3\n",
-      "expected_stderr": ""
-    },
-    {
       "command": "echo \"42 is nice\" | ./ft_ssl md5",
       "expected_stdout": "(stdin)= 35f1d6de0302e2086a4e472266efb3a9\n",
       "expected_stderr": ""
@@ -63,6 +58,11 @@
     {
       "command": "echo \"just to be extra clear\" | ./ft_ssl md5 -r -q -p -s \"foo\" /tmp/file",
       "expected_stdout": "just to be extra clear\n3ba35f1ea0d170cb3b9a752e3360286c\nacbd18db4cc2f85cedef654fccc4a4d8\n53d53ea94217b259c11a5a2d104ec58a\n",
+      "expected_stderr": ""
+    },
+    {
+      "command": "./ft_ssl md5 -q -s \"be sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\"",
+      "expected_stdout": "10aa2c6851c8a4f61b100dc32dd8d4f3\n",
       "expected_stderr": ""
     }
   ],
