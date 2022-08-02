@@ -14,7 +14,6 @@ void sha256_init(t_sha2Context* sha256Context, const uint32_t* hash_values) {
 		sha256Context->h[i] = hash_values[i];
 	}
 }
-
 void	sha256_transform(t_sha2Context *sha256Context) {
 	uint32_t hash[8];
 	uint32_t w[64];
@@ -26,15 +25,12 @@ void	sha256_transform(t_sha2Context *sha256Context) {
 		if (i < 16) {
 			// copy chunk into first 16 words w[0..15] of the message schedule array
 			w[i] = four_chars_to_uint32_sha256(&sha256Context->data[i * 4]);
-//			printf("w[%u] = %#x\n", i, w[i]);
 		} else {
 			// Extend the first 16 words into the remaining 48 words w[16..63] of the message schedule array:
 			const uint32_t s0 = get_s0(w[i - 15]);
 			const uint32_t s1 = get_s1(w[i - 2]);
-//			printf("w[i] = %#x + %#x + %#x + %#x\n",  w[i - 16], s0, w[i - 7], s1);
 
 			w[i] = w[i - 16] + s0 + w[i - 7] + s1;
-//			printf("s0 = %#x, s1 = %#x, w[%u] = %#x\n", s0, s1, i, w[i]);
 		}
 	}
 
@@ -77,53 +73,39 @@ void	sha256_update(t_sha2Context *sha256Context, const uint8_t *input_buffer, co
 }
 
 void	sha256_finalize(t_sha2Context *sha256Context) {
-//	char *digest = calloc(SHA256_DIGEST_SIZE, sizeof(char));
-
 	uint32_t i;
+	const uint32_t padding_length = (sha256Context->data_len < 56) ? 56 : 64;
 
 	i = sha256Context->data_len;
+	sha256Context->data[i] = 0x80;
+	i++;
 
 	// Pad whatever data is left in the buffer.
-	if (sha256Context->data_len < 56) {
-		sha256Context->data[i] = 0x80;
+	while (i < padding_length) {
+		sha256Context->data[i] = 0x00;
 		i++;
-		while (i < 56) {
-			sha256Context->data[i] = 0x00;
-			i++;
-		}
 	}
-	else {
-		sha256Context->data[i] = 0x80;
-		i++;
-		while (i < 64)
-			sha256Context->data[i++] = 0x00;
+	if (sha256Context->data_len >= 56) {
+		// We do this because we need some space to store the total message's length
 		sha256_transform(sha256Context);
 		memset(sha256Context->data, 0, 56);
 	}
 
 	// Append to the padding the total message's length in bits and transform.
-	sha256Context->bitlen += sha256Context->data_len * 8;
-	sha256Context->data[63] = sha256Context->bitlen;
-	sha256Context->data[62] = sha256Context->bitlen >> 8;
-	sha256Context->data[61] = sha256Context->bitlen >> 16;
-	sha256Context->data[60] = sha256Context->bitlen >> 24;
-	sha256Context->data[59] = sha256Context->bitlen >> 32;
-	sha256Context->data[58] = sha256Context->bitlen >> 40;
-	sha256Context->data[57] = sha256Context->bitlen >> 48;
-	sha256Context->data[56] = sha256Context->bitlen >> 56;
+	sha256Context->bitlen += sha256Context->data_len * 8; // 8 bits per byte
+	for (i = 0; i < 8; i++) {
+		const uint32_t bitshift = 8 * i;
+		sha256Context->data[63 - i] = (uint8_t)(sha256Context->bitlen >> bitshift);
+	}
+
 	sha256_transform(sha256Context);
 
-	// Since this implementation uses little endian byte ordering and SHA uses big endian,
-	// reverse all the bytes when copying the final state to the output hash.
+	// Reverse the bytes because it wants it in big endian, and we use little endian
 	for (i = 0; i < 4; ++i) {
-		sha256Context->digest[i]      = (int8_t)((sha256Context->h[0] >> (24 - i * 8)) & 0x000000ff);
-		sha256Context->digest[i + 4]  = (int8_t)((sha256Context->h[1] >> (24 - i * 8)) & 0x000000ff);
-		sha256Context->digest[i + 8]  = (int8_t)((sha256Context->h[2] >> (24 - i * 8)) & 0x000000ff);
-		sha256Context->digest[i + 12] = (int8_t)((sha256Context->h[3] >> (24 - i * 8)) & 0x000000ff);
-		sha256Context->digest[i + 16] = (int8_t)((sha256Context->h[4] >> (24 - i * 8)) & 0x000000ff);
-		sha256Context->digest[i + 20] = (int8_t)((sha256Context->h[5] >> (24 - i * 8)) & 0x000000ff);
-		sha256Context->digest[i + 24] = (int8_t)((sha256Context->h[6] >> (24 - i * 8)) & 0x000000ff);
-		sha256Context->digest[i + 28] = (int8_t)((sha256Context->h[7] >> (24 - i * 8)) & 0x000000ff);
+		const uint32_t bitshift = 24 - i * 8;
+		for (uint32_t n = 0; n < 8; n++) {
+			sha256Context->digest[i + 4 * n] = (uint8_t)((sha256Context->h[n] >> bitshift) & 0xff);
+		}
 	}
 }
 
