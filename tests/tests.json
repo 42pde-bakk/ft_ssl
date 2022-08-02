@@ -109,6 +109,12 @@
       "expected_statuscode": 0,
       "expected_stdout": "(stdin)= ffa3b3e6f150b593ce30f0e8ba7ac98236c0dedbe75f41270b03419cc5ac047f\n",
       "expected_stderr": ""
+    },
+    {
+      "command": "./ft_ssl sha256 -q -s \"IjustWantAStringOfSixtyCharactersForTestingPurposesFillerIci\"",
+      "expected_statuscode": 0,
+      "expected_stdout": "f3e9e0c3f5759afa6905192029841156392cd4b87f999efde158d596828c1a57\n",
+      "expected_stderr": ""
     }
   ],
   "SHA224": [
