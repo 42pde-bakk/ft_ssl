@@ -60,7 +60,7 @@ def main():
 	with open('tests/tests.json', 'r') as f:
 		test_file = json.load(f)
 
-	for test_name in ['MD5', 'SHA256', 'Invalid']:
+	for test_name in ['MD5', 'SHA256', 'SHA224', 'Invalid']:
 		ret |= run_testcases(test_file[test_name], test_name)
 
 	exit(ret)

@@ -119,9 +119,39 @@
   ],
   "SHA224": [
     {
-      "command": "./ft_ssl sha224 -q -s \"hello world\"",
+      "command": "./ft_ssl sha224 -q /tmp/website",
       "expected_statuscode": 0,
-      "expected_stdout": "2f05477fc24bb4faefd86517156dafdecec45b8ad3cf2522a563582b\n",
+      "expected_stdout": "20812c3a7017f98719f01f1ae221eb9ec89f4589fb4c5907fee3daff\n",
+      "expected_stderr": ""
+    },
+    {
+      "command": "./ft_ssl sha224 -s \"\"",
+      "expected_statuscode": 0,
+      "expected_stdout": "SHA224 (\"\") = d14a028c2a3a2bc9476102bb288234c415a2b01f828ea62ac5b3e42f\n",
+      "expected_stderr": ""
+    },
+    {
+      "command": "./ft_ssl sha224 -s \"The quick brown fox jumps over the lazy dog\"",
+      "expected_statuscode": 0,
+      "expected_stdout": "SHA224 (\"The quick brown fox jumps over the lazy dog\") = 730e109bd7a8a32b1cb9d9a09aa2325d2430587ddbc0c38bad911525\n",
+      "expected_stderr": ""
+    },
+    {
+      "command": "./ft_ssl sha224 -s \"The quick brown fox jumps over the lazy dog.\"",
+      "expected_statuscode": 0,
+      "expected_stdout": "SHA224 (\"The quick brown fox jumps over the lazy dog.\") = 619cba8e8e05826e9b8c519c0a5c68f4fb653e8a3d8aa04bb2c8cd4c\n",
+      "expected_stderr": ""
+    },
+    {
+      "command": "echo \"be sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\" | ./ft_ssl sha224",
+      "expected_statuscode": 0,
+      "expected_stdout": "(stdin)= 1f6150aee88b59743bc33f5f2917d03c0db2711c4bb54dee4d30791e\n",
+      "expected_stderr": ""
+    },
+    {
+      "command": "./ft_ssl sha224 -q -s \"IjustWantAStringOfSixtyCharactersForTestingPurposesFillerIci\"",
+      "expected_statuscode": 0,
+      "expected_stdout": "4f16408447c191f30cc7177a6f423cda2953d5e1202a98c49c55b27b\n",
       "expected_stderr": ""
     }
   ],
