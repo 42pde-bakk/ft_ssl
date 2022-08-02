@@ -43,7 +43,9 @@ char	*read_stdin(const bool return_on_enter) {
 	while ((ret = read(STDIN_FILENO, tmp, BUFSIZ)) > 0) {
 		if (ret > 0)
 			total_read += ret;
+		char *tmp2 = result;
 		result = ft_strjoin(result, tmp);
+		free(tmp2);
 		if (!result) {
 			free(result);
 			free(tmp);
@@ -54,6 +56,7 @@ char	*read_stdin(const bool return_on_enter) {
 			break ;
 		}
 	}
+	free(tmp);
 	if (ret < 0 || total_read == 0) {
 		if (ret < 0)
 			perror("read");
@@ -168,7 +171,7 @@ int main(int argc, char **argv) {
 	unsigned int	file_start_idx = 1;
 	unsigned int	flags;
 	t_handler		handler;
-	t_ptrvector		*vec = ptrvector_init(5, false);
+	t_ptrvector		*vec;
 	unsigned int	ret = 0;
 	const char		*program_name = get_program_name(argv[0]);
 
@@ -181,6 +184,7 @@ int main(int argc, char **argv) {
 			return (EXIT_FAILURE);
 		}
 	}
+	vec = ptrvector_init(5, false);
 	if (!vec) {
 		perror("malloc");
 		exit(EXIT_FAILURE);
@@ -188,11 +192,14 @@ int main(int argc, char **argv) {
 	handler = parse_command(argv[1]);
 	if (!handler.cmd) {
 		print_error(program_name, argv[1]);
+		ptrvector_destroy(vec);
 		return (EXIT_FAILURE);
 	}
 	flags = parse_flags(argc - 1, &argv[1], &file_start_idx, vec);
-	if (flags == (unsigned int)-1)
+	if (flags == (unsigned int)-1) {
+		ptrvector_destroy(vec);
 		return (EXIT_FAILURE);
+	}
 
 	const bool no_files_or_strings_given = (unsigned int)argc == file_start_idx && vec->size == 0;
 
