@@ -6,6 +6,8 @@
 #define FT_SSL_UTILS_H
 
 #include <stdint.h>
+#include <stddef.h>
+#include "logging.h"
 
 // string_toupper.c
 char	*string_toupper(char *str);
@@ -27,5 +29,8 @@ uint32_t rightrotate(uint32_t x, uint32_t n);
 // copy_four_chars_to_uint32.c
 uint32_t	four_chars_to_uint32_sha256(const uint8_t *ptr);
 uint32_t	four_chars_to_uint32_md5(const uint8_t *ptr);
+
+// print_hash.c
+void print_hash(const uint8_t *digest, size_t digest_length);
 
 #endif //FT_SSL_UTILS_H

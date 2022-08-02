@@ -16,6 +16,11 @@ const t_handler handlers[] = {
 			.handle_string = sha256_string,
 		},
 		{
+			.cmd = "sha224",
+			.handle_file = sha224_file,
+			.handle_string = sha224_string,
+		},
+		{
 			.cmd = NULL
 		}
 };
