@@ -19,8 +19,8 @@ typedef struct s_sha2Context {
 	uint8_t		digest[SHA256_DIGEST_SIZE];
 }	t_sha2Context;
 
-const uint32_t	sha256_h[8];
-const uint32_t	sha224_h[8];
+extern const uint32_t	sha256_h[8];
+extern const uint32_t	sha224_h[8];
 extern const uint32_t k_sha2[64];
 
 // shared/s0_s1.c
