@@ -8,13 +8,14 @@
 #include "sha256.h"
 #include "utils.h"
 
-void sha256_init(t_sha2Context* sha256Context, const uint32_t* hash_values) {
+static void sha256_init(t_sha2Context* sha256Context, const uint32_t* hash_values) {
 	bzero(sha256Context, sizeof(t_sha2Context));
 	for (unsigned int i = 0; i < 8; i++) {
 		sha256Context->h[i] = hash_values[i];
 	}
 }
-void	sha256_transform(t_sha2Context *sha256Context) {
+
+static void	sha256_transform(t_sha2Context *sha256Context) {
 	uint32_t hash[8];
 	uint32_t w[64];
 
@@ -59,7 +60,7 @@ void	sha256_transform(t_sha2Context *sha256Context) {
 	}
 }
 
-void	sha256_update(t_sha2Context *sha256Context, const uint8_t *input_buffer, const size_t buffer_len) {
+static void	sha256_update(t_sha2Context *sha256Context, const uint8_t *input_buffer, const size_t buffer_len) {
 	for (unsigned int i = 0; i < buffer_len; i++) {
 		sha256Context->data[sha256Context->data_len] = input_buffer[i];
 		sha256Context->data_len++;
@@ -72,7 +73,7 @@ void	sha256_update(t_sha2Context *sha256Context, const uint8_t *input_buffer, co
 	}
 }
 
-void	sha256_finalize(t_sha2Context *sha256Context) {
+static void	sha256_finalize(t_sha2Context *sha256Context) {
 	uint32_t i;
 	const uint32_t padding_length = (sha256Context->data_len < 56) ? 56 : 64;
 
