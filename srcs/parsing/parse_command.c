@@ -3,22 +3,32 @@
 //
 #include <string.h>
 #include "func_ptrs.h"
+#include "parsing.h"
 
 const t_handler handlers[] = {
 		{
 			.cmd = "md5",
 			.handle_file = md5sum_file,
 			.handle_string = md5sum_string,
+			.handle_flags = parse_flags_md5_sha
 		},
 		{
 			.cmd = "sha256",
 			.handle_file = sha256_file,
 			.handle_string = sha256_string,
+			.handle_flags = parse_flags_md5_sha
 		},
 		{
 			.cmd = "sha224",
 			.handle_file = sha224_file,
 			.handle_string = sha224_string,
+			.handle_flags = parse_flags_md5_sha
+		},
+		{
+			.cmd = "base64",
+			.handle_file = base64_file,
+			.handle_string  = base64_string,
+			.handle_flags = parse_flags_base64
 		},
 		{
 			.cmd = NULL

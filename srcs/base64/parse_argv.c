@@ -1,30 +1,33 @@
 //
-// Created by Peer de Bakker on 7/4/22.
+// Created by pde-bakk on 10/25/22.
 //
 
 #include <getopt.h>
 #include <stdio.h>
 #include <ctype.h>
-#include "flags.h"
+#include "base64/flags.h"
 #include "vector.h"
 
-unsigned int parse_flags_md5_sha(int argc, char** argv, unsigned int* file_start_idx, t_ptrvector* string_vector) {
+unsigned int parse_flags_base64(int argc, char** argv, unsigned int* file_start_idx, t_ptrvector* string_vector) {
 	unsigned int flags = 0;
 	int opt;
 
 	while ((opt = getopt(argc, argv, "+pqrs:")) != -1) {
 		switch (opt) {
-			case 'p':
-				flags |= FLAG_P;
+			case 'd':
+				flags |= FLAG_DECODE;
 				break ;
-			case 'q':
-				flags |= FLAG_QUIET;
+			case 'e':
+				flags |= FLAG_ENCODE;
 				break ;
-			case 'r':
-				flags |= FLAG_REVERSE;
+			case 'i':
+				flags |= FLAG_INPUTFILE;
+				if (string_vector) {
+					ptrvector_pushback(string_vector, optarg);
+				}
 				break ;
-			case 's':
-				flags |= FLAG_STRING;
+			case 'o':
+				flags |= FLAG_OUTPUTFILE;
 				if (string_vector) {
 					ptrvector_pushback(string_vector, optarg);
 				}
@@ -42,8 +45,8 @@ unsigned int parse_flags_md5_sha(int argc, char** argv, unsigned int* file_start
 				return ((unsigned int)-1);
 		}
 	}
-	if (flags & FLAG_QUIET) {
-		flags &= ~FLAG_REVERSE;
+	if (flags & FLAG_DECODE && flags & FLAG_ENCODE) {
+		dprintf(2, "what is going on? Decode and encode!?\n");
 	}
 	if (file_start_idx) {
 		*file_start_idx = optind + 1;

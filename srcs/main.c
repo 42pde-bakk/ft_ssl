@@ -76,6 +76,7 @@ int handle_stdin(t_handler handler, bool no_files_or_strings_given, const unsign
 			return (EXIT_FAILURE);
 		}
 		char *escaped_string = get_escaped_string(result);
+		fprintf(stderr, "input=%s, escaped=%s\n", result, escaped_string);
 		if (!escaped_string) {
 			free(result);
 			return (EXIT_FAILURE);
@@ -117,7 +118,7 @@ int	handle_bonus(t_handler *handler, const char *program_name) {
 			token = strtok(NULL, WHITESPACE_STRING);
 		}
 		ptrvector_pushback(args, NULL);
-		flags = parse_flags((int)(args->size - 1), (char **)args->arr, NULL, NULL);
+		flags = parse_flags_md5_sha((int) (args->size - 1), (char **) args->arr, NULL, NULL);
 		*handler = parse_command(args->arr[0]);
 		if (handler->cmd == NULL || flags == (unsigned int)-1) {
 			print_error(program_name, args->arr[0]);
@@ -195,7 +196,7 @@ int main(int argc, char **argv) {
 		ptrvector_destroy(vec);
 		return (EXIT_FAILURE);
 	}
-	flags = parse_flags(argc - 1, &argv[1], &file_start_idx, vec);
+	flags = handler.handle_flags(argc - 1, &argv[1], &file_start_idx, vec);
 	if (flags == (unsigned int)-1) {
 		ptrvector_destroy(vec);
 		return (EXIT_FAILURE);
