@@ -28,8 +28,8 @@ int sha256_file(int fd);
 int sha224_string(const char* str);
 int sha224_file(int fd);
 
-int	base64_string(const char* str);
-int	base64_file(int fd);
+int	base64_encode_string(const char* str);
+int	base64_encode_file(int fd);
 
 
 #endif //FT_SSL_FUNC_PTRS_H
