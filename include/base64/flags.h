@@ -11,5 +11,7 @@
 #define FLAG_INPUTFILE			0b0010
 #define FLAG_OUTPUTFILE			0b0001
 
+extern unsigned int g_flags;
+
 
 #endif //FT_SSL_FLAGS_H

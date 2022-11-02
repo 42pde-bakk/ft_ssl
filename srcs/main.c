@@ -15,6 +15,8 @@
 #include "vector.h"
 #include "libft.h"
 
+unsigned int g_flags;
+
 static int	open_file(const char *filename) {
 	struct stat buf;
 	int fd;
@@ -76,15 +78,17 @@ int handle_stdin(t_handler handler, bool no_files_or_strings_given, const unsign
 			return (EXIT_FAILURE);
 		}
 		char *escaped_string = get_escaped_string(result);
-		fprintf(stderr, "input=%s, escaped=%s\n", result, escaped_string);
+//		fprintf(stderr, "input=%s, escaped=%s\n", result, escaped_string);
 		if (!escaped_string) {
 			free(result);
 			return (EXIT_FAILURE);
 		}
-		if (!(flags & FLAG_QUIET)) {
-			fprintf(stdout, "(%s)= ", flags & FLAG_P ? escaped_string : "stdin");
-		} else if (flags & FLAG_P) {
-			fprintf(stdout, "%s", result);
+		if (ft_strncmp(handler.cmd, "md5", sizeof("md5")) == 0 || ft_strncmp(handler.cmd, "sha", 3) == 0) {
+			if (!(flags & FLAG_QUIET)) {
+				fprintf(stdout, "(%s)= ", flags & FLAG_P ? escaped_string : "stdin");
+			} else if (flags & FLAG_P) {
+				fprintf(stdout, "%s", result);
+			}
 		}
 		ret = handler.handle_string(result);
 		free(escaped_string);
@@ -93,45 +97,6 @@ int handle_stdin(t_handler handler, bool no_files_or_strings_given, const unsign
 		return ((int)ret);
 	}
 	return (EXIT_SUCCESS);
-}
-
-int	handle_bonus(t_handler *handler, const char *program_name) {
-	bool valid = false;
-	unsigned int flags;
-	t_ptrvector *args = ptrvector_init(8, false);
-
-	while (!valid) {
-		// first read once to get the command and flags
-		char	*result = read_stdin(true);
-		if (!result) {
-			ptrvector_destroy(args);
-			return (EXIT_FAILURE);
-		}
-		char	*token = strtok(result, WHITESPACE_STRING);
-		if (!token) {
-			free(result);
-			ptrvector_destroy(args);
-			return (EXIT_FAILURE);
-		}
-		while (token != NULL) {
-			ptrvector_pushback(args, token);
-			token = strtok(NULL, WHITESPACE_STRING);
-		}
-		ptrvector_pushback(args, NULL);
-		flags = parse_flags_md5_sha((int) (args->size - 1), (char **) args->arr, NULL, NULL);
-		*handler = parse_command(args->arr[0]);
-		if (handler->cmd == NULL || flags == (unsigned int)-1) {
-			print_error(program_name, args->arr[0]);
-			ptrvector_destroy(args);
-			args = ptrvector_init(8, false);
-			continue ;
-		}
-		free(result);
-		valid = true;
-	}
-	ptrvector_destroy(args);
-	// read again for the input string
-	return (handle_stdin(*handler, true, flags, true));
 }
 
 static int handle_file(t_handler handler, const int fd, const char *filename, const unsigned int flags) {
@@ -170,20 +135,15 @@ static int handle_string(t_handler handler, char *str, const unsigned int flags)
 
 int main(int argc, char **argv) {
 	unsigned int	file_start_idx = 1;
-	unsigned int	flags;
 	t_handler		handler;
 	t_ptrvector		*vec;
 	unsigned int	ret = 0;
 	const char		*program_name = get_program_name(argv[0]);
 
 	if (argc == 1) {
-		if (BONUS) {
-			return (handle_bonus(&handler, program_name));
-		} else {
-			// I guess I could treat it like md5sum treats no-args, but the subject has an example that wants this:
-			print_usage(program_name);
-			return (EXIT_FAILURE);
-		}
+		// I guess I could treat it like md5sum treats no-args, but the subject has an example that wants this:
+		print_usage(program_name);
+		return (EXIT_FAILURE);
 	}
 	vec = ptrvector_init(5, false);
 	if (!vec) {
@@ -196,20 +156,19 @@ int main(int argc, char **argv) {
 		ptrvector_destroy(vec);
 		return (EXIT_FAILURE);
 	}
-	flags = handler.handle_flags(argc - 1, &argv[1], &file_start_idx, vec);
-	if (flags == (unsigned int)-1) {
+	g_flags = handler.handle_flags(argc - 1, &argv[1], &file_start_idx, vec);
+	if (g_flags == (unsigned int)-1) {
 		ptrvector_destroy(vec);
 		return (EXIT_FAILURE);
 	}
 
 	const bool no_files_or_strings_given = (unsigned int)argc == file_start_idx && vec->size == 0;
 
-	ret |= handle_stdin(handler, no_files_or_strings_given, flags, false);
+	ret |= handle_stdin(handler, no_files_or_strings_given, g_flags, false);
 
 	for (unsigned int i = 0; i < vec->size; i++) {
-		ret |= handle_string(handler, (char *)vec->arr[i], flags);
+		ret |= handle_string(handler, (char *)vec->arr[i], g_flags);
 	}
-
 	for (unsigned int i = file_start_idx; i < (unsigned int)argc; i++) {
 		int fd;
 		const char *filename = argv[i];
@@ -220,7 +179,7 @@ int main(int argc, char **argv) {
 			ret |= 1;
 			continue ;
 		}
-		ret |= handle_file(handler, fd, filename, flags);
+		ret |= handle_file(handler, fd, filename, g_flags);
 		close(fd);
 	}
 	ptrvector_destroy(vec);

@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include "libft.h"
 #include "base64/base64.h"
+#include <sys/stat.h>
+#include <sys/mman.h>
 
 uint32_t	combine_three_uint8s(const uint8_t* data, size_t i, size_t datalen) {
 	uint32_t grand = ((uint32_t)data[i]) << 16;
@@ -19,17 +21,20 @@ uint32_t	combine_three_uint8s(const uint8_t* data, size_t i, size_t datalen) {
 }
 
 
-int	base64_encode_string(const char* str) {
+int base64_encode_string(const char *str, const int output_fd) {
 	const uint8_t*	data = (const uint8_t *)str;
 	const size_t	datalen = ft_strlen(str);
-	unsigned int pad_count = datalen % 3;
+	size_t	pad_count = 3 - datalen % 3;
+	size_t	outlen = datalen / 3 * 4;
+	if (datalen % 3)
+		outlen += 4;
+	if (pad_count == 3)
+		pad_count = 0;
+
 	size_t	x = 0;
-	uint8_t*	result = calloc(datalen / 4 * 3 + 1, sizeof(char));
-	fprintf(stderr, "datalen = %zu, str=%s\n", datalen, str);
+	uint8_t*	result = calloc(outlen + 1, sizeof(char));
 
 	for (size_t i = 0; i < datalen; i += 3) {
-		fprintf(stderr, "i = %zu\n", i);
-		fprintf(stderr, "octets: [%d, %d, %d]\n", data[i], data[i+1], data[i+2]);
 		uint32_t grand = combine_three_uint8s(data, i, datalen);
 
 		// Now we need to split grand into 4 sextets
@@ -43,22 +48,34 @@ int	base64_encode_string(const char* str) {
 			if (tmp > 1 && i + tmp > datalen)
 				continue;
 			result[x] = BASE64_CHARS[sextets[tmp]];
-			printf("i=%zu,tmp=%zu, sextet = %hhu, char=%c\n", i, tmp,sextets[tmp], BASE64_CHARS[sextets[tmp]]);
 			++x;
 		}
 	}
-	printf("string before padding = '%s', x=%zu\n", result, x);
-	while (pad_count > 0 && pad_count < 3) {
+	while (pad_count > 0) {
 		result[x] = PAD_CHAR;
 		++x;
-		++pad_count;
+		--pad_count;
 	}
-	printf("final string = '%s', x=%zu\n", result, x);
-
+	dprintf(output_fd, "%s\n", result);
+	free(result);
 	return (0);
 }
 
-int	base64_encode_file(const int fd) {
-	(void)fd;
-	return (0);
+int base64_encode_file(const int fd, const int output_fd) {
+	struct stat buf;
+	char* file;
+
+	ft_memset(&buf, 0, sizeof(buf));
+	printf("hereeee\n");
+	if (fstat(fd, &buf) == -1 || buf.st_size <= 0 || S_ISDIR(buf.st_mode)) {
+		fprintf(stderr, "Error opening file.\n");
+		return (EXIT_FAILURE);
+	}
+	if ((file = mmap(NULL, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
+		fprintf(stderr, "Error rading file.\n");
+		return (EXIT_FAILURE);
+	}
+	base64_encode_string(file, output_fd);
+	munmap(file, buf.st_size);
+	return (EXIT_SUCCESS);
 }

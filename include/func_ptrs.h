@@ -8,12 +8,15 @@
 #include <stddef.h>
 #include "vector.h"
 
+typedef int	(*func_parser)(char** argv);
 typedef int	(*file_handler)(int fd);
 typedef int	(*string_handler)(const char *str);
 typedef unsigned int (*flag_parser)(int argc, char** argv, unsigned int* file_start_idx, t_ptrvector* string_vector);
 
-	typedef struct s_handler {
+typedef struct s_handler {
 	const char * cmd;
+	func_parser	handler;
+
 	file_handler handle_file;
 	string_handler handle_string;
 	flag_parser		handle_flags;
@@ -28,8 +31,8 @@ int sha256_file(int fd);
 int sha224_string(const char* str);
 int sha224_file(int fd);
 
-int	base64_encode_string(const char* str);
-int	base64_encode_file(int fd);
+int base64_fd(int fd);
+int base64_string(const char* str);
 
 
 #endif //FT_SSL_FUNC_PTRS_H

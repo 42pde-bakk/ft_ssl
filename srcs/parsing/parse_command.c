@@ -26,8 +26,8 @@ const t_handler handlers[] = {
 		},
 		{
 			.cmd = "base64",
-			.handle_file = base64_encode_file,
-			.handle_string  = base64_encode_string,
+			.handle_file = base64_fd,
+			.handle_string  = base64_string,
 			.handle_flags = parse_flags_base64
 		},
 		{

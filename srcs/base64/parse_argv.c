@@ -8,29 +8,35 @@
 #include "base64/flags.h"
 #include "vector.h"
 
+const char* g_input = NULL;
+const char* g_output = NULL;
+
 unsigned int parse_flags_base64(int argc, char** argv, unsigned int* file_start_idx, t_ptrvector* string_vector) {
 	unsigned int flags = 0;
 	int opt;
+	(void)string_vector;
 
-	while ((opt = getopt(argc, argv, "+pqrs:")) != -1) {
+	while ((opt = getopt(argc, argv, "+dei:o:")) != -1) {
 		switch (opt) {
+			case 'D':
 			case 'd':
 				flags |= FLAG_DECODE;
 				break ;
+			case 'E':
 			case 'e':
 				flags |= FLAG_ENCODE;
 				break ;
 			case 'i':
 				flags |= FLAG_INPUTFILE;
-				if (string_vector) {
-					ptrvector_pushback(string_vector, optarg);
-				}
+				g_input = optarg;
 				break ;
 			case 'o':
-				flags |= FLAG_OUTPUTFILE;
-				if (string_vector) {
-					ptrvector_pushback(string_vector, optarg);
+				if (flags & FLAG_OUTPUTFILE) {
+					fprintf(stderr, "You are not allowed to specify two outputfiles!\n");
+					return ((unsigned int)-1);
 				}
+				flags |= FLAG_OUTPUTFILE;
+				g_output = optarg;
 				break ;
 			case '?':
 				if (optopt == 's')
@@ -46,7 +52,7 @@ unsigned int parse_flags_base64(int argc, char** argv, unsigned int* file_start_
 		}
 	}
 	if (flags & FLAG_DECODE && flags & FLAG_ENCODE) {
-		dprintf(2, "what is going on? Decode and encode!?\n");
+		fprintf(stderr, "what is going on? Decode and encode!?\n");
 	}
 	if (file_start_idx) {
 		*file_start_idx = optind + 1;
