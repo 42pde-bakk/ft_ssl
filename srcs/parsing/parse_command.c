@@ -31,6 +31,9 @@ const t_handler handlers[] = {
 			.handle_flags = parse_flags_base64
 		},
 		{
+			.cmd = "des"
+		},
+		{
 			.cmd = NULL
 		}
 };
