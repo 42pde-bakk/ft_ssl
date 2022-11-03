@@ -4,6 +4,7 @@
 #include <string.h>
 #include "func_ptrs.h"
 #include "parsing.h"
+#include <stdio.h>
 
 const t_handler handlers[] = {
 		{
@@ -27,11 +28,14 @@ const t_handler handlers[] = {
 		{
 			.cmd = "base64",
 			.handle_file = base64_fd,
-			.handle_string  = base64_string,
+			.handle_string = base64_string,
 			.handle_flags = parse_flags_base64
 		},
 		{
-			.cmd = "des"
+			.cmd = "des",
+			.handle_file = des_fd,
+			.handle_string = des_string,
+			.handle_flags = parse_flags_des
 		},
 		{
 			.cmd = NULL
@@ -47,4 +51,13 @@ t_handler 	parse_command(const char *const cmd) {
 		}
 	}
 	return (handlers[handler_amount - 1]);
+}
+
+void print_error(const char *prog_name, char *invalid_command) {
+	fprintf(stderr, "%s: Error: '%s' in an invalid command.\n\n", prog_name, invalid_command);
+	fprintf(stderr, "Commands:\n");
+	for (size_t i = 0; handlers[i].cmd; i++) {
+		fprintf(stderr, "%s\n", handlers[i].cmd);
+	}
+	fprintf(stderr, "\nFlags:\n-p -q -r -s\n");
 }

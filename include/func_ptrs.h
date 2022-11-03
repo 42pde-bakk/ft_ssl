@@ -34,5 +34,8 @@ int sha224_file(int fd);
 int base64_fd(int fd);
 int base64_string(const char* str);
 
+int des_fd(int fd);
+int des_string(const char* str);
+
 
 #endif //FT_SSL_FUNC_PTRS_H
