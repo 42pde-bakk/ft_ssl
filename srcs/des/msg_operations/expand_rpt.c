@@ -20,7 +20,8 @@ uint64_t	expand_rpt(uint32_t rpt) {
 	uint64_t expanded_rpt = 0;
 
 	/* We expand RPT from 32 to 48 bits */
-	for (size_t j = 0; j< 48; j++) {
+	// This is the f(R,K) function
+	for (size_t j = 0; j < 48; j++) {
 		expanded_rpt <<= 1;
 		expanded_rpt |= (uint64_t) ((rpt >> (32 - expansion_table[j])) & 0x1);
 	}

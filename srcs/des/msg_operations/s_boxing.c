@@ -3,6 +3,7 @@
 //
 #include <stdint.h>
 #include <stddef.h>
+#include <stdio.h>
 
 static const uint32_t s_boxing_table[8][4][16] = {
 		{
@@ -63,12 +64,21 @@ static const uint32_t s_boxing_table[8][4][16] = {
 		}
 };
 
-uint32_t	get_sbox_output(const uint64_t expanded_rpt, size_t round_nb) {
+uint32_t	get_sbox_output(const uint64_t expanded_rpt) {
 	// RCCCCR
-	uint8_t	            row = (uint8_t) ((expanded_rpt & (0x0000840000000000 >> 6*round_nb)) >> (42-6*round_nb));
-	row = (row >> 4) | row & 0x01;
+	uint8_t		row,
+				column;
+	uint32_t	s_output = 0;
 
-	uint8_t column = (uint8_t) ((expanded_rpt & (0x0000780000000000 >> 6*round_nb)) >> (43-6*round_nb));
+	for (size_t j = 0; j < 8; j++) {
+		const size_t j6 = 6 * j;
+		row = (uint8_t) ((expanded_rpt & (0x0000840000000000 >> j6)) >> (42 - j6));
+		row = (row >> 4) | row & 0x01;
 
-	return (uint32_t)(s_boxing_table[round_nb][column][row] & 0xF);
+		column = (uint8_t) ((expanded_rpt & (0x0000780000000000 >> j6)) >> (43 - j6));
+
+		s_output <<= 4;
+		s_output |= (uint32_t) (s_boxing_table[j][row][column] & 0x0f);
+	}
+	return (s_output);
 }

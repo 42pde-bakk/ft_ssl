@@ -8,17 +8,14 @@
 #define CHUNK_SIZE 8 // Bytes, so 64 bits
 #include <stdint.h>
 
-int	des_encode_string(const char* str);
-int des_encode_file(int fd);
-
-int	des_decode_string(const char* str);
-int des_decode_file(int fd);
+uint64_t	apply_des(uint64_t input, uint64_t key, char mode);
 
 void		msg_split_blocks(uint64_t block, uint32_t* leftblock, uint32_t* rightblock);
 uint64_t	perform_initial_permutation(uint64_t input);
 uint64_t	perform_inverse_initial_permutation(uint64_t input);
 uint64_t	expand_rpt(uint32_t rpt);
-uint32_t	get_sbox_output(const uint64_t expanded_rpt, size_t round_nb);
+uint32_t	get_sbox_output(uint64_t expanded_rpt);
+uint64_t	apply_post_sboxing_permuations(uint32_t s_output);
 
 uint64_t	produce_56bit_key(uint64_t key);
 void		key_split_blocks(uint64_t block, uint32_t* leftblock, uint32_t* rightblock);

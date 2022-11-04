@@ -30,4 +30,3 @@ uint64_t	perform_initial_permutation(const uint64_t input) {
 	}
 	return (initial_perm_result);
 }
-

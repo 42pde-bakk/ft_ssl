@@ -14,7 +14,7 @@ static const uint32_t shift_amounts[] = {
 
 void	shift_key(uint32_t* leftkey, uint32_t* rightkey, size_t round_nb) {
 	for (size_t j = 0; j < shift_amounts[round_nb]; j++) {
-		*leftkey = LOWERMASK & (*leftkey << 1) | (*leftkey >> 27) & 1;
-		*rightkey = LOWERMASK & (*rightkey << 1) | (*rightkey >> 27) & 1;
+		*leftkey = (LOWERMASK & (*leftkey << 1)) | ((*leftkey >> 27) & 1);
+		*rightkey = (LOWERMASK & (*rightkey << 1)) | ((*rightkey >> 27) & 1);
 	}
 }
