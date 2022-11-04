@@ -8,46 +8,63 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <assert.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <stdint.h>
 #include "des/flags.h"
 #include "des/des.h"
 #include "libft.h"
-
-char*	get_password() {
-	char *pass = getpass("enter ft_des encryption password:");
-	printf("pass = %s and strlen = %zu\n", pass, ft_strlen(pass));
-	return (pass);
-}
 void test();
-int des_fd(const int fd) {
-//	const size_t datalen = ft_strlen(str);
-//	char	*pass = get_password();
-//	struct stat buf;
-//	char* file;
-//
-//	ft_memset(&buf, 0, sizeof(buf));
-//	if (fstat(fd, &buf) == -1 || buf.st_size <= 0 || S_ISDIR(buf.st_mode)) {
-//		fprintf(stderr, "Error opening file.\n");
-//		return (EXIT_FAILURE);
-//	}
-//	if ((file = mmap(NULL, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
-//		fprintf(stderr, "Error rading file.\n");
-//		return (EXIT_FAILURE);
-//	}
-//	des_encode_string(file);
-//	munmap(file, buf.st_size);
-//	return (EXIT_SUCCESS);
-	(void)fd;
-	test();
 
+uint64_t	create_64bit_chunk_from_str(const char* const str) {
+	uint64_t	chunk = 0;
+
+	for (size_t i = 0; i < 8 && str[i]; i++) {
+		chunk <<= 8;
+		chunk |= (uint64_t)str[i];
+	}
+	return (chunk);
+}
+
+uint64_t	get_key() {
+	uint64_t	key;
+	char *pass = getpass("enter des encryption password:");
+	key = create_64bit_chunk_from_str(pass);
+	printf("pass = %s and strlen = %zu, key = %lX\n", pass, ft_strlen(pass), key);
+	return (key);
+}
+
+int des_fd(const int fd) {
+	const uint64_t	key = get_key();
+	struct stat buf;
+	char* file;
+
+	ft_memset(&buf, 0, sizeof(buf));
+	if (fstat(fd, &buf) == -1 || buf.st_size <= 0 || S_ISDIR(buf.st_mode)) {
+		fprintf(stderr, "Error opening file.\n");
+		return (EXIT_FAILURE);
+	}
+	if ((file = mmap(NULL, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
+		fprintf(stderr, "Error rading file.\n");
+		return (EXIT_FAILURE);
+	}
+	for (size_t i = 0; i < buf.st_size; i++) {
+		const uint64_t chunk = create_64bit_chunk_from_str(file + i);
+		const uint64_t result = apply_des(chunk, key);
+		printf("%lX", result);
+	}
+	munmap(file, buf.st_size);
 	return (EXIT_SUCCESS);
 }
 
 int des_string(const char* str) {
-//	size_t datalen = ft_strlen(str);
-	(void)str;
-	for (int i = 0; i < 16; i++) {
-		uint64_t	res = apply_des(0x9474B8E8C73BCA7D, 0x0000000000000000);
-		printf("res = %016lX\n", res);
+	const size_t datalen = ft_strlen(str);
+	const uint64_t	key = get_key();
+
+	for (size_t i = 0; i < datalen; i++) {
+		const uint64_t chunk = create_64bit_chunk_from_str(str + i);
+		const uint64_t result = apply_des(chunk, key);
+		printf("%lX", result);
 	}
 	return (EXIT_SUCCESS);
 }
