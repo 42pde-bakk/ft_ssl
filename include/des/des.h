@@ -8,7 +8,7 @@
 #define CHUNK_SIZE 8 // Bytes, so 64 bits
 #include <stdint.h>
 
-uint64_t	apply_des(uint64_t input, uint64_t key, char mode);
+uint64_t	apply_des(uint64_t input, uint64_t key);
 
 void		msg_split_blocks(uint64_t block, uint32_t* leftblock, uint32_t* rightblock);
 uint64_t	perform_initial_permutation(uint64_t input);
