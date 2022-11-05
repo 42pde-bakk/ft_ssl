@@ -17,11 +17,13 @@
 void test();
 
 uint64_t	create_64bit_chunk_from_str(const char* const str) {
+	size_t		stringlength = ft_strlen(str);
 	uint64_t	chunk = 0;
 
-	for (size_t i = 0; i < 8 && str[i]; i++) {
+	for (size_t i = 0; i < 8; i++) {
 		chunk <<= 8;
-		chunk |= (uint64_t)str[i];
+		if (i < stringlength)
+			chunk |= (uint64_t)str[i];
 	}
 	return (chunk);
 }
@@ -30,7 +32,7 @@ uint64_t	get_key() {
 	uint64_t	key;
 	char *pass = getpass("enter des encryption password:");
 	key = create_64bit_chunk_from_str(pass);
-	printf("pass = %s and strlen = %zu, key = %lX\n", pass, ft_strlen(pass), key);
+	printf("pass = %s and strlen = %zu, key = %016lX\n", pass, ft_strlen(pass), key);
 	return (key);
 }
 

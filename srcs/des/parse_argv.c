@@ -6,11 +6,15 @@
 #include <getopt.h>
 #include <stdio.h>
 #include <ctype.h>
-#include "base64/flags.h"
+#include "des/flags.h"
 #include "vector.h"
 
-extern const char* g_input;
-extern const char* g_output;
+const char*	g_infile = NULL;
+const char*	g_outfile = NULL;
+const char*	g_key = NULL;
+const char*	g_password = NULL;
+const char*	g_salt = NULL;
+const char*	g_initialization_vector = NULL;
 
 unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx, t_ptrvector* string_vector) {
 	unsigned int flags = 0;
@@ -19,6 +23,9 @@ unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx
 
 	while ((opt = getopt(argc, argv, "+dei:o:")) != -1) {
 		switch (opt) {
+			case 'a':
+				flags |= FLAG_BASE64;
+				break ;
 			case 'D':
 			case 'd':
 				flags |= FLAG_DECODE;
@@ -29,7 +36,11 @@ unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx
 				break ;
 			case 'i':
 				flags |= FLAG_INPUTFILE;
-				g_input = optarg;
+				g_infile = optarg;
+				break ;
+			case 'k':
+				flags |= FLAG_KEY;
+				g_key = optarg;
 				break ;
 			case 'o':
 				if (flags & FLAG_OUTPUTFILE) {
@@ -37,7 +48,19 @@ unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx
 					return ((unsigned int)-1);
 				}
 				flags |= FLAG_OUTPUTFILE;
-				g_output = optarg;
+				g_outfile = optarg;
+				break ;
+			case 'p':
+				flags |= FLAG_PASSWORD;
+				g_password = optarg;
+				break ;
+			case 's':
+				flags |= FLAG_SALT;
+				g_salt = optarg;
+				break ;
+			case 'v':
+				flags |= FLAG_INITVECTOR;
+				g_initialization_vector = optarg;
 				break ;
 			case '?':
 				if (optopt == 's')
