@@ -14,6 +14,7 @@
 #define FLAG_PASSWORD	(1 << 6)
 #define FLAG_SALT		(1 << 7)
 #define FLAG_INITVECTOR	(1 << 8)
+#define FLAG_SHOW_KEY	(1 << 9)
 
 extern unsigned int g_flags;
 extern const char*	g_infile;

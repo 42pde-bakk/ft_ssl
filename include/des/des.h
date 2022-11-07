@@ -22,4 +22,6 @@ void		key_split_blocks(uint64_t block, uint32_t* leftblock, uint32_t* rightblock
 void		shift_key(uint32_t* leftkey, uint32_t* rightkey, size_t round_nb);
 uint64_t	shift_sub_key(uint64_t permuted_key);
 
+uint64_t	pbkdf(uint64_t password, uint64_t salt);
+
 #endif //FT_SSL_DES_H

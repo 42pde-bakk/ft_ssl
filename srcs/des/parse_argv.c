@@ -21,7 +21,7 @@ unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx
 	int opt;
 	(void)string_vector;
 
-	while ((opt = getopt(argc, argv, "+dei:o:")) != -1) {
+	while ((opt = getopt(argc, argv, "+aDdEePi:k:o:p:s:v:")) != -1) {
 		switch (opt) {
 			case 'a':
 				flags |= FLAG_BASE64;
@@ -53,6 +53,9 @@ unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx
 			case 'p':
 				flags |= FLAG_PASSWORD;
 				g_password = optarg;
+				break ;
+			case 'P':
+				flags |= FLAG_SHOW_KEY;
 				break ;
 			case 's':
 				flags |= FLAG_SALT;
