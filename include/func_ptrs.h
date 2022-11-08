@@ -17,9 +17,10 @@ typedef struct s_handler {
 	const char * cmd;
 	func_parser	handler;
 
-	file_handler handle_file;
-	string_handler handle_string;
+	file_handler	handle_file;
+	string_handler	handle_string;
 	flag_parser		handle_flags;
+	bool			print_filename;
 }	t_handler;
 
 int md5sum_string(const char* str);
@@ -34,8 +35,10 @@ int sha224_file(int fd);
 int base64_fd(int fd);
 int base64_string(const char* str);
 
-int des_fd(int fd);
-int des_string(const char* str);
+int des_ecb_fd(int fd);
+int des_ecb_string(const char* str);
 
+int des_cbc_fd(int fd);
+int des_cbc_string(const char* str);
 
 #endif //FT_SSL_FUNC_PTRS_H

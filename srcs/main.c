@@ -78,7 +78,6 @@ int handle_stdin(t_handler handler, bool no_files_or_strings_given, const unsign
 			return (EXIT_FAILURE);
 		}
 		char *escaped_string = get_escaped_string(result);
-//		fprintf(stderr, "input=%s, escaped=%s\n", result, escaped_string);
 		if (!escaped_string) {
 			free(result);
 			return (EXIT_FAILURE);
@@ -102,13 +101,13 @@ int handle_stdin(t_handler handler, bool no_files_or_strings_given, const unsign
 static int handle_file(t_handler handler, const int fd, const char *filename, const unsigned int flags) {
 	int ret;
 
-	if (!(flags & FLAG_QUIET) && !(flags & FLAG_REVERSE)) {
+	if (!(flags & FLAG_QUIET) && !(flags & FLAG_REVERSE) && handler.print_filename) {
 		char *upper = string_toupper((char *)handler.cmd);
 		fprintf(stdout, "%s (%s) = ", upper, filename);
 		free(upper);
 	}
 	ret = handler.handle_file(fd);
-	if (!(flags & FLAG_QUIET) && (flags & FLAG_REVERSE)) {
+	if (!(flags & FLAG_QUIET) && (flags & FLAG_REVERSE) && handler.print_filename) {
 		fprintf(stdout, " %s", filename);
 	}
 	fprintf(stdout, "\n");
@@ -119,13 +118,13 @@ static int handle_string(t_handler handler, char *str, const unsigned int flags)
 	int		ret;
 	char	*escaped_string = get_escaped_string(str);
 
-	if (!(flags & FLAG_QUIET) && !(flags & FLAG_REVERSE)) {
+	if (!(flags & FLAG_QUIET) && !(flags & FLAG_REVERSE) && handler.print_filename) {
 		char *upper = string_toupper((char *)handler.cmd);
 		fprintf(stdout, "%s (%s) = ", upper, escaped_string);
 		free(upper);
 	}
 	ret = handler.handle_string(str);
-	if (!(flags & FLAG_QUIET) && (flags & FLAG_REVERSE)) {
+	if (!(flags & FLAG_QUIET) && (flags & FLAG_REVERSE) && handler.print_filename) {
 		fprintf(stdout, " %s", escaped_string);
 	}
 	fprintf(stdout, "\n");
@@ -172,6 +171,7 @@ int main(int argc, char **argv) {
 	for (unsigned int i = file_start_idx; i < (unsigned int)argc; i++) {
 		int fd;
 		const char *filename = argv[i];
+		printf("opening %s\n", filename);
 
 		fd = open_file(filename);
 		if (fd == -1) {

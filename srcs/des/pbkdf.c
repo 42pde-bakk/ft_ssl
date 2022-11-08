@@ -3,7 +3,6 @@
 //
 #include <stddef.h>
 #include <stdint.h>
-#include <linux/random.h>
 
 /*
  * Stands for Password-Based Key Derivation Function

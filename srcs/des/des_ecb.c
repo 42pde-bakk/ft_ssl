@@ -1,71 +1,18 @@
 //
-// Created by pde-bakk on 11/2/22.
+// Created by peer on 8-11-22.
 //
 
 #include <stddef.h>
-#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <assert.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <stdint.h>
 #include "des/flags.h"
 #include "des/des.h"
 #include "libft.h"
-#include <sys/random.h>
 
-void test();
-
-static uint64_t	create_64bit_chunk_from_str(const char* const str) {
-	size_t		stringlength = ft_strlen(str);
-	uint64_t	chunk = 0;
-
-	for (size_t i = 0; i < 8; i++) {
-		chunk <<= 8;
-		if (i < stringlength)
-			chunk |= (uint64_t)str[i];
-	}
-	return (chunk);
-}
-
-static uint64_t	generate_random_salt() {
-	uint64_t	bytes;
-
-	getrandom(&bytes, 8, 0);
-	return (bytes);
-}
-
-uint64_t	get_key() {
-	uint64_t	key;
-	uint64_t	salt;
-	char		*pass;
-
-	if (g_flags & FLAG_KEY && g_key != NULL) {
-		key = create_64bit_chunk_from_str(g_key);
-		if (g_flags & FLAG_SHOW_KEY) {
-			printf("key=%016lX\n", key);
-		}
-		return (key);
-	}
-	pass = getpass("enter des encryption password:");
-
-	if (g_flags & FLAG_SALT && g_salt != NULL) {
-		salt = create_64bit_chunk_from_str(g_salt);
-	} else {
-		salt = generate_random_salt();
-	}
-	key = create_64bit_chunk_from_str(pass);
-	key = pbkdf(key, salt);
-	if (g_flags & FLAG_SHOW_KEY) {
-		printf("salt=%016lX\n", salt);
-		printf("key=%016lX\n", key);
-	}
-	return (key);
-}
-
-int des_fd(const int fd) {
+int des_ecb_fd(const int fd) {
 	const uint64_t	key = get_key();
 	struct stat buf;
 	char* file;
@@ -82,23 +29,24 @@ int des_fd(const int fd) {
 	for (size_t i = 0; i < buf.st_size; i++) {
 		const uint64_t chunk = create_64bit_chunk_from_str(file + i);
 		const uint64_t result = apply_des(chunk, key);
-		printf("%lX", result);
+		printf("%016lX", result);
 	}
 	munmap(file, buf.st_size);
 	return (EXIT_SUCCESS);
 }
 
-int des_string(const char* str) {
+int des_ecb_string(const char* str) {
 	const size_t datalen = ft_strlen(str);
 	const uint64_t	key = get_key();
 
 	for (size_t i = 0; i < datalen; i++) {
 		const uint64_t chunk = create_64bit_chunk_from_str(str + i);
 		const uint64_t result = apply_des(chunk, key);
-		printf("%lX", result);
+		printf("%016lX", result);
 	}
 	return (EXIT_SUCCESS);
 }
+
 
 /*
 	* TESTING IMPLEMENTATION OF DES
@@ -158,7 +106,7 @@ void	test() {
 			res = apply_des(res, res);
 			printf("D: %016lx\n", res);
 		}
-		assert(res == expected_outcomes[i]);
+//		assert(res == expected_outcomes[i]);
 	}
 	g_flags = flags_backup;
 }

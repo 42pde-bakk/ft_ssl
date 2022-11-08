@@ -155,6 +155,11 @@
       "expected_stderr": ""
     }
   ],
+  "DES-ECB": [
+    {
+      "command": ""
+    }
+  ],
   "Invalid": [
     {
       "command": "./ft_ssl",
