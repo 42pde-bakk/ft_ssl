@@ -33,12 +33,12 @@ int des_cbc_fd(const int fd) {
 		fprintf(stderr, "Error rading file.\n");
 		return (EXIT_FAILURE);
 	}
-	if (g_flags & FLAG_INITVECTOR && g_initialization_vector)
+	if (g_des_flags & FLAG_INITVECTOR && g_initialization_vector)
 		result = create_64bit_chunk_from_hexstr(g_initialization_vector);
 
-	if (g_flags & FLAG_SHOW_KEY)
+	if (g_des_flags & FLAG_SHOW_KEY)
 		printf("iv= %016lX\n", result);
-	for (size_t i = 0; i < buf.st_size; i++) {
+	for (size_t i = 0; i < buf.st_size; i += CHUNK_SIZE_IN_BYTES) {
 		const uint64_t chunk = create_64bit_chunk_from_str(file + i);
 		result = apply_des(chunk ^ result, key);
 		printf("%016lX", result);
@@ -52,12 +52,12 @@ int des_cbc_string(const char* str) {
 	const uint64_t	key = get_key();
 	uint64_t	result = 0;
 
-	if (g_flags & FLAG_INITVECTOR && g_initialization_vector)
+	if (g_des_flags & FLAG_INITVECTOR && g_initialization_vector)
 		result = create_64bit_chunk_from_hexstr(g_initialization_vector);
-	if (g_flags & FLAG_SHOW_KEY)
+	if (g_des_flags & FLAG_SHOW_KEY)
 		printf("iv= %016lX\n", result);
 
-	for (size_t i = 0; i < datalen; i++) {
+	for (size_t i = 0; i < datalen; i += CHUNK_SIZE_IN_BYTES) {
 		const uint64_t chunk = create_64bit_chunk_from_str(str + i);
 		result = apply_des(chunk ^ result, key);
 		printf("%016lX", result);

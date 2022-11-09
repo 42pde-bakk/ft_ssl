@@ -10,9 +10,9 @@
 
 const char* g_input = NULL;
 const char* g_output = NULL;
+unsigned int	g_base64_flags = 0;
 
 unsigned int parse_flags_base64(int argc, char** argv, unsigned int* file_start_idx, t_ptrvector* string_vector) {
-	unsigned int flags = 0;
 	int opt;
 	(void)string_vector;
 
@@ -20,22 +20,22 @@ unsigned int parse_flags_base64(int argc, char** argv, unsigned int* file_start_
 		switch (opt) {
 			case 'D':
 			case 'd':
-				flags |= FLAG_DECODE;
+				g_base64_flags |= FLAG_DECODE;
 				break ;
 			case 'E':
 			case 'e':
-				flags |= FLAG_ENCODE;
+				g_base64_flags |= FLAG_ENCODE;
 				break ;
 			case 'i':
-				flags |= FLAG_INPUTFILE;
+				g_base64_flags |= FLAG_INPUTFILE;
 				g_input = optarg;
 				break ;
 			case 'o':
-				if (flags & FLAG_OUTPUTFILE) {
+				if (g_base64_flags & FLAG_OUTPUTFILE) {
 					fprintf(stderr, "You are not allowed to specify two outputfiles!\n");
 					return ((unsigned int)-1);
 				}
-				flags |= FLAG_OUTPUTFILE;
+				g_base64_flags |= FLAG_OUTPUTFILE;
 				g_output = optarg;
 				break ;
 			case '?':
@@ -51,11 +51,11 @@ unsigned int parse_flags_base64(int argc, char** argv, unsigned int* file_start_
 				return ((unsigned int)-1);
 		}
 	}
-	if (flags & FLAG_DECODE && flags & FLAG_ENCODE) {
+	if (g_base64_flags & FLAG_DECODE && g_base64_flags & FLAG_ENCODE) {
 		fprintf(stderr, "what is going on? Decode and encode!?\n");
 	}
 	if (file_start_idx) {
 		*file_start_idx = optind + 1;
 	}
-	return (flags);
+	return (g_base64_flags);
 }

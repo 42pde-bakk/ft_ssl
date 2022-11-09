@@ -37,7 +37,7 @@ uint64_t apply_des(uint64_t input, uint64_t key) {
 		// Now the 48-bit key is XOR with 48-bit RPT and the resulting output is given to the next step
 		// Which is the S-Box substitution.
 
-		if (g_flags & FLAG_DECODE) {
+		if (g_des_flags & FLAG_DECODE) {
 			expanded_rpt ^= sub_keys[15 - i];
 		} else {
 			expanded_rpt ^= sub_keys[i];

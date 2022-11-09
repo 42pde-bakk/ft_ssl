@@ -5,7 +5,7 @@
 #ifndef FT_SSL_DES_H
 #define FT_SSL_DES_H
 
-#define CHUNK_SIZE 8 // Bytes, so 64 bits
+#define CHUNK_SIZE_IN_BYTES 8 // Bytes, so 64 bits
 #include <stdint.h>
 
 /*
@@ -42,5 +42,10 @@ uint64_t	pbkdf(uint64_t password, uint64_t salt);
 uint64_t	create_64bit_chunk_from_str(const char* str);
 uint64_t	create_64bit_chunk_from_hexstr(const char* str);
 uint64_t	get_key();
+
+/*
+ * srcs/des/output.c
+ */
+void	output_chunk(int fd, uint64_t chunk);
 
 #endif //FT_SSL_DES_H

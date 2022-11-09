@@ -26,10 +26,10 @@ int des_ecb_fd(const int fd) {
 		fprintf(stderr, "Error rading file.\n");
 		return (EXIT_FAILURE);
 	}
-	for (size_t i = 0; i < buf.st_size; i++) {
+	for (size_t i = 0; i < buf.st_size; i += CHUNK_SIZE_IN_BYTES) {
 		const uint64_t chunk = create_64bit_chunk_from_str(file + i);
 		const uint64_t result = apply_des(chunk, key);
-		printf("%016lX", result);
+		output_chunk(1, result);
 	}
 	munmap(file, buf.st_size);
 	return (EXIT_SUCCESS);
@@ -39,10 +39,10 @@ int des_ecb_string(const char* str) {
 	const size_t datalen = ft_strlen(str);
 	const uint64_t	key = get_key();
 
-	for (size_t i = 0; i < datalen; i++) {
+	for (size_t i = 0; i < datalen; i += CHUNK_SIZE_IN_BYTES) {
 		const uint64_t chunk = create_64bit_chunk_from_str(str + i);
 		const uint64_t result = apply_des(chunk, key);
-		printf("%016lX", result);
+		output_chunk(1, result);
 	}
 	return (EXIT_SUCCESS);
 }
@@ -91,22 +91,22 @@ void	test() {
 			0x95ec2578c2c433f0,
 			0x1b1a2ddb4c642438
 	};
-	const unsigned int flags_backup = g_flags;
+	const unsigned int flags_backup = g_des_flags;
 	uint64_t res = 0x9474B8E8C73BCA7D;
 	printf("\n");
 	for (size_t i = 0; i < 16; i++) {
-		g_flags = 0;
+		g_des_flags = 0;
 		if (i % 2 == 0) {
-			g_flags |= FLAG_ENCODE;
+			g_des_flags |= FLAG_ENCODE;
 			res = apply_des(res, res);
 			printf("E: %016lx\n", res);
 		}
 		else {
-			g_flags |= FLAG_DECODE;
+			g_des_flags |= FLAG_DECODE;
 			res = apply_des(res, res);
 			printf("D: %016lx\n", res);
 		}
 //		assert(res == expected_outcomes[i]);
 	}
-	g_flags = flags_backup;
+	g_des_flags = flags_backup;
 }

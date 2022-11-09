@@ -16,7 +16,7 @@
 #define FLAG_INITVECTOR	(1 << 8)
 #define FLAG_SHOW_KEY	(1 << 9)
 
-extern unsigned int g_flags;
+extern unsigned int g_des_flags;
 extern const char*	g_infile;
 extern const char*	g_outfile;
 extern const char*	g_key;

@@ -48,23 +48,23 @@ uint64_t	get_key() {
 	uint64_t	salt;
 	char		*pass;
 
-	if (g_flags & FLAG_KEY && g_key != NULL) {
+	if (g_des_flags & FLAG_KEY && g_key != NULL) {
 		key = create_64bit_chunk_from_hexstr(g_key);
-		if (g_flags & FLAG_SHOW_KEY) {
+		if (g_des_flags & FLAG_SHOW_KEY) {
 			printf("key=%016lX\n", key);
 		}
 		return (key);
 	}
 	pass = getpass("enter des encryption password:");
 
-	if (g_flags & FLAG_SALT && g_salt != NULL) {
+	if (g_des_flags & FLAG_SALT && g_salt != NULL) {
 		salt = create_64bit_chunk_from_hexstr(g_salt);
 	} else {
 		salt = generate_random_salt();
 	}
 	key = create_64bit_chunk_from_str(pass);
 	key = pbkdf(key, salt);
-	if (g_flags & FLAG_SHOW_KEY) {
+	if (g_des_flags & FLAG_SHOW_KEY) {
 		printf("salt=%016lX\n", salt);
 		printf("key=%016lX\n", key);
 	}
