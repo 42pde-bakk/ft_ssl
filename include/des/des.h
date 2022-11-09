@@ -6,6 +6,7 @@
 #define FT_SSL_DES_H
 
 #define CHUNK_SIZE_IN_BYTES 8 // Bytes, so 64 bits
+#define ROUNDS 16
 #include <stdint.h>
 
 /*

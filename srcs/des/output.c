@@ -45,8 +45,8 @@ void	clear_buffer(const int fd) {
 	}
 
 	if (g_des_flags & FLAG_BASE64 && g_des_flags & FLAG_ENCODE) {
-		uint64vector_pushback(chunk_vector, 0x0000); // so there is "NULL terminator"
-		char* result = base64_encode_string((char *)&chunk_vector->arr[0]);
+//		uint64vector_pushback(chunk_vector, 0x0000); // so there is "NULL terminator"
+		char* result = base64_encode_string((char *)chunk_vector->arr, chunk_vector->size * CHUNK_SIZE_IN_BYTES);
 		dprintf(fd, "%s", result);
 		free(result);
 	} else {

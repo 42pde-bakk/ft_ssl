@@ -8,7 +8,7 @@
 
 uint64_t apply_des(uint64_t input, uint64_t key) {
 	uint64_t	key56 = produce_56bit_key(key);
-	uint64_t	sub_keys[16];
+	uint64_t	sub_keys[ROUNDS];
 	uint64_t	result;
 	uint32_t	lpt, // Left Plain Text
 				rpt; // Right Plain Text
@@ -22,14 +22,14 @@ uint64_t apply_des(uint64_t input, uint64_t key) {
 	key_split_blocks(key56, &left_key, &right_key);
 
 	/* Key transformation */
-	for (size_t i = 0; i < 16; i++){
+	for (size_t i = 0; i < ROUNDS; i++){
 		shift_key(&left_key, &right_key, i);
 
 		const uint64_t	permuted_key_2 = (((uint64_t)left_key) << 28) | (uint64_t)right_key;
 		sub_keys[i] = shift_sub_key(permuted_key_2);
 	}
 
-	for (size_t i = 0; i < 16; i++) {
+	for (size_t i = 0; i < ROUNDS; i++) {
 		uint64_t	expanded_rpt = expand_rpt(rpt);
 
 		// Time to XOR
@@ -38,7 +38,7 @@ uint64_t apply_des(uint64_t input, uint64_t key) {
 		// Which is the S-Box substitution.
 
 		if (g_des_flags & FLAG_DECODE) {
-			expanded_rpt ^= sub_keys[15 - i];
+			expanded_rpt ^= sub_keys[ROUNDS - 1 - i];
 		} else {
 			expanded_rpt ^= sub_keys[i];
 		}

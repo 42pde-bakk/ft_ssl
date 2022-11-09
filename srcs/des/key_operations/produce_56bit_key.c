@@ -29,4 +29,3 @@ uint64_t	produce_56bit_key(const uint64_t key) {
 	}
 	return (new_key);
 }
-

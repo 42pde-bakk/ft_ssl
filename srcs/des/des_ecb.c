@@ -31,7 +31,7 @@ int des_ecb_fd(const int fd) {
 		return (EXIT_FAILURE);
 	}
 	if (g_des_flags & FLAG_BASE64 && g_des_flags & FLAG_DECODE) {
-		char* base = base64_decode_string(file);
+		char* base = base64_decode_string(file, 0);
 		for (size_t i = 0; i < ft_strlen(base); i += CHUNK_SIZE_IN_BYTES) {
 			chunk = create_64bit_chunk_from_str(base + i);
 			result = apply_des(chunk, key);
@@ -56,10 +56,10 @@ int des_ecb_string(const char* str) {
 	uint64_t		chunk,
 					result;
 
-
+	dprintf(2, "incoming string is '%s' with size=%zu\n", str, datalen);
 
 	if (g_des_flags & FLAG_BASE64 && g_des_flags & FLAG_DECODE) {
-		char* base = base64_decode_string(str);
+		char* base = base64_decode_string(str, datalen);
 		for (size_t i = 0; i < ft_strlen(base); i += CHUNK_SIZE_IN_BYTES) {
 			chunk = create_64bit_chunk_from_str(base + i);
 			dprintf(2, "D: chunk %zu = %016lX\n", i, chunk);

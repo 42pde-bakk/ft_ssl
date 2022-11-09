@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include "base64/flags.h"
 #include "base64/base64.h"
+#include "libft.h"
 
 int	get_output_fd() {
 	int fd;
@@ -31,20 +32,21 @@ int base64_fd(const int fd) {
 	} else {
 		result = base64_decode_file(fd);
 	}
-	dprintf(1, "%s", result);
+	dprintf(STDOUT_FILENO, "%s", result);
 	free(result);
 	return (EXIT_SUCCESS);
 }
 
 int base64_string(const char* str) {
 	char*	result;
+	size_t	str_len = ft_strlen(str);
 
 	if (g_base64_flags & FLAG_DECODE) {
-		result = base64_decode_string(str);
+		result = base64_decode_string(str, str_len);
 	} else {
-		result = base64_encode_string(str);
+		result = base64_encode_string(str, str_len);
 	}
-	dprintf(1, "%s", result);
+	dprintf(STDOUT_FILENO, "%s", result);
 	free(result);
 	return (EXIT_SUCCESS);
 }

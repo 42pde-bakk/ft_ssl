@@ -36,7 +36,7 @@ int des_cbc_fd(const int fd) {
 		printf("iv= %016lX\n", result);
 
 	if (g_des_flags & FLAG_BASE64 && g_des_flags & FLAG_DECODE) {
-		char* base = base64_decode_string(file);
+		char* base = base64_decode_string(file, 0);
 		for (size_t i = 0; i < ft_strlen(base); i += CHUNK_SIZE_IN_BYTES) {
 			chunk = create_64bit_chunk_from_str(base + i);
 			result = apply_des(chunk ^ result, key);
@@ -67,7 +67,7 @@ int des_cbc_string(const char* str) {
 		dprintf(2, "iv= %016lX\n", result);
 
 	if (g_des_flags & FLAG_BASE64 && g_des_flags & FLAG_DECODE) {
-		char* base = base64_decode_string(str);
+		char* base = base64_decode_string(str, datalen);
 		dprintf(2, "base: %s\n", base);
 		for (size_t i = 0; i < ft_strlen(base); i += CHUNK_SIZE_IN_BYTES) {
 			chunk = create_64bit_chunk_from_str(base + i);

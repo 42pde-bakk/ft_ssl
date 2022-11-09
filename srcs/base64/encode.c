@@ -20,9 +20,8 @@ uint32_t	combine_three_uint8s(const uint8_t* data, size_t i, size_t datalen) {
 	return (grand);
 }
 
-char *base64_encode_string(const char *str) {
+char *base64_encode_string(const char *str, size_t datalen) {
 	const uint8_t*	data = (const uint8_t *)str;
-	const size_t	datalen = ft_strlen(str);
 	size_t	pad_count = 3 - datalen % 3;
 	size_t	outlen = datalen / 3 * 4;
 	if (datalen % 3)
@@ -72,7 +71,7 @@ char *base64_encode_file(const int fd) {
 		fprintf(stderr, "Error rading file.\n");
 		exit(EXIT_FAILURE);
 	}
-	result = base64_encode_string(file);
+	result = base64_encode_string(file, buf.st_size);
 	munmap(file, buf.st_size);
 	return (result);
 }

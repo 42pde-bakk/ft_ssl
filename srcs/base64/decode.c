@@ -14,8 +14,7 @@ static bool	is_base64_char(char c) {
 	return (ft_isalnum(c) || c == '+' || c == '/');
 }
 
-char *base64_decode_string(const char *str) {
-	const size_t	datalen = ft_strlen(str);
+char *base64_decode_string(const char *str, size_t datalen) {
 	size_t	outlen = datalen / 4 * 3 + 20;
 	uint8_t*	result = calloc(outlen + 1, sizeof(char));
 	size_t result_i = 0;
@@ -71,7 +70,7 @@ char *base64_decode_file(const int fd) {
 		fprintf(stderr, "Error reading file.\n");
 		exit(EXIT_FAILURE);
 	}
-	result = base64_decode_string(file);
+	result = base64_decode_string(file, buf.st_size);
 	munmap(file, buf.st_size);
 	return (result);
 }
