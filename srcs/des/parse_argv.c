@@ -33,10 +33,11 @@ unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx
 	int opt;
 	(void)string_vector;
 
-	while ((opt = getopt(argc, argv, "+aDdEePi:k:o:p:s:v:")) != -1) {
+	while ((opt = getopt(argc, argv, "+aDdEePi:k:K:o:p:s:v:")) != -1) {
 		switch (opt) {
 			case 'a':
 				g_des_flags |= FLAG_BASE64;
+				printf("flag for base64 set\n");
 				break ;
 			case 'D':
 			case 'd':
@@ -51,6 +52,7 @@ unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx
 				g_infile = optarg;
 				ptrvector_pushback(string_vector, (void *)g_infile);
 				break ;
+			case 'K':
 			case 'k':
 				g_des_flags |= FLAG_KEY;
 				g_key = optarg;
@@ -95,6 +97,8 @@ unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx
 				return ((unsigned int)-1);
 		}
 	}
+	if (!(g_des_flags & FLAG_DECODE))
+		g_des_flags |= FLAG_ENCODE;
 	if (g_des_flags & FLAG_DECODE && g_des_flags & FLAG_ENCODE) {
 		fprintf(stderr, "what is going on? Decode and encode!?\n");
 	}

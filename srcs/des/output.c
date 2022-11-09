@@ -33,8 +33,10 @@ void	output_chunk(const int fd, uint64_t chunk) {
 	ft_bzero(charr, sizeof(charr));
 	ft_memcpy(charr, &chunk, CHUNK_SIZE_IN_BYTES);
 
-	if (g_des_flags & FLAG_BASE64) {
-		base64_encode_string(charr, fd);
+	if (g_des_flags & FLAG_BASE64 && g_des_flags & FLAG_ENCODE) {
+		char* result = base64_encode_string(charr);
+		dprintf(fd, "%s", result);
+		free(result);
 	} else {
 		ssize_t ret = write(fd, charr, CHUNK_SIZE_IN_BYTES);
 		if (ret < 0) {

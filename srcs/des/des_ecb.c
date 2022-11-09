@@ -11,6 +11,7 @@
 #include "des/flags.h"
 #include "des/des.h"
 #include "libft.h"
+#include "base64/base64.h"
 
 int des_ecb_fd(const int fd) {
 	const uint64_t	key = get_key();
@@ -23,11 +24,20 @@ int des_ecb_fd(const int fd) {
 		return (EXIT_FAILURE);
 	}
 	if ((file = mmap(NULL, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
-		fprintf(stderr, "Error rading file.\n");
+		fprintf(stderr, "Error reading file.\n");
 		return (EXIT_FAILURE);
 	}
 	for (size_t i = 0; i < buf.st_size; i += CHUNK_SIZE_IN_BYTES) {
-		const uint64_t chunk = create_64bit_chunk_from_str(file + i);
+		uint64_t chunk;
+		if (g_des_flags & FLAG_BASE64 && g_des_flags & FLAG_DECODE) {
+			char* substr = ft_substr(file, i, CHUNK_SIZE_IN_BYTES);
+			char* base = base64_decode_string(substr);
+			free(substr);
+			chunk = create_64bit_chunk_from_str(base);
+			free(base);
+		} else {
+			chunk = create_64bit_chunk_from_str(file + i);
+		}
 		const uint64_t result = apply_des(chunk, key);
 		output_chunk(1, result);
 	}
@@ -40,7 +50,16 @@ int des_ecb_string(const char* str) {
 	const uint64_t	key = get_key();
 
 	for (size_t i = 0; i < datalen; i += CHUNK_SIZE_IN_BYTES) {
-		const uint64_t chunk = create_64bit_chunk_from_str(str + i);
+		uint64_t chunk;
+		if (g_des_flags & FLAG_BASE64 && g_des_flags & FLAG_DECODE) {
+			char* substr = ft_substr(str, i, CHUNK_SIZE_IN_BYTES);
+			char* base = base64_decode_string(substr);
+			free(substr);
+			chunk = create_64bit_chunk_from_str(base);
+			free(base);
+		} else {
+			chunk = create_64bit_chunk_from_str(str + i);
+		}
 		const uint64_t result = apply_des(chunk, key);
 		output_chunk(1, result);
 	}

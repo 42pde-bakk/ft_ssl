@@ -25,20 +25,25 @@ int	get_output_fd() {
 
 int base64_fd(const int fd) {
 	const int output_fd = get_output_fd();
+	char*	result;
 
 	if (g_base64_flags & FLAG_ENCODE) {
-		return (base64_encode_file(fd, output_fd));
+		result = base64_encode_file(fd, output_fd);
 	} else {
-		return (base64_decode_file(fd, output_fd));
+		result = base64_decode_file(fd, output_fd);
 	}
+	dprintf(1, "%s", result);
+	free(result);
 }
 
 int base64_string(const char* str) {
-	const int output_fd = get_output_fd();
+	char*	result;
 
 	if (g_base64_flags & FLAG_DECODE) {
-		return (base64_decode_string(str, output_fd));
+		result = base64_decode_string(str);
 	} else {
-		return (base64_encode_string(str, output_fd));
+		result = base64_encode_string(str);
 	}
+	dprintf(1, "%s", result);
+	free(result);
 }
