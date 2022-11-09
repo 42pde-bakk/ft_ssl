@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <stdint.h>
+#include <assert.h>
 #include "des/flags.h"
 #include "des/des.h"
 #include "libft.h"
@@ -17,6 +18,8 @@ int des_ecb_fd(const int fd) {
 	const uint64_t	key = get_key();
 	struct stat buf;
 	char* file;
+	uint64_t	chunk,
+				result;
 
 	ft_memset(&buf, 0, sizeof(buf));
 	if (fstat(fd, &buf) == -1 || buf.st_size <= 0 || S_ISDIR(buf.st_mode)) {
@@ -27,45 +30,54 @@ int des_ecb_fd(const int fd) {
 		fprintf(stderr, "Error reading file.\n");
 		return (EXIT_FAILURE);
 	}
-	for (size_t i = 0; i < buf.st_size; i += CHUNK_SIZE_IN_BYTES) {
-		uint64_t chunk;
-		if (g_des_flags & FLAG_BASE64 && g_des_flags & FLAG_DECODE) {
-			char* substr = ft_substr(file, i, CHUNK_SIZE_IN_BYTES);
-			char* base = base64_decode_string(substr);
-			free(substr);
-			chunk = create_64bit_chunk_from_str(base);
-			free(base);
-		} else {
-			chunk = create_64bit_chunk_from_str(file + i);
+	if (g_des_flags & FLAG_BASE64 && g_des_flags & FLAG_DECODE) {
+		char* base = base64_decode_string(file);
+		for (size_t i = 0; i < ft_strlen(base); i += CHUNK_SIZE_IN_BYTES) {
+			chunk = create_64bit_chunk_from_str(base + i);
+			result = apply_des(chunk, key);
+			add_chunk_to_buffer(result);
 		}
-		const uint64_t result = apply_des(chunk, key);
-		output_chunk(1, result);
+		free(base);
+	} else {
+		for (long int i = 0; i < buf.st_size; i += CHUNK_SIZE_IN_BYTES) {
+			chunk = create_64bit_chunk_from_str(file + i);
+			result = apply_des(chunk, key);
+			add_chunk_to_buffer(result);
+		}
 	}
 	munmap(file, buf.st_size);
+	clear_buffer(1);
 	return (EXIT_SUCCESS);
 }
 
 int des_ecb_string(const char* str) {
 	const size_t datalen = ft_strlen(str);
 	const uint64_t	key = get_key();
+	uint64_t		chunk,
+					result;
 
-	for (size_t i = 0; i < datalen; i += CHUNK_SIZE_IN_BYTES) {
-		uint64_t chunk;
-		if (g_des_flags & FLAG_BASE64 && g_des_flags & FLAG_DECODE) {
-			char* substr = ft_substr(str, i, CHUNK_SIZE_IN_BYTES);
-			char* base = base64_decode_string(substr);
-			free(substr);
-			chunk = create_64bit_chunk_from_str(base);
-			free(base);
-		} else {
-			chunk = create_64bit_chunk_from_str(str + i);
+
+
+	if (g_des_flags & FLAG_BASE64 && g_des_flags & FLAG_DECODE) {
+		char* base = base64_decode_string(str);
+		for (size_t i = 0; i < ft_strlen(base); i += CHUNK_SIZE_IN_BYTES) {
+			chunk = create_64bit_chunk_from_str(base + i);
+			dprintf(2, "D: chunk %zu = %016lX\n", i, chunk);
+			result = apply_des(chunk, key);
+			add_chunk_to_buffer(result);
 		}
-		const uint64_t result = apply_des(chunk, key);
-		output_chunk(1, result);
+		free(base);
 	}
+	else {
+		for (size_t i = 0; i < datalen; i += CHUNK_SIZE_IN_BYTES) {
+			chunk = create_64bit_chunk_from_str(str + i);
+			result = apply_des(chunk, key);
+			add_chunk_to_buffer(result);
+		}
+	}
+	clear_buffer(1);
 	return (EXIT_SUCCESS);
 }
-
 
 /*
 	* TESTING IMPLEMENTATION OF DES
@@ -125,7 +137,7 @@ void	test() {
 			res = apply_des(res, res);
 			printf("D: %016lx\n", res);
 		}
-//		assert(res == expected_outcomes[i]);
+		assert(res == expected_outcomes[i]);
 	}
 	g_des_flags = flags_backup;
 }

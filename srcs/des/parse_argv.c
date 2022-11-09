@@ -37,7 +37,6 @@ unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx
 		switch (opt) {
 			case 'a':
 				g_des_flags |= FLAG_BASE64;
-				printf("flag for base64 set\n");
 				break ;
 			case 'D':
 			case 'd':

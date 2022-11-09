@@ -46,6 +46,7 @@ uint64_t	get_key();
 /*
  * srcs/des/output.c
  */
-void	output_chunk(int fd, uint64_t chunk);
+void add_chunk_to_buffer(uint64_t chunk);
+void	clear_buffer(int fd);
 
 #endif //FT_SSL_DES_H

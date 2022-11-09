@@ -57,7 +57,7 @@ char *base64_decode_string(const char *str) {
 	return ((char*)result);
 }
 
-char *base64_decode_file(const int fd, const int output_fd) {
+char *base64_decode_file(const int fd) {
 	struct stat buf;
 	char*	file;
 	char*	result;

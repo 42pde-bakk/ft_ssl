@@ -24,16 +24,16 @@ int	get_output_fd() {
 }
 
 int base64_fd(const int fd) {
-	const int output_fd = get_output_fd();
 	char*	result;
 
 	if (g_base64_flags & FLAG_ENCODE) {
-		result = base64_encode_file(fd, output_fd);
+		result = base64_encode_file(fd);
 	} else {
-		result = base64_decode_file(fd, output_fd);
+		result = base64_decode_file(fd);
 	}
 	dprintf(1, "%s", result);
 	free(result);
+	return (EXIT_SUCCESS);
 }
 
 int base64_string(const char* str) {
@@ -46,4 +46,5 @@ int base64_string(const char* str) {
 	}
 	dprintf(1, "%s", result);
 	free(result);
+	return (EXIT_SUCCESS);
 }

@@ -73,7 +73,7 @@ uint32_t	get_sbox_output(const uint64_t expanded_rpt) {
 	for (size_t j = 0; j < 8; j++) {
 		const size_t j6 = 6 * j;
 		row = (uint8_t) ((expanded_rpt & (0x0000840000000000 >> j6)) >> (42 - j6));
-		row = (row >> 4) | row & 0x01;
+		row = (row >> 4) | (row & 0x01);
 
 		column = (uint8_t) ((expanded_rpt & (0x0000780000000000 >> j6)) >> (43 - j6));
 

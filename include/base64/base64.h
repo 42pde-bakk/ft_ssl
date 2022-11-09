@@ -9,9 +9,9 @@
 #define PAD_CHAR '='
 
 char *base64_decode_string(const char *str);
-char * base64_decode_file(int fd, int output_fd);
+char *base64_decode_file(const int fd);
 char *base64_encode_string(const char *str);
-char * base64_encode_file(int fd, int output_fd);
+char *base64_encode_file(const int fd);
 extern const char*	g_input;
 extern const char*	g_output;
 
