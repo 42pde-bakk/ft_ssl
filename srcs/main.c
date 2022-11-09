@@ -171,7 +171,6 @@ int main(int argc, char **argv) {
 	for (unsigned int i = file_start_idx; i < (unsigned int)argc; i++) {
 		int fd;
 		const char *filename = argv[i];
-		printf("opening %s\n", filename);
 
 		fd = open_file(filename);
 		if (fd == -1) {

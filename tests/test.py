@@ -19,11 +19,11 @@ def run_process(arg: str) -> Tuple[int, str, str]:
 def hard_code(testcase: dict) -> None:
 	my_ret, my_stdout, my_stderr = run_process(f'{testcase["command"]}')
 
-	assert(testcase['expected_statuscode'] == my_ret), f'Statuscode:\n\tgot {my_ret}, expected: {testcase["expected_statuscode"]}'
+	assert(testcase['expected_statuscode'] == my_ret), f'Statuscode:\n\tgot:\t{my_ret}, expected: {testcase["expected_statuscode"]}'
 	if 'expected_stdout' in testcase.keys():
-		assert(testcase['expected_stdout'] == my_stdout), f'STDOUT:\n\tgot \'{my_stdout.encode("unicode_escape")}\',\n\texpected: \'{testcase["expected_stdout"].encode("unicode_escape")}\''
+		assert(testcase['expected_stdout'] == my_stdout), f'STDOUT:\n\tgot:\t\'{my_stdout.encode("unicode_escape")}\',\n\texpected:\'{testcase["expected_stdout"].encode("unicode_escape")}\''
 	if 'expected_stderr' in testcase.keys():
-		assert(testcase['expected_stderr'] == my_stderr), f'STDERR:n\n\ttgot \'{my_stderr.encode("unicode_escape")}\',\n\texpected: \'{testcase["expected_stderr"].encode("unicode_escape")}\''
+		assert(testcase['expected_stderr'] == my_stderr), f'STDERR:n\n\ttgot:\t\'{my_stderr.encode("unicode_escape")}\',\n\texpected:\'{testcase["expected_stderr"].encode("unicode_escape")}\''
 
 
 def run_testcases(test_cases: list, test_name: str) -> int:
@@ -60,7 +60,7 @@ def main():
 	with open('tests/tests.json', 'r') as f:
 		test_file = json.load(f)
 
-	for test_name in ['MD5', 'SHA256', 'SHA224', 'Invalid']:
+	for test_name in ['MD5', 'SHA256', 'SHA224', 'BASE64', 'DES-ECB', 'DES-CBC', 'Invalid']:
 		ret |= run_testcases(test_file[test_name], test_name)
 
 	exit(ret)

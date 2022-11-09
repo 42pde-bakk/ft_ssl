@@ -8,14 +8,26 @@
 #include <ctype.h>
 #include "des/flags.h"
 #include "vector.h"
+#include <fcntl.h>
 
 const char*	g_infile = NULL;
 const char*	g_outfile = NULL;
+int			g_outfd = 1;
 const char*	g_key = NULL;
 const char*	g_password = NULL;
 const char*	g_salt = NULL;
 const char*	g_initialization_vector = NULL;
 unsigned int	g_des_flags = 0;
+
+static int	create_outfd(const char* const pathname) {
+	int fd;
+
+	fd = open(pathname, O_RDONLY);
+	if (fd == -1)
+		return (1);
+	g_outfd = fd;
+	return (0);
+}
 
 unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx, t_ptrvector* string_vector) {
 	int opt;
@@ -37,6 +49,7 @@ unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx
 			case 'i':
 				g_des_flags |= FLAG_INPUTFILE;
 				g_infile = optarg;
+				ptrvector_pushback(string_vector, (void *)g_infile);
 				break ;
 			case 'k':
 				g_des_flags |= FLAG_KEY;
@@ -49,6 +62,10 @@ unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx
 				}
 				g_des_flags |= FLAG_OUTPUTFILE;
 				g_outfile = optarg;
+				if (create_outfd(g_outfile)) {
+					fprintf(stderr, "Error opening outfile '%s'.\n", g_outfile);
+					return ((unsigned int)-1);
+				}
 				break ;
 			case 'p':
 				g_des_flags |= FLAG_PASSWORD;

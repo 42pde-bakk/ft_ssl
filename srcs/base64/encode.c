@@ -56,7 +56,7 @@ int base64_encode_string(const char *str, const int output_fd) {
 		++x;
 		--pad_count;
 	}
-	dprintf(output_fd, "%s\n", result);
+	dprintf(output_fd, "%s", result);
 	free(result);
 	return (0);
 }
@@ -66,7 +66,6 @@ int base64_encode_file(const int fd, const int output_fd) {
 	char* file;
 
 	ft_memset(&buf, 0, sizeof(buf));
-	printf("hereeee\n");
 	if (fstat(fd, &buf) == -1 || buf.st_size <= 0 || S_ISDIR(buf.st_mode)) {
 		fprintf(stderr, "Error opening file.\n");
 		return (EXIT_FAILURE);

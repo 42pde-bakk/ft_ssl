@@ -155,7 +155,50 @@
       "expected_stderr": ""
     }
   ],
+  "BASE64": [
+    {
+      "command": "echo toto | ./ft_ssl base64 -e",
+      "expected_statuscode": 0,
+      "expected_stdout": "dG90bwo=\n",
+      "expected_stderr": ""
+    },
+    {
+      "command": "echo -n toto | ./ft_ssl base64 -e",
+      "expected_statuscode": 0,
+      "expected_stdout": "dG90bw==\n",
+      "expected_stderr": ""
+    },
+    {
+      "command": "echo 'dG90bw==' | ./ft_ssl base64 -d",
+      "expected_statuscode": 0,
+      "expected_stdout": "toto\n",
+      "expected_stderr": ""
+    },
+    {
+      "command": "echo 'dG 90b     w==' | ./ft_ssl base64 -d",
+      "expected_statuscode": 0,
+      "expected_stdout": "toto\n",
+      "expected_stderr": ""
+    },
+    {
+      "command": "echo foobar | ./ft_ssl base64 -e",
+      "expected_statuscode": 0,
+      "expected_stdout": "Zm9vYmFyCg==\n",
+      "expected_stderr": ""
+    },
+    {
+      "command": "echo Zm9vYmFyCg== | ./ft_ssl base64 -d",
+      "expected_statuscode": 0,
+      "expected_stdout": "foobar\n",
+      "expected_stderr": ""
+    }
+  ],
   "DES-ECB": [
+    {
+      "command": ""
+    }
+  ],
+  "DES-CBC": [
     {
       "command": ""
     }

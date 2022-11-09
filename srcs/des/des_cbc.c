@@ -3,20 +3,14 @@
 //
 
 #include <stddef.h>
-#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <assert.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <stdint.h>
 #include "des/flags.h"
 #include "des/des.h"
 #include "libft.h"
-#include <sys/random.h>
-
-void test();
 
 int des_cbc_fd(const int fd) {
 	const uint64_t	key = get_key();
@@ -41,7 +35,7 @@ int des_cbc_fd(const int fd) {
 	for (size_t i = 0; i < buf.st_size; i += CHUNK_SIZE_IN_BYTES) {
 		const uint64_t chunk = create_64bit_chunk_from_str(file + i);
 		result = apply_des(chunk ^ result, key);
-		printf("%016lX", result);
+		output_chunk(1, result);
 	}
 	munmap(file, buf.st_size);
 	return (EXIT_SUCCESS);
@@ -60,7 +54,7 @@ int des_cbc_string(const char* str) {
 	for (size_t i = 0; i < datalen; i += CHUNK_SIZE_IN_BYTES) {
 		const uint64_t chunk = create_64bit_chunk_from_str(str + i);
 		result = apply_des(chunk ^ result, key);
-		printf("%016lX", result);
+		output_chunk(1, result);
 	}
 	return (EXIT_SUCCESS);
 }

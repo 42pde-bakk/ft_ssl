@@ -54,7 +54,7 @@ int base64_decode_string(const char *str, const int output_fd) {
 			++result_i;
 		}
 	}
-	dprintf(output_fd, "%s", result);
+	dprintf(output_fd, "%s$", result);
 	free(result);
 	return (0);
 }
