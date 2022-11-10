@@ -58,6 +58,26 @@ int des_ecb_string(const char* str) {
 	uint64_t		chunk,
 					result;
 	char*			base = NULL;
+	char*			padded_str = NULL;
+
+	if (!(g_des_flags & FLAG_NO_PADDING)) {
+		uint8_t pad_amount = 8 - (datalen % 8);
+		dprintf(2, "str = %s\n", str);
+		dprintf(STDERR_FILENO, "datalen = %zu, pad_amount = %u\n", datalen, pad_amount);
+		padded_str = ft_calloc(datalen + pad_amount, sizeof(char));
+		ft_strlcpy(padded_str, str, datalen);
+		for (size_t i = 0; i < pad_amount; i++) {
+			padded_str[datalen + -1 + i] = (char)pad_amount;
+			dprintf(2, "padded_str[%zu]=%#hhx, should be %hhx\n", datalen + i, padded_str[datalen -1 + i], pad_amount);
+		}
+		str = padded_str;
+		for (size_t i = 0; i < datalen + pad_amount + 1; i++) {
+			dprintf(2, "%c ", padded_str[i]);
+		}
+		dprintf(2, "$\n");
+		datalen += pad_amount;
+//		dprintf(2, "padded_str = %s$, %#hhx, %#hhx, %#hhx\n", padded_str, padded_str[datalen - 1], padded_str[datalen], padded_str[datalen + 1]);
+	}
 
 	if (g_des_flags & FLAG_DECODE) {
 		if (g_des_flags & FLAG_BASE64) {
@@ -82,6 +102,10 @@ int des_ecb_string(const char* str) {
 //			dprintf(STDERR_FILENO, "E1: chunk = %016lX, result = %016lX\n", chunk, result);
 			add_chunk_to_buffer(result, true);
 		}
+	}
+
+	if (!(g_des_flags & FLAG_NO_PADDING)) {
+		free(padded_str);
 	}
 
 	clear_buffer(g_outfd);

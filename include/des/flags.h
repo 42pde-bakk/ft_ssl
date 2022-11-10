@@ -15,6 +15,8 @@
 #define FLAG_SALT		(1 << 7)
 #define FLAG_INITVECTOR	(1 << 8)
 #define FLAG_SHOW_KEY	(1 << 9)
+#define FLAG_NO_PADDING	(1 << 10)
+
 
 extern unsigned int g_des_flags;
 extern const char*	g_infile;

@@ -33,7 +33,7 @@ unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx
 	int opt;
 	(void)string_vector;
 
-	while ((opt = getopt(argc, argv, "+aDdEePi:k:K:o:p:s:v:")) != -1) {
+	while ((opt = getopt(argc, argv, "+aDdnEePi:k:K:o:p:s:v:")) != -1) {
 		switch (opt) {
 			case 'a':
 				g_des_flags |= FLAG_BASE64;
@@ -82,6 +82,9 @@ unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx
 			case 'v':
 				g_des_flags |= FLAG_INITVECTOR;
 				g_initialization_vector = optarg;
+				break ;
+			case 'n':
+				g_des_flags |= FLAG_NO_PADDING;
 				break ;
 			case '?':
 				if (optopt == 's')
