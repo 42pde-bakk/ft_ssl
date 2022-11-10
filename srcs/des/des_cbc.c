@@ -40,14 +40,14 @@ int des_cbc_fd(const int fd) {
 		for (size_t i = 0; i < ft_strlen(base); i += CHUNK_SIZE_IN_BYTES) {
 			chunk = create_64bit_chunk_from_str(base + i);
 			result = apply_des(chunk ^ result, key);
-			add_chunk_to_buffer(result); // TODO: fix output file
+			add_chunk_to_buffer(result, 0); // TODO: fix output file
 		}
 		free(base);
 	} else {
 		for (long int i = 0; i < buf.st_size; i += CHUNK_SIZE_IN_BYTES) {
 			chunk = create_64bit_chunk_from_str(file + i);
 			result = apply_des(chunk ^ result, key);
-			add_chunk_to_buffer(result);
+			add_chunk_to_buffer(result, 0);
 		}
 	}
 	munmap(file, buf.st_size);
@@ -72,14 +72,14 @@ int des_cbc_string(const char* str) {
 		for (size_t i = 0; i < ft_strlen(base); i += CHUNK_SIZE_IN_BYTES) {
 			chunk = create_64bit_chunk_from_str(base + i);
 			result = apply_des(chunk ^ result, key);
-			add_chunk_to_buffer(result); // TODO: fix output file
+			add_chunk_to_buffer(result, 0); // TODO: fix output file
 		}
 		free(base);
 	} else {
 		for (size_t i = 0; i < datalen; i += CHUNK_SIZE_IN_BYTES) {
 			chunk = create_64bit_chunk_from_str(str + i);
 			result = apply_des(chunk ^ result, key);
-			add_chunk_to_buffer(result);
+			add_chunk_to_buffer(result, 0);
 		}
 	}
 	clear_buffer(1);

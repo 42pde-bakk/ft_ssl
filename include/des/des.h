@@ -8,6 +8,7 @@
 #define CHUNK_SIZE_IN_BYTES 8 // Bytes, so 64 bits
 #define ROUNDS 16
 #include <stdint.h>
+#include <stdbool.h>
 
 /*
  * srcs/des/des.c
@@ -47,7 +48,7 @@ uint64_t	get_key();
 /*
  * srcs/des/output.c
  */
-void add_chunk_to_buffer(uint64_t chunk);
+void add_chunk_to_buffer(uint64_t chunk, bool should_reverse);
 void	clear_buffer(int fd);
 
 #endif //FT_SSL_DES_H

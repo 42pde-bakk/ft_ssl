@@ -51,7 +51,7 @@ uint64_t	get_key() {
 	if (g_des_flags & FLAG_KEY && g_key != NULL) {
 		key = create_64bit_chunk_from_hexstr(g_key);
 		if (g_des_flags & FLAG_SHOW_KEY) {
-			dprintf(2, "key=%016lX\n", key);
+			dprintf(STDERR_FILENO, "key=%016lX\n", key);
 		}
 		return (key);
 	}
@@ -65,8 +65,8 @@ uint64_t	get_key() {
 	key = create_64bit_chunk_from_str(pass);
 	key = pbkdf(key, salt);
 	if (g_des_flags & FLAG_SHOW_KEY) {
-		dprintf(2,"salt=%016lX\n", salt);
-		dprintf(2,"key=%016lX\n", key);
+		dprintf(STDERR_FILENO,"salt=%016lX\n", salt);
+		dprintf(STDERR_FILENO,"key=%016lX\n", key);
 	}
 	return (key);
 }

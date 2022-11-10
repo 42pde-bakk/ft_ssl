@@ -11,7 +11,9 @@ import os
 def run_process(arg: str) -> Tuple[int, str, str]:
 	p = subprocess.Popen(f'{arg}', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 	p.wait()
-	stdout = p.stdout.read().decode('ascii')
+	stdout = p.stdout.read()
+	print(stdout)
+	stdout = stdout.decode('ascii')
 	stderr = p.stderr.read().decode('ascii')
 	return p.returncode, stdout, stderr
 
