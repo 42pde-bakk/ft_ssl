@@ -56,32 +56,42 @@ int des_cbc_fd(const int fd) {
 }
 
 int des_cbc_string(const char* str) {
-	const size_t datalen = ft_strlen(str);
+	size_t datalen = ft_strlen(str);
 	const uint64_t	key = get_key();
 	uint64_t	result = 0,
 				chunk;
+	char*			base = NULL;
 
 	if (g_des_flags & FLAG_INITVECTOR && g_initialization_vector)
 		result = create_64bit_chunk_from_hexstr(g_initialization_vector);
 	if (g_des_flags & FLAG_SHOW_KEY)
-		dprintf(2, "iv= %016lX\n", result);
+		dprintf(STDERR_FILENO, "iv= %016lX\n", result);
 
-	if (g_des_flags & FLAG_BASE64 && g_des_flags & FLAG_DECODE) {
-		char* base = base64_decode_string(str, datalen);
-		dprintf(2, "base: %s\n", base);
-		for (size_t i = 0; i < ft_strlen(base); i += CHUNK_SIZE_IN_BYTES) {
-			chunk = create_64bit_chunk_from_str(base + i);
-			result = apply_des(chunk ^ result, key);
-			add_chunk_to_buffer(result, 0); // TODO: fix output file
+	if (g_des_flags & FLAG_DECODE) {
+		if (g_des_flags & FLAG_BASE64) {
+			base = base64_decode_string(str, datalen);
+//			dprintf(STDERR_FILENO, "got string %s which amounts to %s in base64, strlen = %zu\n", str, base, ft_strlen(base));
+			str = base;
+			datalen = ft_strlen(str);
 		}
-		free(base);
-	} else {
+		for (size_t i = 0; i < datalen; i += CHUNK_SIZE_IN_BYTES) {
+			chunk = REV64(*(uint64_t *)(str + i));
+
+			result = apply_des(chunk, key) ^ result;
+//			dprintf(STDERR_FILENO, "D2: chunk = %016lX, result = %016lX\n", chunk, result);
+			add_chunk_to_buffer(result, true);
+		}
+
+	} else { // FLAG_ENCODE
 		for (size_t i = 0; i < datalen; i += CHUNK_SIZE_IN_BYTES) {
 			chunk = create_64bit_chunk_from_str(str + i);
+
 			result = apply_des(chunk ^ result, key);
-			add_chunk_to_buffer(result, 0);
+//			dprintf(STDERR_FILENO, "E1: chunk = %016lX, result = %016lX\n", chunk, result);
+			add_chunk_to_buffer(result, true);
 		}
 	}
-	clear_buffer(1);
+
+	clear_buffer(g_outfd);
 	return (EXIT_SUCCESS);
 }

@@ -13,7 +13,6 @@
 #include "des/des.h"
 #include "libft.h"
 #include "base64/base64.h"
-uint64_t REV64(uint64_t x);
 
 int des_ecb_fd(const int fd) {
 	const uint64_t	key = get_key();
@@ -49,7 +48,7 @@ int des_ecb_fd(const int fd) {
 		}
 	}
 	munmap(file, buf.st_size);
-	clear_buffer(1);
+	clear_buffer(g_outfd);
 	return (EXIT_SUCCESS);
 }
 
@@ -63,31 +62,29 @@ int des_ecb_string(const char* str) {
 	if (g_des_flags & FLAG_DECODE) {
 		if (g_des_flags & FLAG_BASE64) {
 			base = base64_decode_string(str, datalen);
-			dprintf(STDERR_FILENO, "got string %s which amounts to %s in base64, strlen = %zu\n", str, base, ft_strlen(base));
+//			dprintf(STDERR_FILENO, "got string %s which amounts to %s in base64, strlen = %zu\n", str, base, ft_strlen(base));
 			str = base;
 			datalen = ft_strlen(str);
 		}
 		for (size_t i = 0; i < datalen; i += CHUNK_SIZE_IN_BYTES) {
-//			chunk = create_64bit_chunk_from_hexstr(str + i);
 			chunk = REV64(*(uint64_t *)(str + i));
 
 			result = apply_des(chunk, key);
-			dprintf(STDERR_FILENO, "D2: chunk = %016lX, result = %016lX\n", chunk, result);
+//			dprintf(STDERR_FILENO, "D2: chunk = %016lX, result = %016lX\n", chunk, result);
 			add_chunk_to_buffer(result, true);
 		}
 
 	} else { // FLAG_ENCODE
 		for (size_t i = 0; i < datalen; i += CHUNK_SIZE_IN_BYTES) {
 			chunk = create_64bit_chunk_from_str(str + i);
-//			chunk = *(uint64_t *)(str + i);
 
 			result = apply_des(chunk, key);
-			dprintf(STDERR_FILENO, "E1: chunk = %016lX, result = %016lX\n", chunk, result);
+//			dprintf(STDERR_FILENO, "E1: chunk = %016lX, result = %016lX\n", chunk, result);
 			add_chunk_to_buffer(result, true);
 		}
 	}
 
-	clear_buffer(1);
+	clear_buffer(g_outfd);
 	free(base);
 	return (EXIT_SUCCESS);
 }

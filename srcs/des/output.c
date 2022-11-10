@@ -33,7 +33,6 @@ void	create_str_from_64bit_chunk_and_output(uint64_t chunk, const int fd) {
 	char	arr[9];
 
 	ft_bzero(arr, sizeof(arr));
-//	chunk = REV64(chunk);
 	for (size_t i = 0; i < 8; i++) {
 		arr[i] = (char)chunk;
 		chunk >>= 8;
@@ -58,17 +57,16 @@ void add_chunk_to_buffer(uint64_t chunk, bool should_reverse) {
 
 void	clear_buffer(const int fd) {
 	if (g_des_flags & FLAG_BASE64 && g_des_flags & FLAG_ENCODE) {
-		for (size_t i = 0; i < chunk_vector->size; i++) {
-			dprintf(STDERR_FILENO, "E2: chunk %zu = %016lX (%s)\n", i, chunk_vector->arr[i], (char *)&chunk_vector->arr[i]);
-		}
+//		for (size_t i = 0; i < chunk_vector->size; i++) {
+//			dprintf(STDERR_FILENO, "E2: chunk %zu = %016lX (%s)\n", i, chunk_vector->arr[i], (char *)&chunk_vector->arr[i]);
+//		}
 		char* result = base64_encode_string((char *)chunk_vector->arr, chunk_vector->size * CHUNK_SIZE_IN_BYTES);
-		dprintf(fd, "%s$$", result);
+		dprintf(fd, "%s", result);
 		free(result);
 	} else {
 		for (size_t i = 0; i < chunk_vector->size; i++) {
-			dprintf(STDERR_FILENO, "write(%d, %016lX, %d);\n", fd, chunk_vector->arr[i], CHUNK_SIZE_IN_BYTES);
+//			dprintf(STDERR_FILENO, "write(%d, %016lX, %d);\n", fd, chunk_vector->arr[i], CHUNK_SIZE_IN_BYTES);
 			create_str_from_64bit_chunk_and_output(chunk_vector->arr[i], fd);
-//			ssize_t ret = write(fd, &chunk_vector->arr[i], CHUNK_SIZE_IN_BYTES);
 		}
 	}
 	uint64vector_destroy(chunk_vector);

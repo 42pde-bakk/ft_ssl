@@ -20,6 +20,7 @@ extern unsigned int g_des_flags;
 extern const char*	g_infile;
 extern const char*	g_outfile;
 extern const char*	g_key;
+extern int			g_outfd;
 extern const char*	g_password;
 extern const char*	g_salt;
 extern const char*	g_initialization_vector;

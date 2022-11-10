@@ -203,7 +203,7 @@
     {
       "command": "echo YZF3QKaabXU= | ./ft_ssl des-ecb -k 6162636461626364 -a -d",
       "expected_statuscode": 0,
-      "expected_stdout": "\"foo bar\"\n",
+      "expected_stdout": "foo bar\n\n",
       "expected_stderr": ""
     },
     {
@@ -215,11 +215,11 @@
     {
       "command": "echo 'PPlElcr60EQ=' | ./ft_ssl des-ecb -k 6162636461626364 -a -d",
       "expected_statuscode": 0,
-      "expected_stdout": "foo bad\n",
+      "expected_stdout": "foo bad\n\n",
       "expected_stderr": ""
     },
     {
-      "command": "echo -n \"multiple blocks chained together\" | ./ft_ssl des-ecb -k 6162636461626364 -a -d",
+      "command": "echo -n \"multiple blocks chained together\" | ./ft_ssl des-ecb -k 6162636461626364 -a",
       "expected_statuscode": 0,
       "expected_stdout": "DOYaTvPcuHuTYW5nM1J3gQRT+mefdzpZjmjWsrQMcWw=\n",
       "expected_stderr": ""
