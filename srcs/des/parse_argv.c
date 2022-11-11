@@ -29,11 +29,27 @@ static int	create_outfd(const char* const pathname) {
 	return (0);
 }
 
+static void	print_usage() {
+	fprintf(stderr, "Data Encryption Standard:\nvailable flags:\n");
+	fprintf(stderr, "-a, decode/encode the input/output in base64, depending on the encryption mode\n");
+	fprintf(stderr, "-D or -d, decrypt mode\n");
+	fprintf(stderr, "-E or -e, encrypt mode (default)\n");
+	fprintf(stderr, "-i, input file for message\n");
+	fprintf(stderr, "-o, output file for message\n");
+	fprintf(stderr, "-K or -k, key in hex is the next argument\n");
+	fprintf(stderr, "-p, the password in ascii is the next argument\n");
+	fprintf(stderr, "-s, the salt in hex is the next argument\n");
+	fprintf(stderr, "-v, the initialization vector in hex is the next argument\n");
+	fprintf(stderr, "-P, print the iv/key\n");
+	fprintf(stderr, "-n, disable the size difference byte padding scheme\n");
+	fprintf(stderr, "-h, display this summary\n");
+}
+
 unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx, t_ptrvector* string_vector) {
 	int opt;
 	(void)string_vector;
 
-	while ((opt = getopt(argc, argv, "+aDdnEePi:k:K:o:p:s:v:")) != -1) {
+	while ((opt = getopt(argc, argv, "+aDdhnEePi:k:K:o:p:s:v:")) != -1) {
 		switch (opt) {
 			case 'a':
 				g_des_flags |= FLAG_BASE64;
@@ -86,6 +102,9 @@ unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx
 			case 'n':
 				g_des_flags |= FLAG_NO_PADDING;
 				break ;
+			case 'h':
+				print_usage();
+				exit(EXIT_SUCCESS);
 			case '?':
 				if (optopt == 's')
 					fprintf(stderr, "Option -%c requires an argument.\n", optopt);
@@ -93,9 +112,11 @@ unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx
 					fprintf(stderr, "Unknown option `-%c'.\n", optopt);
 				else
 					fprintf(stderr, "Unknown option character `\\x%x'.\n", optopt);
+				print_usage();
 				return ((unsigned int)-1);
 			default:
 				fprintf(stderr, "%s: invalid option -- '%c'\n", argv[0], optopt);
+				print_usage();
 				return ((unsigned int)-1);
 		}
 	}

@@ -12,6 +12,15 @@ const char* g_input = NULL;
 const char* g_output = NULL;
 unsigned int	g_base64_flags = 0;
 
+static void	print_usage() {
+	fprintf(stderr, "base64:\nvailable flags:\n");
+	fprintf(stderr, "-D or -d, decode mode\n");
+	fprintf(stderr, "-E or -e, encode mode (default)\n");
+	fprintf(stderr, "-i, input file\n");
+	fprintf(stderr, "-o, output file\n");
+	fprintf(stderr, "-h, display this summary\n");
+}
+
 unsigned int parse_flags_base64(int argc, char** argv, unsigned int* file_start_idx, t_ptrvector* string_vector) {
 	int opt;
 	(void)string_vector;
@@ -45,9 +54,11 @@ unsigned int parse_flags_base64(int argc, char** argv, unsigned int* file_start_
 					fprintf(stderr, "Unknown option `-%c'.\n", optopt);
 				else
 					fprintf(stderr, "Unknown option character `\\x%x'.\n", optopt);
+				print_usage();
 				return ((unsigned int)-1);
 			default:
 				fprintf(stderr, "%s: invalid option -- '%c'\n", argv[0], optopt);
+				print_usage();
 				return ((unsigned int)-1);
 		}
 	}
