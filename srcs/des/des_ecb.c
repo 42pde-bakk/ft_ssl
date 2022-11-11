@@ -14,83 +14,33 @@
 #include "libft.h"
 #include "base64/base64.h"
 
-int des_ecb_fd(const int fd) {
-	const uint64_t	key = get_key();
-	struct stat buf;
-	char* file;
-	uint64_t	chunk,
-				result;
-	char*		base;
-
-	ft_memset(&buf, 0, sizeof(buf));
-	if (fstat(fd, &buf) == -1 || buf.st_size <= 0 || S_ISDIR(buf.st_mode)) {
-		fprintf(stderr, "Error opening file.\n");
-		return (EXIT_FAILURE);
-	}
-	if ((file = mmap(NULL, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
-		fprintf(stderr, "Error reading file.\n");
-		return (EXIT_FAILURE);
-	}
-	if (g_des_flags & FLAG_BASE64 && g_des_flags & FLAG_DECODE) {
-		base = base64_decode_string(file, 0, NULL);
-//		str = base;
-		for (size_t i = 0; i < ft_strlen(base); i += CHUNK_SIZE_IN_BYTES) {
-			chunk = create_64bit_chunk_from_str(base + i);
-			result = apply_des(chunk, key);
-			add_chunk_to_buffer(result, 0);
-		}
-		free(base);
-	} else {
-		for (long int i = 0; i < buf.st_size; i += CHUNK_SIZE_IN_BYTES) {
-			chunk = create_64bit_chunk_from_str(file + i);
-			result = apply_des(chunk, key);
-			add_chunk_to_buffer(result, 0);
-		}
-	}
-	munmap(file, buf.st_size);
-	clear_buffer(g_outfd);
-	return (EXIT_SUCCESS);
-}
-
-int des_ecb_string(const char* str) {
-	size_t datalen = ft_strlen(str);
+int des_ecb_handler(const char* str, size_t length) {
 	const uint64_t	key = get_key();
 	uint64_t		chunk,
 					result;
 	char*			base = NULL;
 	char*			padded_str = NULL;
 
-//	dprintf(2, "'%s'\n", str);
-//	for (size_t i = 0; i < datalen; i++) {
-//		dprintf(2, "%#hhx ", str[i]);
-//	}
-//	dprintf(2, "\n");
-
 	if (!(g_des_flags & FLAG_NO_PADDING) && g_des_flags & FLAG_ENCODE) {
-		const uint8_t pad_amount = 8 - (datalen % 8);
-		padded_str = ft_calloc(datalen + pad_amount, sizeof(char));
-		ft_strlcpy(padded_str, str, datalen + 1);
+		const uint8_t pad_amount = 8 - (length % 8);
+		padded_str = ft_calloc(length + pad_amount, sizeof(char));
+		ft_strlcpy(padded_str, str, length + 1);
 
 		for (uint8_t i = 0; i < pad_amount; i++) {
-			padded_str[datalen + i] = (char)pad_amount;
+			padded_str[length + i] = (char)pad_amount;
 		}
 		str = padded_str;
-		datalen += pad_amount;
-//		for (size_t i = 0; i < datalen; i++) {
-//			dprintf(2, "%#hhx ", str[i]);
-//		}
-//		dprintf(2, "\n");
-
+		length += pad_amount;
 	}
 
 	if (g_des_flags & FLAG_DECODE) {
 		if (g_des_flags & FLAG_BASE64) {
 			size_t newdatalen;
-			base = base64_decode_string(str, datalen, &newdatalen);
+			base = base64_decode_string(str, length, &newdatalen);
 			str = base;
-			datalen = newdatalen;
+			length = newdatalen;
 		}
-		for (size_t i = 0; i < datalen; i += CHUNK_SIZE_IN_BYTES) {
+		for (size_t i = 0; i < length; i += CHUNK_SIZE_IN_BYTES) {
 			chunk = REV64(*(uint64_t *)(str + i));
 
 			result = apply_des(chunk, key);
@@ -99,7 +49,7 @@ int des_ecb_string(const char* str) {
 		}
 
 	} else { // FLAG_ENCODE
-		for (size_t i = 0; i < datalen; i += CHUNK_SIZE_IN_BYTES) {
+		for (size_t i = 0; i < length; i += CHUNK_SIZE_IN_BYTES) {
 			chunk = create_64bit_chunk_from_str(str + i);
 
 			result = apply_des(chunk, key);
@@ -112,10 +62,35 @@ int des_ecb_string(const char* str) {
 		free(padded_str);
 	}
 
-	clear_buffer(g_outfd);
+	clear_buffer(g_outfd, true);
 	free(base);
 	return (EXIT_SUCCESS);
 }
+
+int des_ecb_fd(const int fd) {
+	struct stat	buf;
+	char		*file;
+	int			return_status;
+
+	ft_memset(&buf, 0, sizeof(buf));
+	if (fstat(fd, &buf) == -1 || buf.st_size <= 0 || S_ISDIR(buf.st_mode)) {
+		fprintf(stderr, "Error opening file.\n");
+		return (EXIT_FAILURE);
+	}
+	if ((file = mmap(NULL, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
+		fprintf(stderr, "Error reading file.\n");
+		return (EXIT_FAILURE);
+	}
+	return_status = des_ecb_handler(file, buf.st_size);
+
+	munmap(file, buf.st_size);
+	return (return_status);
+}
+
+int des_ecb_string(const char* str) {
+	return (des_ecb_handler(str, ft_strlen(str)));
+}
+
 
 /*
 	* TESTING IMPLEMENTATION OF DES

@@ -227,9 +227,14 @@
   ],
   "DES-CBC": [
     {
-      "command": "echo \"one deep secret\" | ./ft_ssl des-cbc -a -K 6162636461626364 -v 0011223344556677 -n",
+      "command": "echo \"one deep secret\" | ./ft_ssl des-cbc -a -K 6162636461626364 -v 0011223344556677",
       "expected_statuscode": 0,
-      "expected_stdout": "zqYWONX68rWNxl7msIdGCw==\n"
+      "expected_stdout": "zqYWONX68rWNxl7msIdGC67Uh2HfVEBo\n"
+    },
+    {
+      "command": "echo \"zqYWONX68rWNxl7msIdGC67Uh2HfVEBo\" | ./ft_ssl des-cbc -d -a -K 6162636461626364 -v 0011223344556677",
+      "expected_statuscode": 0,
+      "expected_stdout": "one deep secret\n\n"
     }
   ],
   "Invalid": [

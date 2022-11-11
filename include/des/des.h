@@ -50,6 +50,6 @@ uint64_t	get_key();
  */
 uint64_t	REV64(uint64_t x);;
 void	add_chunk_to_buffer(uint64_t chunk, bool should_reverse);
-void	clear_buffer(int fd);
+void clear_buffer(const int fd, bool reverse_decode);
 
 #endif //FT_SSL_DES_H
