@@ -42,9 +42,9 @@ int base64_string(const char* str) {
 	size_t	str_len = ft_strlen(str);
 
 	if (g_base64_flags & FLAG_DECODE) {
-		result = base64_decode_string(str, str_len);
+		result = base64_decode_string(str, str_len, NULL);
 	} else {
-		result = base64_encode_string(str, str_len);
+		result = base64_encode_string(str, str_len, NULL);
 	}
 	dprintf(STDOUT_FILENO, "%s", result);
 	free(result);

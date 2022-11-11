@@ -14,17 +14,19 @@ static bool	is_base64_char(char c) {
 	return (ft_isalnum(c) || c == '+' || c == '/');
 }
 
-char *base64_decode_string(const char *str, size_t datalen) {
-	size_t	outlen = datalen / 4 * 3 + 20;
-	uint8_t*	result = calloc(outlen + 1, sizeof(char));
-	size_t result_i = 0;
-	size_t x = 0;
+char *base64_decode_string(const char *str, size_t datalen, size_t *outlen) {
+	*outlen = datalen * 3 / 4;
+	uint8_t	*result = calloc(*outlen + 1, sizeof(char));
+	size_t	result_i = 0;
+	size_t	x = 0;
 	uint8_t	char_arr4[4],
 			char_arr3[3];
 
-	for (size_t i = 0; i < datalen && (is_base64_char(str[i]) || str[i] == ' '); i++) {
-		if (str[i] == ' ')
+	for (size_t i = 0; i < datalen && (is_base64_char(str[i]) || iswhitespace(str[i]) || str[i] == '='); i++) {
+		if (iswhitespace(str[i]) || str[i] == PAD_CHAR) {
+			(*outlen)--;
 			continue;
+		}
 		char_arr4[x] = str[i];
 		++x;
 		if (x == 4) { // we found enough chars
@@ -53,6 +55,10 @@ char *base64_decode_string(const char *str, size_t datalen) {
 			++result_i;
 		}
 	}
+	for (size_t i = 0; i < *outlen; i++) {
+		dprintf(2, "%#hhx ", result[i]);
+	}
+	dprintf(2, "\n");
 	return ((char*)result);
 }
 
@@ -70,7 +76,7 @@ char *base64_decode_file(const int fd) {
 		fprintf(stderr, "Error reading file.\n");
 		exit(EXIT_FAILURE);
 	}
-	result = base64_decode_string(file, buf.st_size);
+	result = base64_decode_string(file, buf.st_size, NULL);
 	munmap(file, buf.st_size);
 	return (result);
 }

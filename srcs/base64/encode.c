@@ -20,17 +20,24 @@ uint32_t	combine_three_uint8s(const uint8_t* data, size_t i, size_t datalen) {
 	return (grand);
 }
 
-char *base64_encode_string(const char *str, size_t datalen) {
+char *base64_encode_string(const char *str, size_t datalen, size_t *outlen) {
 	const uint8_t*	data = (const uint8_t *)str;
 	size_t	pad_count = 3 - datalen % 3;
-	size_t	outlen = datalen / 3 * 4;
+
+	*outlen = datalen / 3 * 4;
 	if (datalen % 3)
-		outlen += 4;
+		*outlen += 4;
 	if (pad_count == 3)
 		pad_count = 0;
 
+	dprintf(2, "Encoding ");
+	for (size_t i = 0; i < datalen; i++) {
+		dprintf(2, "%#hhx ", str[i]);
+	}
+	dprintf(2, "\n");
+
 	size_t	x = 0;
-	uint8_t*	result = calloc(outlen + 1, sizeof(char));
+	uint8_t*	result = calloc(*outlen + 1, sizeof(char));
 
 	for (size_t i = 0; i < datalen; i += 3) {
 		uint32_t grand = combine_three_uint8s(data, i, datalen);
@@ -54,6 +61,12 @@ char *base64_encode_string(const char *str, size_t datalen) {
 		++x;
 		--pad_count;
 	}
+	dprintf(2, "becomes ");
+	for (size_t i = 0; i < datalen; i++) {
+		dprintf(2, "%#hhx ", result[i]);
+	}
+	dprintf(2, "\n");
+
 	return ((char *)result);
 }
 
@@ -71,7 +84,7 @@ char *base64_encode_file(const int fd) {
 		fprintf(stderr, "Error rading file.\n");
 		exit(EXIT_FAILURE);
 	}
-	result = base64_encode_string(file, buf.st_size);
+	result = base64_encode_string(file, buf.st_size, NULL);
 	munmap(file, buf.st_size);
 	return (result);
 }

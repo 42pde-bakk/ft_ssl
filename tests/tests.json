@@ -195,31 +195,43 @@
   ],
   "DES-ECB": [
     {
-      "command": "echo \"foo bar\" | ./ft_ssl des-ecb -k 6162636461626364 -a",
+      "command": "echo \"foo bar\" | ./ft_ssl des-ecb -K 6162636461626364 -an # The n flag is meant as no-padding",
       "expected_statuscode": 0,
       "expected_stdout": "YZF3QKaabXU=\n",
       "expected_stderr": ""
     },
     {
-      "command": "echo YZF3QKaabXU= | ./ft_ssl des-ecb -k 6162636461626364 -a -d",
+      "command": "echo YZF3QKaabXU= | ./ft_ssl des-ecb -K 6162636461626364 -a -d -n # The n flag means no-padding mode",
       "expected_statuscode": 0,
       "expected_stdout": "foo bar\n\n",
       "expected_stderr": ""
     },
     {
-      "command": "echo \"foo bad\" | ./ft_ssl des-ecb -k 6162636461626364 -a",
+      "command": "echo \"foo bar\" | ./ft_ssl des-ecb -K 6162636461626364 -a",
+      "expected_statuscode": 0,
+      "expected_stdout": "YZF3QKaabXUPfcjmfO47RQ==\n",
+      "expected_stderr": ""
+    },
+    {
+      "command": "echo \"YZF3QKaabXUPfcjmfO47RQ==\" | ./ft_ssl des-ecb -K 6162636461626364 -a -d",
+      "expected_statuscode": 0,
+      "expected_stdout": "foo bar\n\n",
+      "expected_stderr": ""
+    },
+    {
+      "command": "echo \"foo bad\" | ./ft_ssl des-ecb -K 6162636461626364 -an",
       "expected_statuscode": 0,
       "expected_stdout": "PPlElcr60EQ=\n",
       "expected_stderr": ""
     },
     {
-      "command": "echo 'PPlElcr60EQ=' | ./ft_ssl des-ecb -k 6162636461626364 -a -d",
+      "command": "echo 'PPlElcr60EQ=' | ./ft_ssl des-ecb -K 6162636461626364 -a -d -n",
       "expected_statuscode": 0,
       "expected_stdout": "foo bad\n\n",
       "expected_stderr": ""
     },
     {
-      "command": "echo -n \"multiple blocks chained together\" | ./ft_ssl des-ecb -k 6162636461626364 -a",
+      "command": "echo -n \"multiple blocks chained together\" | ./ft_ssl des-ecb -K 6162636461626364 -a -n",
       "expected_statuscode": 0,
       "expected_stdout": "DOYaTvPcuHuTYW5nM1J3gQRT+mefdzpZjmjWsrQMcWw=\n",
       "expected_stderr": ""
@@ -227,9 +239,9 @@
   ],
   "DES-CBC": [
     {
-      "command": "echo \"one deep secret\" | ./ft_ssl des-cbc -a -k 6162636461626364 -v 0011223344556677",
+      "command": "echo \"one deep secret\" | ./ft_ssl des-cbc -a -K 6162636461626364 -v 0011223344556677 -n",
       "expected_statuscode": 0,
-      "expected_stdout": "\"foo bar\"\n",
+      "expected_stdout": "zqYWONX68rWNxl7msIdGCw==\n",
       "expected_stderr": ""
     }
   ],

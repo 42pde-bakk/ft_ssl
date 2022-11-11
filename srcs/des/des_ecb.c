@@ -32,7 +32,7 @@ int des_ecb_fd(const int fd) {
 		return (EXIT_FAILURE);
 	}
 	if (g_des_flags & FLAG_BASE64 && g_des_flags & FLAG_DECODE) {
-		base = base64_decode_string(file, 0);
+		base = base64_decode_string(file, 0, NULL);
 //		str = base;
 		for (size_t i = 0; i < ft_strlen(base); i += CHUNK_SIZE_IN_BYTES) {
 			chunk = create_64bit_chunk_from_str(base + i);
@@ -60,38 +60,31 @@ int des_ecb_string(const char* str) {
 	char*			base = NULL;
 	char*			padded_str = NULL;
 
-	if (!(g_des_flags & FLAG_NO_PADDING)) {
-		uint8_t pad_amount = 8 - (datalen % 8);
-		dprintf(2, "str = %s\n", str);
-		dprintf(STDERR_FILENO, "datalen = %zu, pad_amount = %u\n", datalen, pad_amount);
+	if (!(g_des_flags & FLAG_NO_PADDING) && g_des_flags & FLAG_ENCODE) {
+		const uint8_t pad_amount = 8 - (datalen % 8);
 		padded_str = ft_calloc(datalen + pad_amount, sizeof(char));
-		ft_strlcpy(padded_str, str, datalen);
-		for (size_t i = 0; i < pad_amount; i++) {
-			padded_str[datalen + -1 + i] = (char)pad_amount;
-			dprintf(2, "padded_str[%zu]=%#hhx, should be %hhx\n", datalen + i, padded_str[datalen -1 + i], pad_amount);
+		ft_strlcpy(padded_str, str, datalen + 1);
+
+		for (uint8_t i = 0; i < pad_amount; i++) {
+			padded_str[datalen + i] = (char)pad_amount;
 		}
 		str = padded_str;
-		for (size_t i = 0; i < datalen + pad_amount + 1; i++) {
-			dprintf(2, "%c ", padded_str[i]);
-		}
-		dprintf(2, "$\n");
 		datalen += pad_amount;
-//		dprintf(2, "padded_str = %s$, %#hhx, %#hhx, %#hhx\n", padded_str, padded_str[datalen - 1], padded_str[datalen], padded_str[datalen + 1]);
 	}
 
 	if (g_des_flags & FLAG_DECODE) {
 		if (g_des_flags & FLAG_BASE64) {
-			base = base64_decode_string(str, datalen);
-//			dprintf(STDERR_FILENO, "got string %s which amounts to %s in base64, strlen = %zu\n", str, base, ft_strlen(base));
+			size_t newdatalen;
+			base = base64_decode_string(str, datalen, &newdatalen);
 			str = base;
-			datalen = ft_strlen(str);
+			datalen = newdatalen;
 		}
 		for (size_t i = 0; i < datalen; i += CHUNK_SIZE_IN_BYTES) {
 			chunk = REV64(*(uint64_t *)(str + i));
 
 			result = apply_des(chunk, key);
-//			dprintf(STDERR_FILENO, "D2: chunk = %016lX, result = %016lX\n", chunk, result);
-			add_chunk_to_buffer(result, true);
+			dprintf(STDERR_FILENO, "Decode: chunk=%016lX, result = %016lX\n", chunk, result);
+			add_chunk_to_buffer(result, false);
 		}
 
 	} else { // FLAG_ENCODE
@@ -99,7 +92,7 @@ int des_ecb_string(const char* str) {
 			chunk = create_64bit_chunk_from_str(str + i);
 
 			result = apply_des(chunk, key);
-//			dprintf(STDERR_FILENO, "E1: chunk = %016lX, result = %016lX\n", chunk, result);
+			dprintf(STDERR_FILENO, "Encode: chunk=%016lX, result = %016lX\n", chunk, result);
 			add_chunk_to_buffer(result, true);
 		}
 	}
