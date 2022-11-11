@@ -30,15 +30,8 @@ char *base64_encode_string(const char *str, size_t datalen, size_t *outlen) {
 	if (pad_count == 3)
 		pad_count = 0;
 
-	dprintf(2, "Encoding ");
-	for (size_t i = 0; i < datalen; i++) {
-		dprintf(2, "%#hhx ", str[i]);
-	}
-	dprintf(2, "\n");
-
 	size_t	x = 0;
-	uint8_t*	result = calloc(*outlen + 1, sizeof(char));
-
+	uint8_t	*result = calloc(*outlen + 1, sizeof(char));
 	for (size_t i = 0; i < datalen; i += 3) {
 		uint32_t grand = combine_three_uint8s(data, i, datalen);
 
@@ -61,12 +54,6 @@ char *base64_encode_string(const char *str, size_t datalen, size_t *outlen) {
 		++x;
 		--pad_count;
 	}
-	dprintf(2, "becomes ");
-	for (size_t i = 0; i < datalen; i++) {
-		dprintf(2, "%#hhx ", result[i]);
-	}
-	dprintf(2, "\n");
-
 	return ((char *)result);
 }
 

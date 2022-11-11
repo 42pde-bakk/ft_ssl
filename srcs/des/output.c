@@ -29,7 +29,7 @@ uint64_t REV64(uint64_t x) {
 	return (y);
 }
 
-void	create_str_from_64bit_chunk_and_output(uint64_t chunk, const int fd) {
+void create_str_from_64bit_chunk_and_output(uint64_t chunk, const int fd, const size_t write_len) {
 	char	arr[9];
 
 	ft_bzero(arr, sizeof(arr));
@@ -37,7 +37,7 @@ void	create_str_from_64bit_chunk_and_output(uint64_t chunk, const int fd) {
 		arr[i] = (char)chunk;
 		chunk >>= 8;
 	}
-	if (write(fd, arr, CHUNK_SIZE_IN_BYTES) == -1) {
+	if (write(fd, arr, write_len) == -1) {
 		fprintf(stderr, "Write failed.\n");
 		exit(EXIT_FAILURE);
 	}
@@ -55,20 +55,20 @@ void add_chunk_to_buffer(uint64_t chunk, bool should_reverse) {
 	uint64vector_pushback(chunk_vector, chunk);
 }
 
-void	remove_padding() {
+uint8_t	remove_padding() {
 	uint64_t	*last_chunk = &chunk_vector->arr[chunk_vector->size - 1];
 	uint8_t		pad_amount = *last_chunk & 0x000000FF;
 
 	if (pad_amount == 0 || pad_amount > 8) {
 		dprintf(STDERR_FILENO, "Warning, invalid padding scheme, found %#hhx.\n", pad_amount);
-		return ;
+		return (0);
 	}
 
 	dprintf(2, "pad_amount = %#hhx\n", pad_amount);
 
 	if (pad_amount == 0x8) {
 		uint64vector_delete_bypos(chunk_vector, chunk_vector->size - 1);
-		return ;
+		return (0);
 	}
 	dprintf(2, "last_chunk has value %016lX\n", *last_chunk);
 	*last_chunk = *last_chunk >> (8 * pad_amount);
@@ -77,29 +77,26 @@ void	remove_padding() {
 //		(*last_chunk)
 //	}
 	dprintf(2, "after clearing, it is %016lX\n", *last_chunk);
+	return (pad_amount);
 }
 
 void	clear_buffer(const int fd) {
-	for (size_t i = 0; i < chunk_vector->size; i++) {
-		dprintf(2, "chunk_vector->arr[%zu] = %016lX\n", i, chunk_vector->arr[i]);
-	}
+	size_t padding_removed = 0;
+
 	if (!(g_des_flags & FLAG_NO_PADDING) && g_des_flags & FLAG_DECODE) {
-		remove_padding();
+		padding_removed = remove_padding();
+		dprintf(2, "padding_removed = %zu\n", padding_removed);
 	}
 	if (g_des_flags & FLAG_BASE64 && g_des_flags & FLAG_ENCODE) {
-//		for (size_t i = 0; i < chunk_vector->size; i++) {
-//			dprintf(STDERR_FILENO, "E2: chunk %zu = %016lX (%s)\n", i, chunk_vector->arr[i], (char *)&chunk_vector->arr[i]);
-//		}
 		size_t newdatalen;
 		char* result = base64_encode_string((char *) chunk_vector->arr, chunk_vector->size * CHUNK_SIZE_IN_BYTES, &newdatalen);
 		dprintf(fd, "%s", result);
 		free(result);
 	} else {
 		for (size_t i = 0; i < chunk_vector->size; i++) {
-//			dprintf(STDERR_FILENO, "write(%d, %016lX, %d);\n", fd, chunk_vector->arr[i], CHUNK_SIZE_IN_BYTES);
 			if (g_des_flags & FLAG_DECODE)
 				chunk_vector->arr[i] = REV64(chunk_vector->arr[i]);
-			create_str_from_64bit_chunk_and_output(chunk_vector->arr[i], fd);
+			create_str_from_64bit_chunk_and_output(chunk_vector->arr[i], fd, CHUNK_SIZE_IN_BYTES - padding_removed);
 		}
 	}
 	uint64vector_destroy(chunk_vector);

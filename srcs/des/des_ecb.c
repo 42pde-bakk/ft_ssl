@@ -60,6 +60,12 @@ int des_ecb_string(const char* str) {
 	char*			base = NULL;
 	char*			padded_str = NULL;
 
+//	dprintf(2, "'%s'\n", str);
+//	for (size_t i = 0; i < datalen; i++) {
+//		dprintf(2, "%#hhx ", str[i]);
+//	}
+//	dprintf(2, "\n");
+
 	if (!(g_des_flags & FLAG_NO_PADDING) && g_des_flags & FLAG_ENCODE) {
 		const uint8_t pad_amount = 8 - (datalen % 8);
 		padded_str = ft_calloc(datalen + pad_amount, sizeof(char));
@@ -70,6 +76,11 @@ int des_ecb_string(const char* str) {
 		}
 		str = padded_str;
 		datalen += pad_amount;
+//		for (size_t i = 0; i < datalen; i++) {
+//			dprintf(2, "%#hhx ", str[i]);
+//		}
+//		dprintf(2, "\n");
+
 	}
 
 	if (g_des_flags & FLAG_DECODE) {
@@ -83,7 +94,7 @@ int des_ecb_string(const char* str) {
 			chunk = REV64(*(uint64_t *)(str + i));
 
 			result = apply_des(chunk, key);
-			dprintf(STDERR_FILENO, "Decode: chunk=%016lX, result = %016lX\n", chunk, result);
+//			dprintf(STDERR_FILENO, "Decode: chunk=%016lX, result = %016lX\n", chunk, result);
 			add_chunk_to_buffer(result, false);
 		}
 
@@ -92,7 +103,7 @@ int des_ecb_string(const char* str) {
 			chunk = create_64bit_chunk_from_str(str + i);
 
 			result = apply_des(chunk, key);
-			dprintf(STDERR_FILENO, "Encode: chunk=%016lX, result = %016lX\n", chunk, result);
+//			dprintf(STDERR_FILENO, "Encode: chunk=%016lX, result = %016lX\n", chunk, result);
 			add_chunk_to_buffer(result, true);
 		}
 	}

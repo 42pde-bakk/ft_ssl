@@ -3,62 +3,52 @@
     {
       "command": "echo \"42 is nice\" | ./ft_ssl md5",
       "expected_statuscode": 0,
-      "expected_stdout": "(stdin)= 35f1d6de0302e2086a4e472266efb3a9\n",
-      "expected_stderr": ""
+      "expected_stdout": "(stdin)= 35f1d6de0302e2086a4e472266efb3a9\n"
     },
     {
       "command": "echo \"42 is nice\" | ./ft_ssl md5 -p",
       "expected_statuscode": 0,
-      "expected_stdout": "(\"42 is nice\\n\")= 35f1d6de0302e2086a4e472266efb3a9\n",
-      "expected_stderr": ""
+      "expected_stdout": "(\"42 is nice\\n\")= 35f1d6de0302e2086a4e472266efb3a9\n"
     },
     {
       "command": "echo \"Pity the living.\" | ./ft_ssl md5 -q -r",
       "expected_statuscode": 0,
-      "expected_stdout": "e20c3b973f63482a778f3fd1869b7f25\n",
-      "expected_stderr": ""
+      "expected_stdout": "e20c3b973f63482a778f3fd1869b7f25\n"
     },
     {
       "command": "./ft_ssl md5 /tmp/file",
       "expected_statuscode": 0,
-      "expected_stdout": "MD5 (/tmp/file) = 53d53ea94217b259c11a5a2d104ec58a\n",
-      "expected_stderr": ""
+      "expected_stdout": "MD5 (/tmp/file) = 53d53ea94217b259c11a5a2d104ec58a\n"
     },
     {
       "command": "./ft_ssl md5 -r /tmp/file",
       "expected_statuscode": 0,
-      "expected_stdout": "53d53ea94217b259c11a5a2d104ec58a /tmp/file\n",
-      "expected_stderr": ""
+      "expected_stdout": "53d53ea94217b259c11a5a2d104ec58a /tmp/file\n"
     },
     {
       "command": "./ft_ssl md5 -s \"pity those that aren't following baerista on spotify.\"",
       "expected_statuscode": 0,
-      "expected_stdout": "MD5 (\"pity those that aren't following baerista on spotify.\") = a3c990a1964705d9bf0e602f44572f5f\n",
-      "expected_stderr": ""
+      "expected_stdout": "MD5 (\"pity those that aren't following baerista on spotify.\") = a3c990a1964705d9bf0e602f44572f5f\n"
     },
     {
       "command": "echo \"be sure to handle edge cases carefully\" | ./ft_ssl md5 -p /tmp/file",
       "expected_statuscode": 0,
-      "expected_stdout": "(\"be sure to handle edge cases carefully\\n\")= 3553dc7dc5963b583c056d1b9fa3349c\nMD5 (/tmp/file) = 53d53ea94217b259c11a5a2d104ec58a\n",
-      "expected_stderr": ""
+      "expected_stdout": "(\"be sure to handle edge cases carefully\\n\")= 3553dc7dc5963b583c056d1b9fa3349c\nMD5 (/tmp/file) = 53d53ea94217b259c11a5a2d104ec58a\n"
     },
     {
       "command": "echo \"some of this will not make sense at first\" | ./ft_ssl md5 /tmp/file",
       "expected_statuscode": 0,
-      "expected_stdout": "MD5 (/tmp/file) = 53d53ea94217b259c11a5a2d104ec58a\n",
-      "expected_stderr": ""
+      "expected_stdout": "MD5 (/tmp/file) = 53d53ea94217b259c11a5a2d104ec58a\n"
     },
     {
       "command": "echo \"but eventually you will understand\" | ./ft_ssl md5 -p -r /tmp/file",
       "expected_statuscode": 0,
-      "expected_stdout": "(\"but eventually you will understand\\n\")= dcdd84e0f635694d2a943fa8d3905281\n53d53ea94217b259c11a5a2d104ec58a /tmp/file\n",
-      "expected_stderr": ""
+      "expected_stdout": "(\"but eventually you will understand\\n\")= dcdd84e0f635694d2a943fa8d3905281\n53d53ea94217b259c11a5a2d104ec58a /tmp/file\n"
     },
     {
       "command": "echo \"GL HF let's go\" | ./ft_ssl md5 -p -s \"foo\" /tmp/file",
       "expected_statuscode": 0,
-      "expected_stdout": "(\"GL HF let's go\\n\")= d1e3cc342b6da09480b27ec57ff243e2\nMD5 (\"foo\") = acbd18db4cc2f85cedef654fccc4a4d8\nMD5 (/tmp/file) = 53d53ea94217b259c11a5a2d104ec58a\n",
-      "expected_stderr": ""
+      "expected_stdout": "(\"GL HF let's go\\n\")= d1e3cc342b6da09480b27ec57ff243e2\nMD5 (\"foo\") = acbd18db4cc2f85cedef654fccc4a4d8\nMD5 (/tmp/file) = 53d53ea94217b259c11a5a2d104ec58a\n"
     },
     {
       "command": " echo \"one more thing\" | ./ft_ssl md5 -r -p -s \"foo\" /tmp/file -s \"bar\"",
@@ -69,180 +59,177 @@
     {
       "command": "echo \"just to be extra clear\" | ./ft_ssl md5 -r -q -p -s \"foo\" /tmp/file",
       "expected_statuscode": 0,
-      "expected_stdout": "just to be extra clear\n3ba35f1ea0d170cb3b9a752e3360286c\nacbd18db4cc2f85cedef654fccc4a4d8\n53d53ea94217b259c11a5a2d104ec58a\n",
-      "expected_stderr": ""
+      "expected_stdout": "just to be extra clear\n3ba35f1ea0d170cb3b9a752e3360286c\nacbd18db4cc2f85cedef654fccc4a4d8\n53d53ea94217b259c11a5a2d104ec58a\n"
     },
     {
       "command": "./ft_ssl md5 -q -s \"be sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\"",
       "expected_statuscode": 0,
-      "expected_stdout": "10aa2c6851c8a4f61b100dc32dd8d4f3\n",
-      "expected_stderr": ""
+      "expected_stdout": "10aa2c6851c8a4f61b100dc32dd8d4f3\n"
     }
   ],
   "SHA256": [
     {
       "command": "./ft_ssl sha256 -q /tmp/website",
       "expected_statuscode": 0,
-      "expected_stdout": "1ceb55d2845d9dd98557b50488db12bbf51aaca5aa9c1199eb795607a2457daf\n",
-      "expected_stderr": ""
+      "expected_stdout": "1ceb55d2845d9dd98557b50488db12bbf51aaca5aa9c1199eb795607a2457daf\n"
     },
     {
       "command": "./ft_ssl sha256 -s \"\"",
       "expected_statuscode": 0,
-      "expected_stdout": "SHA256 (\"\") = e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\n",
-      "expected_stderr": ""
+      "expected_stdout": "SHA256 (\"\") = e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\n"
     },
     {
       "command": "./ft_ssl sha256 -s \"The quick brown fox jumps over the lazy dog\"",
       "expected_statuscode": 0,
-      "expected_stdout": "SHA256 (\"The quick brown fox jumps over the lazy dog\") = d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592\n",
-      "expected_stderr": ""
+      "expected_stdout": "SHA256 (\"The quick brown fox jumps over the lazy dog\") = d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592\n"
     },
     {
       "command": "./ft_ssl sha256 -s \"The quick brown fox jumps over the lazy dog.\"",
       "expected_statuscode": 0,
-      "expected_stdout": "SHA256 (\"The quick brown fox jumps over the lazy dog.\") = ef537f25c895bfa782526529a9b63d97aa631564d5d789c2b765448c8635fb6c\n",
-      "expected_stderr": ""
+      "expected_stdout": "SHA256 (\"The quick brown fox jumps over the lazy dog.\") = ef537f25c895bfa782526529a9b63d97aa631564d5d789c2b765448c8635fb6c\n"
     },
     {
       "command": "echo \"be sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\" | ./ft_ssl sha256",
       "expected_statuscode": 0,
-      "expected_stdout": "(stdin)= ffa3b3e6f150b593ce30f0e8ba7ac98236c0dedbe75f41270b03419cc5ac047f\n",
-      "expected_stderr": ""
+      "expected_stdout": "(stdin)= ffa3b3e6f150b593ce30f0e8ba7ac98236c0dedbe75f41270b03419cc5ac047f\n"
     },
     {
       "command": "./ft_ssl sha256 -q -s \"IjustWantAStringOfSixtyCharactersForTestingPurposesFillerIci\"",
       "expected_statuscode": 0,
-      "expected_stdout": "f3e9e0c3f5759afa6905192029841156392cd4b87f999efde158d596828c1a57\n",
-      "expected_stderr": ""
+      "expected_stdout": "f3e9e0c3f5759afa6905192029841156392cd4b87f999efde158d596828c1a57\n"
     }
   ],
   "SHA224": [
     {
       "command": "./ft_ssl sha224 -q /tmp/website",
       "expected_statuscode": 0,
-      "expected_stdout": "20812c3a7017f98719f01f1ae221eb9ec89f4589fb4c5907fee3daff\n",
-      "expected_stderr": ""
+      "expected_stdout": "20812c3a7017f98719f01f1ae221eb9ec89f4589fb4c5907fee3daff\n"
     },
     {
       "command": "./ft_ssl sha224 -s \"\"",
       "expected_statuscode": 0,
-      "expected_stdout": "SHA224 (\"\") = d14a028c2a3a2bc9476102bb288234c415a2b01f828ea62ac5b3e42f\n",
-      "expected_stderr": ""
+      "expected_stdout": "SHA224 (\"\") = d14a028c2a3a2bc9476102bb288234c415a2b01f828ea62ac5b3e42f\n"
     },
     {
       "command": "./ft_ssl sha224 -s \"The quick brown fox jumps over the lazy dog\"",
       "expected_statuscode": 0,
-      "expected_stdout": "SHA224 (\"The quick brown fox jumps over the lazy dog\") = 730e109bd7a8a32b1cb9d9a09aa2325d2430587ddbc0c38bad911525\n",
-      "expected_stderr": ""
+      "expected_stdout": "SHA224 (\"The quick brown fox jumps over the lazy dog\") = 730e109bd7a8a32b1cb9d9a09aa2325d2430587ddbc0c38bad911525\n"
     },
     {
       "command": "./ft_ssl sha224 -s \"The quick brown fox jumps over the lazy dog.\"",
       "expected_statuscode": 0,
-      "expected_stdout": "SHA224 (\"The quick brown fox jumps over the lazy dog.\") = 619cba8e8e05826e9b8c519c0a5c68f4fb653e8a3d8aa04bb2c8cd4c\n",
-      "expected_stderr": ""
+      "expected_stdout": "SHA224 (\"The quick brown fox jumps over the lazy dog.\") = 619cba8e8e05826e9b8c519c0a5c68f4fb653e8a3d8aa04bb2c8cd4c\n"
     },
     {
       "command": "echo \"be sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\tbe sure to handle edge cases carefully\" | ./ft_ssl sha224",
       "expected_statuscode": 0,
-      "expected_stdout": "(stdin)= 1f6150aee88b59743bc33f5f2917d03c0db2711c4bb54dee4d30791e\n",
-      "expected_stderr": ""
+      "expected_stdout": "(stdin)= 1f6150aee88b59743bc33f5f2917d03c0db2711c4bb54dee4d30791e\n"
     },
     {
       "command": "./ft_ssl sha224 -q -s \"IjustWantAStringOfSixtyCharactersForTestingPurposesFillerIci\"",
       "expected_statuscode": 0,
-      "expected_stdout": "4f16408447c191f30cc7177a6f423cda2953d5e1202a98c49c55b27b\n",
-      "expected_stderr": ""
+      "expected_stdout": "4f16408447c191f30cc7177a6f423cda2953d5e1202a98c49c55b27b\n"
     }
   ],
   "BASE64": [
     {
       "command": "echo toto | ./ft_ssl base64 -e",
       "expected_statuscode": 0,
-      "expected_stdout": "dG90bwo=\n",
-      "expected_stderr": ""
+      "expected_stdout": "dG90bwo=\n"
     },
     {
       "command": "echo -n toto | ./ft_ssl base64 -e",
       "expected_statuscode": 0,
-      "expected_stdout": "dG90bw==\n",
-      "expected_stderr": ""
+      "expected_stdout": "dG90bw==\n"
     },
     {
       "command": "echo 'dG90bw==' | ./ft_ssl base64 -d",
       "expected_statuscode": 0,
-      "expected_stdout": "toto\n",
-      "expected_stderr": ""
+      "expected_stdout": "toto\n"
     },
     {
       "command": "echo 'dG 90b     w==' | ./ft_ssl base64 -d",
       "expected_statuscode": 0,
-      "expected_stdout": "toto\n",
-      "expected_stderr": ""
+      "expected_stdout": "toto\n"
     },
     {
       "command": "echo -n foobar | ./ft_ssl base64 -e",
       "expected_statuscode": 0,
-      "expected_stdout": "Zm9vYmFy\n",
-      "expected_stderr": ""
+      "expected_stdout": "Zm9vYmFy\n"
     },
     {
       "command": "echo -n Zm9vYmFy | ./ft_ssl base64 -d",
       "expected_statuscode": 0,
-      "expected_stdout": "foobar\n",
-      "expected_stderr": ""
+      "expected_stdout": "foobar\n"
     }
   ],
   "DES-ECB": [
     {
       "command": "echo \"foo bar\" | ./ft_ssl des-ecb -K 6162636461626364 -an # The n flag is meant as no-padding",
       "expected_statuscode": 0,
-      "expected_stdout": "YZF3QKaabXU=\n",
-      "expected_stderr": ""
+      "expected_stdout": "YZF3QKaabXU=\n"
     },
     {
       "command": "echo YZF3QKaabXU= | ./ft_ssl des-ecb -K 6162636461626364 -a -d -n # The n flag means no-padding mode",
       "expected_statuscode": 0,
-      "expected_stdout": "foo bar\n\n",
-      "expected_stderr": ""
+      "expected_stdout": "foo bar\n\n"
     },
     {
       "command": "echo \"foo bar\" | ./ft_ssl des-ecb -K 6162636461626364 -a",
       "expected_statuscode": 0,
-      "expected_stdout": "YZF3QKaabXUPfcjmfO47RQ==\n",
-      "expected_stderr": ""
+      "expected_stdout": "YZF3QKaabXUwxNg3obhMfw==\n"
     },
     {
-      "command": "echo \"YZF3QKaabXUPfcjmfO47RQ==\" | ./ft_ssl des-ecb -K 6162636461626364 -a -d",
+      "command": "echo \"YZF3QKaabXUwxNg3obhMfw==\" | ./ft_ssl des-ecb -K 6162636461626364 -a -d",
       "expected_statuscode": 0,
-      "expected_stdout": "foo bar\n\n",
-      "expected_stderr": ""
+      "expected_stdout": "foo bar\n\n"
     },
     {
       "command": "echo \"foo bad\" | ./ft_ssl des-ecb -K 6162636461626364 -an",
       "expected_statuscode": 0,
-      "expected_stdout": "PPlElcr60EQ=\n",
-      "expected_stderr": ""
+      "expected_stdout": "PPlElcr60EQ=\n"
     },
     {
-      "command": "echo 'PPlElcr60EQ=' | ./ft_ssl des-ecb -K 6162636461626364 -a -d -n",
+      "command": "echo \"PPlElcr60EQ=\" | ./ft_ssl des-ecb -K 6162636461626364 -and",
       "expected_statuscode": 0,
-      "expected_stdout": "foo bad\n\n",
-      "expected_stderr": ""
+      "expected_stdout": "foo bad\n\n"
+    },
+    {
+      "command": "echo \"foo bad\" | ./ft_ssl des-ecb -K 6162636461626364 -a",
+      "expected_statuscode": 0,
+      "expected_stdout": "PPlElcr60EQwxNg3obhMfw==\n"
+    },
+    {
+      "command": "echo \"PPlElcr60EQwxNg3obhMfw==\" | ./ft_ssl des-ecb -K 6162636461626364 -a -d",
+      "expected_statuscode": 0,
+      "expected_stdout": "foo bad\n\n"
+    },
+    {
+      "command": "echo \"42\" | ./ft_ssl des-ecb -K 6162636461626364 -a",
+      "expected_statuscode": 0,
+      "expected_stdout": "2EQzf0CtEPU=\n"
+    },
+    {
+      "command": "echo \"2EQzf0CtEPU=\" | ./ft_ssl des-ecb -K 6162636461626364 -ad",
+      "expected_statuscode": 0,
+      "expected_stdout": "42\n\n"
     },
     {
       "command": "echo -n \"multiple blocks chained together\" | ./ft_ssl des-ecb -K 6162636461626364 -a -n",
       "expected_statuscode": 0,
-      "expected_stdout": "DOYaTvPcuHuTYW5nM1J3gQRT+mefdzpZjmjWsrQMcWw=\n",
-      "expected_stderr": ""
+      "expected_stdout": "DOYaTvPcuHuTYW5nM1J3gQRT+mefdzpZjmjWsrQMcWw=\n"
+    },
+    {
+      "command": "echo -n \"multiple blocks chained together\" | ./ft_ssl des-ecb -K 6162636461626364 -a",
+      "expected_statuscode": 0,
+      "expected_stdout": "DOYaTvPcuHuTYW5nM1J3gQRT+mefdzpZjmjWsrQMcWwwxNg3obhMfw==\n"
     }
   ],
   "DES-CBC": [
     {
       "command": "echo \"one deep secret\" | ./ft_ssl des-cbc -a -K 6162636461626364 -v 0011223344556677 -n",
       "expected_statuscode": 0,
-      "expected_stdout": "zqYWONX68rWNxl7msIdGCw==\n",
-      "expected_stderr": ""
+      "expected_stdout": "zqYWONX68rWNxl7msIdGCw==\n"
     }
   ],
   "Invalid": [

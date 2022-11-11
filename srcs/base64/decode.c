@@ -55,10 +55,7 @@ char *base64_decode_string(const char *str, size_t datalen, size_t *outlen) {
 			++result_i;
 		}
 	}
-	for (size_t i = 0; i < *outlen; i++) {
-		dprintf(2, "%#hhx ", result[i]);
-	}
-	dprintf(2, "\n");
+	*outlen = result_i;
 	return ((char*)result);
 }
 
