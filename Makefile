@@ -74,3 +74,5 @@ debug:
 bonus: BONUS=1
 bonus:
 	$(MAKE) re
+
+.PHONY: all clean fclean re bonus
