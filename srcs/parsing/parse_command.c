@@ -78,9 +78,9 @@ const t_handler handlers[] = {
 			.print_filename = false
 		},
 		{
-			.cmd = "des-pcap",
-			.handle_file = des_pcap_fd,
-			.handle_string = des_pcap_string,
+			.cmd = "des-pcbc",
+			.handle_file = des_pcbc_fd,
+			.handle_string = des_pcbc_string,
 			.handle_flags = parse_flags_des,
 			.print_filename = false
 		},
