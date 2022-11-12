@@ -59,6 +59,13 @@ uint8_t	remove_padding() {
 	uint64_t	*last_chunk = &chunk_vector->arr[chunk_vector->size - 1];
 	uint8_t		pad_amount = *last_chunk & 0x000000FF;
 
+	dprintf(2, "chunk = %#016lX\n", *last_chunk);
+	for (size_t i = 0; i < pad_amount && i < 8; i++) {
+		uint8_t c = (*last_chunk >> (8 * i)) & 0xFF;
+		dprintf(2, "(chunk >> (8 * %zu) & 0xFF = %#hhx\n", i, c);
+	}
+
+
 	if (pad_amount == 0 || pad_amount > 8) {
 		dprintf(STDERR_FILENO, "Warning, invalid padding scheme, found %#hhx.\n", pad_amount);
 		return (0);
@@ -82,17 +89,17 @@ uint8_t	remove_padding() {
 void clear_buffer(const int fd, const bool reverse_decode) {
 	size_t padding_removed = 0;
 
-	if (!(g_des_flags & FLAG_NO_PADDING) && g_des_flags & FLAG_DECODE) {
+	if (!(g_des_flags & FLAG_NO_PADDING) && g_des_flags & FLAG_DECRYPT) {
 		padding_removed = remove_padding();
 	}
-	if (g_des_flags & FLAG_BASE64 && g_des_flags & FLAG_ENCODE) {
+	if (g_des_flags & FLAG_BASE64 && g_des_flags & FLAG_ENCRYPT) {
 		size_t newdatalen;
 		char* result = base64_encode_string((char *) chunk_vector->arr, chunk_vector->size * CHUNK_SIZE_IN_BYTES, &newdatalen);
 		dprintf(fd, "%s", result);
 		free(result);
 	} else {
 		for (size_t i = 0; i < chunk_vector->size; i++) {
-			if (g_des_flags & FLAG_DECODE && reverse_decode)
+			if (g_des_flags & FLAG_DECRYPT && reverse_decode)
 				chunk_vector->arr[i] = REV64(chunk_vector->arr[i]);
 			create_str_from_64bit_chunk_and_output(chunk_vector->arr[i], fd, CHUNK_SIZE_IN_BYTES - padding_removed);
 		}

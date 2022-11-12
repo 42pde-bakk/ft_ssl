@@ -15,22 +15,21 @@
 
 static int des_ctr_handler(const char* str, size_t length) {
 	const uint64_t	key = get_key();
-	uint64_t		chunk,
-					result,
+	uint64_t		ciphertext,
+					plaintext,
 					nonce;
 	char*			base = NULL;
 	char*			padded_str = NULL;
 
-
-
 	if (!(g_des_flags & FLAG_INITVECTOR) || !g_initialization_vector) {
 		dprintf(STDERR_FILENO, "For CTR mode please provide the nonce with the -v option.\n");
+		exit(EXIT_FAILURE);
 	}
 	nonce = create_64bit_chunk_from_hexstr(g_initialization_vector);
 	if (g_des_flags & FLAG_SHOW_KEY)
 		dprintf(STDERR_FILENO, "nonce= %016lX\n", nonce);
 
-	if (!(g_des_flags & FLAG_NO_PADDING) && g_des_flags & FLAG_ENCODE) {
+	if (!(g_des_flags & FLAG_NO_PADDING) && g_des_flags & FLAG_ENCRYPT) {
 		const uint8_t pad_amount = 8 - (length % 8);
 		padded_str = ft_calloc(length + pad_amount, sizeof(char));
 		ft_strlcpy(padded_str, str, length + 1);
@@ -42,7 +41,7 @@ static int des_ctr_handler(const char* str, size_t length) {
 		length += pad_amount;
 	}
 
-	if (g_des_flags & FLAG_DECODE) {
+	if (g_des_flags & FLAG_DECRYPT) {
 		if (g_des_flags & FLAG_BASE64) {
 			size_t newdatalen;
 			base = base64_decode_string(str, length, &newdatalen);
@@ -50,23 +49,21 @@ static int des_ctr_handler(const char* str, size_t length) {
 			length = newdatalen;
 		}
 		unsigned int tmpflags = g_des_flags;
-		g_des_flags = FLAG_ENCODE;
+		g_des_flags = FLAG_ENCRYPT;
 		for (size_t i = 0; i < length; i += CHUNK_SIZE_IN_BYTES) {
-			chunk = REV64(*(uint64_t *)(str + i));
+			ciphertext = REV64(*(uint64_t *)(str + i));
 
-			result = apply_des(nonce ^ i, key);
-			result = result ^ chunk;
-			add_chunk_to_buffer(result, true);
+			plaintext = apply_des(nonce ^ i, key) ^ ciphertext;
+			add_chunk_to_buffer(plaintext, true);
 		}
 		g_des_flags = tmpflags;
 
-	} else { // FLAG_ENCODE
+	} else { // FLAG_ENCRYPT
 		for (size_t i = 0; i < length; i += CHUNK_SIZE_IN_BYTES) {
-			chunk = create_64bit_chunk_from_str(str + i);
+			plaintext = create_64bit_chunk_from_str(str + i);
 
-			result = apply_des(nonce ^ i, key);
-			result = result ^ chunk;
-			add_chunk_to_buffer(result, true);
+			ciphertext = apply_des(nonce ^ i, key) ^ plaintext;
+			add_chunk_to_buffer(ciphertext, true);
 		}
 	}
 

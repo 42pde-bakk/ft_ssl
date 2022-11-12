@@ -16,12 +16,12 @@
 
 int des_ecb_handler(const char* str, size_t length) {
 	const uint64_t	key = get_key();
-	uint64_t		chunk,
-					result;
+	uint64_t		ciphertext,
+					plaintext;
 	char*			base = NULL;
 	char*			padded_str = NULL;
 
-	if (!(g_des_flags & FLAG_NO_PADDING) && g_des_flags & FLAG_ENCODE) {
+	if (!(g_des_flags & FLAG_NO_PADDING) && g_des_flags & FLAG_ENCRYPT) {
 		const uint8_t pad_amount = 8 - (length % 8);
 		padded_str = ft_calloc(length + pad_amount, sizeof(char));
 		ft_strlcpy(padded_str, str, length + 1);
@@ -33,7 +33,7 @@ int des_ecb_handler(const char* str, size_t length) {
 		length += pad_amount;
 	}
 
-	if (g_des_flags & FLAG_DECODE) {
+	if (g_des_flags & FLAG_DECRYPT) {
 		if (g_des_flags & FLAG_BASE64) {
 			size_t newdatalen;
 			base = base64_decode_string(str, length, &newdatalen);
@@ -41,18 +41,18 @@ int des_ecb_handler(const char* str, size_t length) {
 			length = newdatalen;
 		}
 		for (size_t i = 0; i < length; i += CHUNK_SIZE_IN_BYTES) {
-			chunk = REV64(*(uint64_t *)(str + i));
+			ciphertext = REV64(*(uint64_t *)(str + i));
 
-			result = apply_des(chunk, key);
-			add_chunk_to_buffer(result, false);
+			plaintext = apply_des(ciphertext, key);
+			add_chunk_to_buffer(plaintext, false);
 		}
 
-	} else { // FLAG_ENCODE
+	} else { // FLAG_ENCRYPT
 		for (size_t i = 0; i < length; i += CHUNK_SIZE_IN_BYTES) {
-			chunk = create_64bit_chunk_from_str(str + i);
+			plaintext = create_64bit_chunk_from_str(str + i);
 
-			result = apply_des(chunk, key);
-			add_chunk_to_buffer(result, true);
+			ciphertext = apply_des(plaintext, key);
+			add_chunk_to_buffer(ciphertext, true);
 		}
 	}
 
@@ -140,12 +140,12 @@ void	test() {
 	for (size_t i = 0; i < 16; i++) {
 		g_des_flags = 0;
 		if (i % 2 == 0) {
-			g_des_flags |= FLAG_ENCODE;
+			g_des_flags |= FLAG_ENCRYPT;
 			res = apply_des(res, res);
 			printf("E: %016lx\n", res);
 		}
 		else {
-			g_des_flags |= FLAG_DECODE;
+			g_des_flags |= FLAG_DECRYPT;
 			res = apply_des(res, res);
 			printf("D: %016lx\n", res);
 		}

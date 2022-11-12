@@ -15,19 +15,21 @@
 
 int des_cbc_handler(const char* str, size_t length) {
 	const uint64_t	key = get_key();
-	uint64_t		chunk,
-					result;
+	uint64_t		ciphertext,
+					plaintext,
+					iv;
 	char*			base = NULL;
 	char*			padded_str = NULL;
 
-	if (g_des_flags & FLAG_INITVECTOR && g_initialization_vector) {
-		result = create_64bit_chunk_from_hexstr(g_initialization_vector);
-		chunk = create_64bit_chunk_from_hexstr(g_initialization_vector);
+	if (!(g_des_flags & FLAG_INITVECTOR) || !g_initialization_vector) {
+		dprintf(STDERR_FILENO, "iv undefined\n");
+		return (EXIT_FAILURE);
 	}
+	iv = create_64bit_chunk_from_hexstr(g_initialization_vector);
 	if (g_des_flags & FLAG_SHOW_KEY)
-		dprintf(STDERR_FILENO, "iv= %016lX\n", result);
+		dprintf(STDERR_FILENO, "iv =%016lX\n", iv);
 
-	if (!(g_des_flags & FLAG_NO_PADDING) && g_des_flags & FLAG_ENCODE) {
+	if (!(g_des_flags & FLAG_NO_PADDING) && g_des_flags & FLAG_ENCRYPT) {
 		const uint8_t pad_amount = 8 - (length % 8);
 		padded_str = ft_calloc(length + pad_amount, sizeof(char));
 		ft_strlcpy(padded_str, str, length + 1);
@@ -39,7 +41,7 @@ int des_cbc_handler(const char* str, size_t length) {
 		length += pad_amount;
 	}
 
-	if (g_des_flags & FLAG_DECODE) {
+	if (g_des_flags & FLAG_DECRYPT) {
 		if (g_des_flags & FLAG_BASE64) {
 			size_t newdatalen;
 			base = base64_decode_string(str, length, &newdatalen);
@@ -47,20 +49,20 @@ int des_cbc_handler(const char* str, size_t length) {
 			length = newdatalen;
 		}
 		for (size_t i = 0; i < length; i += CHUNK_SIZE_IN_BYTES) {
-			uint64_t old = chunk;
-			chunk = REV64(*(uint64_t *)(str + i));
+			ciphertext = REV64(*(uint64_t *)(str + i));
 
-			result = apply_des(chunk, key) ^ old;
-			add_chunk_to_buffer(result, true);
+			plaintext = apply_des(ciphertext, key) ^ iv;
+			add_chunk_to_buffer(plaintext, true);
+			iv = ciphertext;
 		}
 
-	} else { // FLAG_ENCODE
+	} else { // FLAG_ENCRYPT
 		for (size_t i = 0; i < length; i += CHUNK_SIZE_IN_BYTES) {
-			uint64_t old = result;
-			chunk = create_64bit_chunk_from_str(str + i);
+			plaintext = create_64bit_chunk_from_str(str + i);
 
-			result = apply_des(chunk ^ old, key);
-			add_chunk_to_buffer(result, true);
+			ciphertext = apply_des(plaintext ^ iv, key);
+			add_chunk_to_buffer(ciphertext, true);
+			iv = ciphertext;
 		}
 	}
 

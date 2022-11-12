@@ -37,11 +37,11 @@ unsigned int parse_flags_base64(int argc, char** argv, unsigned int* file_start_
 		switch (opt) {
 			case 'D':
 			case 'd':
-				g_base64_flags |= FLAG_DECODE;
+				g_base64_flags |= FLAG_DECRYPT;
 				break ;
 			case 'E':
 			case 'e':
-				g_base64_flags |= FLAG_ENCODE;
+				g_base64_flags |= FLAG_ENCRYPT;
 				break ;
 			case 'i':
 				g_base64_flags |= FLAG_INPUTFILE;
@@ -76,11 +76,11 @@ unsigned int parse_flags_base64(int argc, char** argv, unsigned int* file_start_
 				return ((unsigned int)-1);
 		}
 	}
-	if (g_base64_flags & FLAG_DECODE && g_base64_flags & FLAG_ENCODE) {
+	if (g_base64_flags & FLAG_DECRYPT && g_base64_flags & FLAG_ENCRYPT) {
 		fprintf(stderr, "what is going on? Decode and encode!?\n");
 	}
-	if (!(g_base64_flags & FLAG_DECODE))
-		g_base64_flags |= FLAG_ENCODE;
+	if (!(g_base64_flags & FLAG_DECRYPT))
+		g_base64_flags |= FLAG_ENCRYPT;
 	if (file_start_idx) {
 		*file_start_idx = optind + 1;
 	}

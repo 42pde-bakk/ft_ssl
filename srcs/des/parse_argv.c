@@ -55,11 +55,11 @@ unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx
 				break ;
 			case 'D':
 			case 'd':
-				g_des_flags |= FLAG_DECODE;
+				g_des_flags |= FLAG_DECRYPT;
 				break ;
 			case 'E':
 			case 'e':
-				g_des_flags |= FLAG_ENCODE;
+				g_des_flags |= FLAG_ENCRYPT;
 				break ;
 			case 'i':
 				g_des_flags |= FLAG_INPUTFILE;
@@ -122,9 +122,9 @@ unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx
 				return ((unsigned int)-1);
 		}
 	}
-	if (!(g_des_flags & FLAG_DECODE))
-		g_des_flags |= FLAG_ENCODE;
-	if (g_des_flags & FLAG_DECODE && g_des_flags & FLAG_ENCODE) {
+	if (!(g_des_flags & FLAG_DECRYPT))
+		g_des_flags |= FLAG_ENCRYPT;
+	if (g_des_flags & FLAG_DECRYPT && g_des_flags & FLAG_ENCRYPT) {
 		fprintf(stderr, "what is going on? Decode and encode!?\n");
 	}
 	if (file_start_idx) {

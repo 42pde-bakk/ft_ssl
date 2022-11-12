@@ -12,7 +12,7 @@
 int base64_fd(const int fd) {
 	char*	result;
 
-	if (g_base64_flags & FLAG_ENCODE) {
+	if (g_base64_flags & FLAG_ENCRYPT) {
 		result = base64_encode_file(fd);
 	} else {
 		result = base64_decode_file(fd);
@@ -27,7 +27,7 @@ int base64_string(const char* str) {
 	size_t	str_len = ft_strlen(str);
 	size_t	output_len;
 
-	if (g_base64_flags & FLAG_DECODE) {
+	if (g_base64_flags & FLAG_DECRYPT) {
 		result = base64_decode_string(str, str_len, &output_len);
 	} else {
 		result = base64_encode_string(str, str_len, &output_len);
