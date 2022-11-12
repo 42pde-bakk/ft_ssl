@@ -78,6 +78,13 @@ const t_handler handlers[] = {
 			.print_filename = false
 		},
 		{
+			.cmd = "des-pcap",
+			.handle_file = des_pcap_fd,
+			.handle_string = des_pcap_string,
+			.handle_flags = parse_flags_des,
+			.print_filename = false
+		},
+		{
 			.cmd = NULL
 		}
 };

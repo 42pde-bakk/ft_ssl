@@ -50,4 +50,7 @@ int des_ofb_string(const char* str);
 int des_cfb_fd(int fd);
 int des_cfb_string(const char* str);
 
+int des_pcap_fd(int fd);
+int des_pcap_string(const char* str);
+
 #endif //FT_SSL_FUNC_PTRS_H
