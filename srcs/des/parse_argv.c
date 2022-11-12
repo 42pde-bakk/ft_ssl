@@ -12,20 +12,19 @@
 
 const char*	g_infile = NULL;
 const char*	g_outfile = NULL;
-int			g_outfd = 1;
 const char*	g_key = NULL;
 const char*	g_password = NULL;
 const char*	g_salt = NULL;
 const char*	g_initialization_vector = NULL;
 unsigned int	g_des_flags = 0;
 
-static int	create_outfd(const char* const pathname) {
+static int	create_fd(const char* const pathname, int* fd_store) {
 	int fd;
 
 	fd = open(pathname, O_RDONLY);
 	if (fd == -1)
 		return (1);
-	g_outfd = fd;
+	*fd_store = fd;
 	return (0);
 }
 
@@ -79,7 +78,7 @@ unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx
 				}
 				g_des_flags |= FLAG_OUTPUTFILE;
 				g_outfile = optarg;
-				if (create_outfd(g_outfile)) {
+				if (create_fd(g_outfile, &g_outfd)) {
 					fprintf(stderr, "Error opening outfile '%s'.\n", g_outfile);
 					return ((unsigned int)-1);
 				}

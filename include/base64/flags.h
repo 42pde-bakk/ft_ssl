@@ -12,6 +12,8 @@
 #define FLAG_OUTPUTFILE			0b0001
 
 extern unsigned int g_base64_flags;
+extern int 	g_infd ;
+extern int	g_outfd;
 
 
 #endif //FT_SSL_FLAGS_H

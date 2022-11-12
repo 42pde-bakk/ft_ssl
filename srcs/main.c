@@ -2,7 +2,6 @@
 // Created by Peer de Bakker on 7/4/22.
 //
 
-#include "ft_ssl.h"
 #include "parsing.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,6 +15,9 @@
 #include "libft.h"
 
 unsigned int g_flags;
+int g_infd = 0;
+int	g_outfd = 1;
+
 
 static int	open_file(const char *filename) {
 	struct stat buf;
@@ -168,6 +170,11 @@ int main(int argc, char **argv) {
 	for (unsigned int i = 0; i < vec->size; i++) {
 		ret |= handle_string(handler, (char *)vec->arr[i], g_flags);
 	}
+	if (g_infd > 0) {
+		ret |= handle_file(handler, g_infd, "InputFile", g_flags);
+		close(g_infd);
+		g_infd = 0;
+	}
 	for (unsigned int i = file_start_idx; i < (unsigned int)argc; i++) {
 		int fd;
 		const char *filename = argv[i];
@@ -182,5 +189,13 @@ int main(int argc, char **argv) {
 		close(fd);
 	}
 	ptrvector_destroy(vec);
+	if (g_outfd > 1) {
+		close(g_outfd);
+		g_outfd = 0;
+	}
+	if (g_infd > 0) {
+		close(g_infd);
+		g_infd = 0;
+	}
 	return ((int)ret);
 }

@@ -58,6 +58,7 @@ char *base64_encode_string(const char *str, size_t datalen, size_t *outlen) {
 }
 
 char *base64_encode_file(const int fd) {
+	size_t outlen;
 	struct stat buf;
 	char*	file;
 	char*	result;
@@ -68,10 +69,10 @@ char *base64_encode_file(const int fd) {
 		exit(EXIT_FAILURE);
 	}
 	if ((file = mmap(NULL, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
-		fprintf(stderr, "Error rading file.\n");
+		fprintf(stderr, "Error reading file.\n");
 		exit(EXIT_FAILURE);
 	}
-	result = base64_encode_string(file, buf.st_size, NULL);
+	result = base64_encode_string(file, buf.st_size, &outlen);
 	munmap(file, buf.st_size);
 	return (result);
 }

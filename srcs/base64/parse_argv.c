@@ -5,12 +5,20 @@
 #include <getopt.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <fcntl.h>
 #include "base64/flags.h"
 #include "vector.h"
-
-const char* g_input = NULL;
-const char* g_output = NULL;
 unsigned int	g_base64_flags = 0;
+
+static int	create_fd(const char* const pathname, int* fd_store, int open_flag) {
+	int fd;
+
+	fd = open(pathname, open_flag);
+	if (fd == -1)
+		return (1);
+	*fd_store = fd;
+	return (0);
+}
 
 static void	print_usage() {
 	fprintf(stderr, "base64:\nvailable flags:\n");
@@ -37,7 +45,10 @@ unsigned int parse_flags_base64(int argc, char** argv, unsigned int* file_start_
 				break ;
 			case 'i':
 				g_base64_flags |= FLAG_INPUTFILE;
-				g_input = optarg;
+				if (create_fd(optarg, &g_infd, O_RDONLY)) {
+					fprintf(stderr, "Error opening %s\n", optarg);
+					exit(EXIT_FAILURE);
+				}
 				break ;
 			case 'o':
 				if (g_base64_flags & FLAG_OUTPUTFILE) {
@@ -45,7 +56,10 @@ unsigned int parse_flags_base64(int argc, char** argv, unsigned int* file_start_
 					return ((unsigned int)-1);
 				}
 				g_base64_flags |= FLAG_OUTPUTFILE;
-				g_output = optarg;
+				if (create_fd(optarg, &g_outfd, O_WRONLY | O_TRUNC | O_CREAT)) {
+					fprintf(stderr, "Error opening %s\n", optarg);
+					exit(EXIT_FAILURE);
+				}
 				break ;
 			case '?':
 				if (optopt == 's')
@@ -65,6 +79,8 @@ unsigned int parse_flags_base64(int argc, char** argv, unsigned int* file_start_
 	if (g_base64_flags & FLAG_DECODE && g_base64_flags & FLAG_ENCODE) {
 		fprintf(stderr, "what is going on? Decode and encode!?\n");
 	}
+	if (!(g_base64_flags & FLAG_DECODE))
+		g_base64_flags |= FLAG_ENCODE;
 	if (file_start_idx) {
 		*file_start_idx = optind + 1;
 	}
