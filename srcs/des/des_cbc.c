@@ -49,10 +49,8 @@ int des_cbc_handler(const char* str, size_t length) {
 		for (size_t i = 0; i < length; i += CHUNK_SIZE_IN_BYTES) {
 			uint64_t old = chunk;
 			chunk = REV64(*(uint64_t *)(str + i));
-//			old = REV64(result);
 
 			result = apply_des(chunk, key) ^ old;
-			dprintf(STDERR_FILENO, "Decode: chunk=%016lX, result = %016lX, old = %016lX\n", chunk, result, old);
 			add_chunk_to_buffer(result, true);
 		}
 
@@ -62,7 +60,6 @@ int des_cbc_handler(const char* str, size_t length) {
 			chunk = create_64bit_chunk_from_str(str + i);
 
 			result = apply_des(chunk ^ old, key);
-			dprintf(STDERR_FILENO, "Encode: chunk=%016lX, result = %016lX, old = %016lX\n", chunk, result, old);
 			add_chunk_to_buffer(result, true);
 		}
 	}
@@ -87,10 +84,11 @@ int des_cbc_fd(const int fd) {
 		return (EXIT_FAILURE);
 	}
 	if ((file = mmap(NULL, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
-		fprintf(stderr, "Error rading file.\n");
+		fprintf(stderr, "Error reading file.\n");
 		return (EXIT_FAILURE);
 	}
 	return_status = des_cbc_handler(file, buf.st_size);
+	dprintf(g_outfd, "\n");
 	munmap(file, buf.st_size);
 	return (return_status);
 }

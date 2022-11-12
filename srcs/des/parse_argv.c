@@ -18,10 +18,10 @@ const char*	g_salt = NULL;
 const char*	g_initialization_vector = NULL;
 unsigned int	g_des_flags = 0;
 
-static int	create_fd(const char* const pathname, int* fd_store) {
+static int	create_fd(const char* const pathname, int* fd_store, int open_flag) {
 	int fd;
 
-	fd = open(pathname, O_RDONLY);
+	fd = open(pathname, open_flag);
 	if (fd == -1)
 		return (1);
 	*fd_store = fd;
@@ -29,19 +29,19 @@ static int	create_fd(const char* const pathname, int* fd_store) {
 }
 
 static void	print_usage() {
-	fprintf(stderr, "Data Encryption Standard:\nvailable flags:\n");
-	fprintf(stderr, "-a, decode/encode the input/output in base64, depending on the encryption mode\n");
-	fprintf(stderr, "-D or -d, decrypt mode\n");
-	fprintf(stderr, "-E or -e, encrypt mode (default)\n");
-	fprintf(stderr, "-i, input file for message\n");
-	fprintf(stderr, "-o, output file for message\n");
-	fprintf(stderr, "-K or -k, key in hex is the next argument\n");
-	fprintf(stderr, "-p, the password in ascii is the next argument\n");
-	fprintf(stderr, "-s, the salt in hex is the next argument\n");
-	fprintf(stderr, "-v, the initialization vector in hex is the next argument\n");
-	fprintf(stderr, "-P, print the iv/key\n");
-	fprintf(stderr, "-n, disable the size difference byte padding scheme\n");
-	fprintf(stderr, "-h, display this summary\n");
+	fprintf(stderr, "Data Encryption Standard:\nAvailable flags:\n");
+	fprintf(stderr, "\t-a, decode/encode the input/output in base64, depending on the encryption mode\n");
+	fprintf(stderr, "\t-D or -d, decrypt mode\n");
+	fprintf(stderr, "\t-E or -e, encrypt mode (default)\n");
+	fprintf(stderr, "\t-i, input file for message\n");
+	fprintf(stderr, "\t-o, output file for message\n");
+	fprintf(stderr, "\t-K or -k, key in hex is the next argument\n");
+	fprintf(stderr, "\t-p, the password in ascii is the next argument\n");
+	fprintf(stderr, "\t-s, the salt in hex is the next argument\n");
+	fprintf(stderr, "\t-v, the initialization vector in hex is the next argument\n");
+	fprintf(stderr, "\t-P, print the iv/key\n");
+	fprintf(stderr, "\t-n, disable the size difference byte padding scheme\n");
+	fprintf(stderr, "\t-h, display this summary\n");
 }
 
 unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx, t_ptrvector* string_vector) {
@@ -64,7 +64,10 @@ unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx
 			case 'i':
 				g_des_flags |= FLAG_INPUTFILE;
 				g_infile = optarg;
-				ptrvector_pushback(string_vector, (void *)g_infile);
+				if (create_fd(optarg, &g_infd, O_RDONLY)) {
+					fprintf(stderr, "Error opening infile '%s'.\n", g_outfile);
+					return ((unsigned int)-1);
+				}
 				break ;
 			case 'K':
 			case 'k':
@@ -78,7 +81,7 @@ unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx
 				}
 				g_des_flags |= FLAG_OUTPUTFILE;
 				g_outfile = optarg;
-				if (create_fd(g_outfile, &g_outfd)) {
+				if (create_fd(g_outfile, &g_outfd, O_WRONLY | O_CREAT | O_TRUNC)) {
 					fprintf(stderr, "Error opening outfile '%s'.\n", g_outfile);
 					return ((unsigned int)-1);
 				}

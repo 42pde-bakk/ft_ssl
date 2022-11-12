@@ -44,7 +44,6 @@ int des_ecb_handler(const char* str, size_t length) {
 			chunk = REV64(*(uint64_t *)(str + i));
 
 			result = apply_des(chunk, key);
-//			dprintf(STDERR_FILENO, "Decode: chunk=%016lX, result = %016lX\n", chunk, result);
 			add_chunk_to_buffer(result, false);
 		}
 
@@ -53,7 +52,6 @@ int des_ecb_handler(const char* str, size_t length) {
 			chunk = create_64bit_chunk_from_str(str + i);
 
 			result = apply_des(chunk, key);
-//			dprintf(STDERR_FILENO, "Encode: chunk=%016lX, result = %016lX\n", chunk, result);
 			add_chunk_to_buffer(result, true);
 		}
 	}
@@ -82,6 +80,7 @@ int des_ecb_fd(const int fd) {
 		return (EXIT_FAILURE);
 	}
 	return_status = des_ecb_handler(file, buf.st_size);
+	dprintf(g_outfd, "\n");
 
 	munmap(file, buf.st_size);
 	return (return_status);

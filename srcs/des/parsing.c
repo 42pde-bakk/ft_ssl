@@ -13,12 +13,10 @@
 #include <stdlib.h>
 
 uint64_t	create_64bit_chunk_from_str(const char* const str) {
-//	size_t		stringlength = ft_strlen(str);
 	uint64_t	chunk = 0;
 
 	for (size_t i = 0; i < 8; i++) {
 		chunk <<= 8;
-//		if (i < stringlength)
 		chunk |= (uint64_t)str[i];
 	}
 	return (chunk);

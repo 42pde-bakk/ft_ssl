@@ -21,12 +21,12 @@ static int	create_fd(const char* const pathname, int* fd_store, int open_flag) {
 }
 
 static void	print_usage() {
-	fprintf(stderr, "base64:\nvailable flags:\n");
-	fprintf(stderr, "-D or -d, decode mode\n");
-	fprintf(stderr, "-E or -e, encode mode (default)\n");
-	fprintf(stderr, "-i, input file\n");
-	fprintf(stderr, "-o, output file\n");
-	fprintf(stderr, "-h, display this summary\n");
+	fprintf(stderr, "base64:\nvAailable flags:\n");
+	fprintf(stderr, "\t-D or -d, decode mode\n");
+	fprintf(stderr, "\t-E or -e, encode mode (default)\n");
+	fprintf(stderr, "-\ti, input file\n");
+	fprintf(stderr, "\t-o, output file\n");
+	fprintf(stderr, "\t-h, display this summary\n");
 }
 
 unsigned int parse_flags_base64(int argc, char** argv, unsigned int* file_start_idx, t_ptrvector* string_vector) {

@@ -70,11 +70,11 @@ char	*read_stdin(const bool return_on_enter) {
 	return (result);
 }
 
-int handle_stdin(t_handler handler, bool no_files_or_strings_given, const unsigned int flags, bool force_read) {
+int handle_stdin(t_handler handler, bool no_files_or_strings_given, const unsigned int flags) {
 	ssize_t	ret;
 	char	*result;
 
-	if ((!isatty(STDIN_FILENO) && (flags & FLAG_P || no_files_or_strings_given)) || force_read) {
+	if ((!isatty(STDIN_FILENO)) && (flags & FLAG_P || no_files_or_strings_given)) {
 		result = read_stdin(false);
 		if (!result) {
 			return (EXIT_FAILURE);
@@ -165,7 +165,7 @@ int main(int argc, char **argv) {
 
 	const bool no_files_or_strings_given = (unsigned int)argc == file_start_idx && vec->size == 0;
 
-	ret |= handle_stdin(handler, no_files_or_strings_given, g_flags, false);
+	ret |= handle_stdin(handler, no_files_or_strings_given, g_flags);
 
 	for (unsigned int i = 0; i < vec->size; i++) {
 		ret |= handle_string(handler, (char *)vec->arr[i], g_flags);
