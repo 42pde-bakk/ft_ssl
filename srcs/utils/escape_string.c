@@ -5,7 +5,6 @@
 #include <stddef.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 static size_t	count_escapable_chars(const char *haystack) {
 	size_t	count = 0;

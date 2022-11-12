@@ -8,7 +8,7 @@
 #include "flags.h"
 #include "vector.h"
 
-unsigned int parse_flags(int argc, char** argv, unsigned int* file_start_idx, t_ptrvector* string_vector) {
+unsigned int parse_flags_md5_sha(int argc, char** argv, unsigned int* file_start_idx, t_ptrvector* string_vector) {
 	unsigned int flags = 0;
 	int opt;
 
