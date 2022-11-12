@@ -13,22 +13,22 @@
 #include "libft.h"
 #include "base64/base64.h"
 
-static int des_ctr_handler(const char* str, size_t length) {
+static int des_cfb_handler(const char* str, size_t length) {
 	const uint64_t	key = get_key();
 	uint64_t		chunk,
 					result,
-					nonce;
+					iv;
 	char*			base = NULL;
 	char*			padded_str = NULL;
 
 
 
 	if (!(g_des_flags & FLAG_INITVECTOR) || !g_initialization_vector) {
-		dprintf(STDERR_FILENO, "For CTR mode please provide the nonce with the -v option.\n");
+		dprintf(STDERR_FILENO, "For cfb mode please provide the initialization vector with the -v option.\n");
 	}
-	nonce = create_64bit_chunk_from_hexstr(g_initialization_vector);
+	iv = create_64bit_chunk_from_hexstr(g_initialization_vector);
 	if (g_des_flags & FLAG_SHOW_KEY)
-		dprintf(STDERR_FILENO, "nonce= %016lX\n", nonce);
+		dprintf(STDERR_FILENO, "iv= %016lX\n", iv);
 
 	if (!(g_des_flags & FLAG_NO_PADDING) && g_des_flags & FLAG_ENCODE) {
 		const uint8_t pad_amount = 8 - (length % 8);
@@ -54,8 +54,8 @@ static int des_ctr_handler(const char* str, size_t length) {
 		for (size_t i = 0; i < length; i += CHUNK_SIZE_IN_BYTES) {
 			chunk = REV64(*(uint64_t *)(str + i));
 
-			result = apply_des(nonce ^ i, key);
-			result = result ^ chunk;
+			iv = apply_des(iv, key);
+			result = iv ^ chunk;
 			add_chunk_to_buffer(result, true);
 		}
 		g_des_flags = tmpflags;
@@ -64,8 +64,8 @@ static int des_ctr_handler(const char* str, size_t length) {
 		for (size_t i = 0; i < length; i += CHUNK_SIZE_IN_BYTES) {
 			chunk = create_64bit_chunk_from_str(str + i);
 
-			result = apply_des(nonce ^ i, key);
-			result = result ^ chunk;
+			iv = apply_des(iv, key);
+			result = iv ^ chunk;
 			add_chunk_to_buffer(result, true);
 		}
 	}
@@ -79,7 +79,7 @@ static int des_ctr_handler(const char* str, size_t length) {
 	return (EXIT_SUCCESS);
 }
 
-int des_ctr_fd(const int fd) {
+int des_cfb_fd(const int fd) {
 	int return_status;
 	struct stat buf;
 	char* file;
@@ -93,12 +93,12 @@ int des_ctr_fd(const int fd) {
 		fprintf(stderr, "Error reading file.\n");
 		return (EXIT_FAILURE);
 	}
-	return_status = des_ctr_handler(file, buf.st_size);
+	return_status = des_cfb_handler(file, buf.st_size);
 	dprintf(g_outfd, "\n");
 	munmap(file, buf.st_size);
 	return (return_status);
 }
 
-int des_ctr_string(const char* str) {
-	return (des_ctr_handler(str, ft_strlen(str)));
+int des_cfb_string(const char* str) {
+	return (des_cfb_handler(str, ft_strlen(str)));
 }

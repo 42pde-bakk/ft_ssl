@@ -64,6 +64,13 @@ const t_handler handlers[] = {
 			.print_filename = false
 		},
 		{
+			.cmd = "des-cfb",
+			.handle_file = des_cfb_fd,
+			.handle_string = des_cfb_string,
+			.handle_flags = parse_flags_des,
+			.print_filename = false
+		},
+		{
 			.cmd = NULL
 		}
 };
