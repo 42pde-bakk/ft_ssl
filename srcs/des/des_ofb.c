@@ -13,7 +13,7 @@
 #include "libft.h"
 #include "base64/base64.h"
 
-static int des_cfb_handler(const char* str, size_t length) {
+static int des_ofb_handler(const char* str, size_t length) {
 	const uint64_t	key = get_key();
 	uint64_t		chunk,
 					result,
@@ -24,7 +24,7 @@ static int des_cfb_handler(const char* str, size_t length) {
 
 
 	if (!(g_des_flags & FLAG_INITVECTOR) || !g_initialization_vector) {
-		dprintf(STDERR_FILENO, "For cfb mode please provide the initialization vector with the -v option.\n");
+		dprintf(STDERR_FILENO, "For ofb mode please provide the initialization vector with the -v option.\n");
 	}
 	iv = create_64bit_chunk_from_hexstr(g_initialization_vector);
 	if (g_des_flags & FLAG_SHOW_KEY)
@@ -79,7 +79,7 @@ static int des_cfb_handler(const char* str, size_t length) {
 	return (EXIT_SUCCESS);
 }
 
-int des_cfb_fd(const int fd) {
+int des_ofb_fd(const int fd) {
 	int return_status;
 	struct stat buf;
 	char* file;
@@ -93,12 +93,12 @@ int des_cfb_fd(const int fd) {
 		fprintf(stderr, "Error reading file.\n");
 		return (EXIT_FAILURE);
 	}
-	return_status = des_cfb_handler(file, buf.st_size);
+	return_status = des_ofb_handler(file, buf.st_size);
 	dprintf(g_outfd, "\n");
 	munmap(file, buf.st_size);
 	return (return_status);
 }
 
-int des_cfb_string(const char* str) {
-	return (des_cfb_handler(str, ft_strlen(str)));
+int des_ofb_string(const char* str) {
+	return (des_ofb_handler(str, ft_strlen(str)));
 }
