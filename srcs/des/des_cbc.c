@@ -13,7 +13,7 @@
 #include "libft.h"
 #include "base64/base64.h"
 
-int des_cbc_handler(const char* str, size_t length) {
+static int des_cbc_handler(const char* str, size_t length) {
 	const uint64_t	key = get_key();
 	uint64_t		ciphertext,
 					plaintext,
@@ -52,7 +52,8 @@ int des_cbc_handler(const char* str, size_t length) {
 			ciphertext = REV64(*(uint64_t *)(str + i));
 
 			plaintext = apply_des(ciphertext, key) ^ iv;
-			add_chunk_to_buffer(plaintext, true);
+			add_chunk_to_buffer(plaintext, false);
+//			dprintf(STDERR_FILENO, "Decrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
 			iv = ciphertext;
 		}
 
@@ -62,6 +63,7 @@ int des_cbc_handler(const char* str, size_t length) {
 
 			ciphertext = apply_des(plaintext ^ iv, key);
 			add_chunk_to_buffer(ciphertext, true);
+//			dprintf(STDERR_FILENO, "Encrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
 			iv = ciphertext;
 		}
 	}
@@ -70,7 +72,7 @@ int des_cbc_handler(const char* str, size_t length) {
 		free(padded_str);
 	}
 
-	clear_buffer(g_outfd, false);
+	clear_buffer(g_outfd, true);
 	free(base);
 	return (EXIT_SUCCESS);
 }

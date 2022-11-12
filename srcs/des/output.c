@@ -29,10 +29,11 @@ uint64_t REV64(uint64_t x) {
 	return (y);
 }
 
-void create_str_from_64bit_chunk_and_output(uint64_t chunk, const int fd, const size_t write_len) {
+static void create_str_from_64bit_chunk_and_output(uint64_t chunk, const int fd, const size_t write_len) {
 	char	arr[9];
 
 	ft_bzero(arr, sizeof(arr));
+
 	for (size_t i = 0; i < 8; i++) {
 		arr[i] = (char)chunk;
 		chunk >>= 8;
@@ -59,13 +60,6 @@ uint8_t	remove_padding() {
 	uint64_t	*last_chunk = &chunk_vector->arr[chunk_vector->size - 1];
 	uint8_t		pad_amount = *last_chunk & 0x000000FF;
 
-	dprintf(2, "chunk = %#016lX\n", *last_chunk);
-	for (size_t i = 0; i < pad_amount && i < 8; i++) {
-		uint8_t c = (*last_chunk >> (8 * i)) & 0xFF;
-		dprintf(2, "(chunk >> (8 * %zu) & 0xFF = %#hhx\n", i, c);
-	}
-
-
 	if (pad_amount == 0 || pad_amount > 8) {
 		dprintf(STDERR_FILENO, "Warning, invalid padding scheme, found %#hhx.\n", pad_amount);
 		return (0);
@@ -74,7 +68,7 @@ uint8_t	remove_padding() {
 	for (size_t i = 0; i < pad_amount; i++) {
 		uint8_t c = (*last_chunk >> (8 * i)) & 0xFF;
 		if (c != pad_amount) {
-			dprintf(STDERR_FILENO, "Warning, invalid padding scheme, found %#hhx.\n", c);
+			dprintf(STDERR_FILENO, "Warning, invalid padding scheme, expected %#hhx, but found %#hhx.\n", pad_amount, c);
 			return (0);
 		}
 	}
@@ -83,6 +77,9 @@ uint8_t	remove_padding() {
 		uint64vector_delete_bypos(chunk_vector, chunk_vector->size - 1);
 		return (0);
 	}
+//	*last_chunk = *last_chunk >> (8 * pad_amount);
+//	*last_chunk = *last_chunk << (8 * pad_amount);
+//	dprintf(2, "now the chunk looks like %016lX\n", *last_chunk);
 	return (pad_amount);
 }
 
@@ -99,9 +96,12 @@ void clear_buffer(const int fd, const bool reverse_decode) {
 		free(result);
 	} else {
 		for (size_t i = 0; i < chunk_vector->size; i++) {
+			size_t write_length = CHUNK_SIZE_IN_BYTES;
+			if (i == chunk_vector->size - 1)
+				write_length -= padding_removed;
 			if (g_des_flags & FLAG_DECRYPT && reverse_decode)
 				chunk_vector->arr[i] = REV64(chunk_vector->arr[i]);
-			create_str_from_64bit_chunk_and_output(chunk_vector->arr[i], fd, CHUNK_SIZE_IN_BYTES - padding_removed);
+			create_str_from_64bit_chunk_and_output(chunk_vector->arr[i], fd, write_length);
 		}
 	}
 	uint64vector_destroy(chunk_vector);

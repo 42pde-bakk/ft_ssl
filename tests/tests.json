@@ -165,12 +165,12 @@
   ],
   "DES-ECB": [
     {
-      "command": "echo \"foo bar\" | ./ft_ssl des-ecb -K 6162636461626364 -an # The n flag is meant as no-padding",
+      "command": "echo \"foo bar\" | ./ft_ssl des-ecb -K 6162636461626364 -an",
       "expected_statuscode": 0,
       "expected_stdout": "YZF3QKaabXU=\n"
     },
     {
-      "command": "echo YZF3QKaabXU= | ./ft_ssl des-ecb -K 6162636461626364 -a -d -n # The n flag means no-padding mode",
+      "command": "echo YZF3QKaabXU= | ./ft_ssl des-ecb -K 6162636461626364 -a -d -n",
       "expected_statuscode": 0,
       "expected_stdout": "foo bar\n\n"
     },
@@ -262,7 +262,7 @@
       "expected_stdout": "tsX2mfUYFhzmmNNJTNS3mQ==\n"
     },
     {
-      "command": "echo \"tsX2mfUYFhzmmNNJTNS3mQ==\" | ./ft_ssl des-cbc -K AB12CD34EF56AB78 -a -v 1A2B3C4D5E6F70DD",
+      "command": "echo \"tsX2mfUYFhzmmNNJTNS3mQ==\" | ./ft_ssl des-cbc -K AB12CD34EF56AB78 -a -d -v 1A2B3C4D5E6F70DD",
       "expected_statuscode": 0,
       "expected_stdout": "foo bar\n\n"
     }

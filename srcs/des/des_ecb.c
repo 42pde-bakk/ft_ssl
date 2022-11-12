@@ -14,7 +14,7 @@
 #include "libft.h"
 #include "base64/base64.h"
 
-int des_ecb_handler(const char* str, size_t length) {
+static int des_ecb_handler(const char* str, size_t length) {
 	const uint64_t	key = get_key();
 	uint64_t		ciphertext,
 					plaintext;
@@ -44,6 +44,7 @@ int des_ecb_handler(const char* str, size_t length) {
 			ciphertext = REV64(*(uint64_t *)(str + i));
 
 			plaintext = apply_des(ciphertext, key);
+//			dprintf(STDERR_FILENO, "Decrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
 			add_chunk_to_buffer(plaintext, false);
 		}
 
@@ -52,6 +53,7 @@ int des_ecb_handler(const char* str, size_t length) {
 			plaintext = create_64bit_chunk_from_str(str + i);
 
 			ciphertext = apply_des(plaintext, key);
+//			dprintf(STDERR_FILENO, "Encrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
 			add_chunk_to_buffer(ciphertext, true);
 		}
 	}

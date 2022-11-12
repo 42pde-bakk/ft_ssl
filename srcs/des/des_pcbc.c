@@ -13,7 +13,7 @@
 #include "libft.h"
 #include "base64/base64.h"
 
-int des_pcbc_handler(const char* str, size_t length) {
+static int des_pcbc_handler(const char* str, size_t length) {
 	const uint64_t	key = get_key();
 	uint64_t		ciphertext,
 					plaintext,
