@@ -41,4 +41,16 @@ int des_ecb_string(const char* str);
 int des_cbc_fd(int fd);
 int des_cbc_string(const char* str);
 
+int des_ctr_fd(int fd);
+int des_ctr_string(const char* str);
+
+int des_ofb_fd(int fd);
+int des_ofb_string(const char* str);
+
+int des_cfb_fd(int fd);
+int des_cfb_string(const char* str);
+
+int des_pcbc_fd(int fd);
+int des_pcbc_string(const char* str);
+
 #endif //FT_SSL_FUNC_PTRS_H

@@ -13,7 +13,7 @@
 #include "libft.h"
 #include "base64/base64.h"
 
-static int des_cbc_handler(const char* str, size_t length) {
+static int des_ofb_handler(const char* str, size_t length) {
 	const uint64_t	key = get_key();
 	uint64_t		ciphertext,
 					plaintext,
@@ -48,23 +48,24 @@ static int des_cbc_handler(const char* str, size_t length) {
 			str = base;
 			length = newdatalen;
 		}
+		unsigned int tmpflags = g_des_flags;
+		g_des_flags = FLAG_ENCRYPT;
 		for (size_t i = 0; i < length; i += CHUNK_SIZE_IN_BYTES) {
 			ciphertext = REV64(*(uint64_t *)(str + i));
 
-			plaintext = apply_des(ciphertext, key) ^ iv;
-			add_chunk_to_buffer(plaintext, false);
-//			dprintf(STDERR_FILENO, "Decrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
-			iv = ciphertext;
+			iv = apply_des(iv, key);
+			plaintext = iv ^ ciphertext;
+			add_chunk_to_buffer(plaintext, true);
 		}
+		g_des_flags = tmpflags;
 
 	} else { // FLAG_ENCRYPT
 		for (size_t i = 0; i < length; i += CHUNK_SIZE_IN_BYTES) {
 			plaintext = create_64bit_chunk_from_str(str + i);
 
-			ciphertext = apply_des(plaintext ^ iv, key);
+			iv = apply_des(iv, key);
+			ciphertext = plaintext ^ iv;
 			add_chunk_to_buffer(ciphertext, true);
-//			dprintf(STDERR_FILENO, "Encrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
-			iv = ciphertext;
 		}
 	}
 
@@ -72,12 +73,12 @@ static int des_cbc_handler(const char* str, size_t length) {
 		free(padded_str);
 	}
 
-	clear_buffer(g_outfd, true);
+	clear_buffer(g_outfd, false);
 	free(base);
 	return (EXIT_SUCCESS);
 }
 
-int des_cbc_fd(const int fd) {
+int des_ofb_fd(const int fd) {
 	int return_status;
 	struct stat buf;
 	char* file;
@@ -91,12 +92,12 @@ int des_cbc_fd(const int fd) {
 		fprintf(stderr, "Error reading file.\n");
 		return (EXIT_FAILURE);
 	}
-	return_status = des_cbc_handler(file, buf.st_size);
+	return_status = des_ofb_handler(file, buf.st_size);
 	dprintf(g_outfd, "\n");
 	munmap(file, buf.st_size);
 	return (return_status);
 }
 
-int des_cbc_string(const char* str) {
-	return (des_cbc_handler(str, ft_strlen(str)));
+int des_ofb_string(const char* str) {
+	return (des_ofb_handler(str, ft_strlen(str)));
 }

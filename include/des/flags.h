@@ -5,8 +5,8 @@
 #ifndef FT_SSL_FLAGS_H
 #define FT_SSL_FLAGS_H
 
-#define FLAG_DECODE		(1 << 0)
-#define FLAG_ENCODE		(1 << 1)
+#define FLAG_DECRYPT	(1 << 0)
+#define FLAG_ENCRYPT	(1 << 1)
 #define FLAG_BASE64		(1 << 2)
 #define FLAG_INPUTFILE	(1 << 3)
 #define FLAG_KEY		(1 << 4)

@@ -165,12 +165,12 @@
   ],
   "DES-ECB": [
     {
-      "command": "echo \"foo bar\" | ./ft_ssl des-ecb -K 6162636461626364 -an # The n flag is meant as no-padding",
+      "command": "echo \"foo bar\" | ./ft_ssl des-ecb -K 6162636461626364 -an",
       "expected_statuscode": 0,
       "expected_stdout": "YZF3QKaabXU=\n"
     },
     {
-      "command": "echo YZF3QKaabXU= | ./ft_ssl des-ecb -K 6162636461626364 -a -d -n # The n flag means no-padding mode",
+      "command": "echo YZF3QKaabXU= | ./ft_ssl des-ecb -K 6162636461626364 -a -d -n",
       "expected_statuscode": 0,
       "expected_stdout": "foo bar\n\n"
     },
@@ -235,6 +235,36 @@
       "command": "echo \"zqYWONX68rWNxl7msIdGC67Uh2HfVEBo\" | ./ft_ssl des-cbc -d -a -K 6162636461626364 -v 0011223344556677",
       "expected_statuscode": 0,
       "expected_stdout": "one deep secret\n\n"
+    },
+    {
+      "command": "echo \"one deep lake\" | ./ft_ssl des-cbc -a -K 6162636461626364 -v 0011223344556677",
+      "expected_statuscode": 0,
+      "expected_stdout": "zqYWONX68rUaawoBeV6+hA==\n"
+    },
+    {
+      "command": "echo \"zqYWONX68rUaawoBeV6+hA==\" | ./ft_ssl des-cbc -d -a -K 6162636461626364 -v 0011223344556677",
+      "expected_statuscode": 0,
+      "expected_stdout": "one deep lake\n\n"
+    },
+    {
+      "command": "echo \"42\" | ./ft_ssl des-cbc -K AB12CD34EF56AB78 -a -v 1A2B3C4D5E6F70DD",
+      "expected_statuscode": 0,
+      "expected_stdout": "2A6spYpmxbg=\n"
+    },
+    {
+      "command": "echo \"2A6spYpmxbg=\" | ./ft_ssl des-cbc -K AB12CD34EF56AB78 -a -d -v 1A2B3C4D5E6F70DD",
+      "expected_statuscode": 0,
+      "expected_stdout": "42\n\n"
+    },
+    {
+      "command": "echo \"foo bar\" | ./ft_ssl des-cbc -K AB12CD34EF56AB78 -a -v 1A2B3C4D5E6F70DD",
+      "expected_statuscode": 0,
+      "expected_stdout": "tsX2mfUYFhzmmNNJTNS3mQ==\n"
+    },
+    {
+      "command": "echo \"tsX2mfUYFhzmmNNJTNS3mQ==\" | ./ft_ssl des-cbc -K AB12CD34EF56AB78 -a -d -v 1A2B3C4D5E6F70DD",
+      "expected_statuscode": 0,
+      "expected_stdout": "foo bar\n\n"
     }
   ],
   "Invalid": [
