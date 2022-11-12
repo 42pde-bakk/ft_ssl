@@ -57,6 +57,13 @@ const t_handler handlers[] = {
 			.print_filename = false
 		},
 		{
+			.cmd = "des-ctr",
+			.handle_file = des_ctr_fd,
+			.handle_string = des_ctr_string,
+			.handle_flags = parse_flags_des,
+			.print_filename = false
+		},
+		{
 			.cmd = NULL
 		}
 };
@@ -78,5 +85,4 @@ void print_error(const char *prog_name, char *invalid_command) {
 	for (size_t i = 0; handlers[i].cmd; i++) {
 		fprintf(stderr, "%s\n", handlers[i].cmd);
 	}
-//	fprintf(stderr, "\nFlags:\n-p -q -r -s\n");
 }
