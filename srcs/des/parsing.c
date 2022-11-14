@@ -53,14 +53,18 @@ uint64_t	get_key() {
 		}
 		return (key);
 	}
-	pass = getpass("enter des encryption password:");
+	if (g_des_flags & FLAG_PASSWORD && g_key != NULL) {
+		key = create_64bit_chunk_from_hexstr(g_password);
+	} else {
+		pass = getpass("enter des encryption password:");
+		key = create_64bit_chunk_from_str(pass);
+	}
 
 	if (g_des_flags & FLAG_SALT && g_salt != NULL) {
 		salt = create_64bit_chunk_from_hexstr(g_salt);
 	} else {
 		salt = generate_random_salt();
 	}
-	key = create_64bit_chunk_from_str(pass);
 	key = pbkdf(key, salt);
 	if (g_des_flags & FLAG_SHOW_KEY) {
 		dprintf(STDERR_FILENO,"salt=%016lX\n", salt);
