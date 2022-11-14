@@ -4,11 +4,10 @@
 
 #include <stdint.h>
 #include <unistd.h>
-#include <sys/mman.h>
 #include <stdlib.h>
 #include <string.h>
-#include "md5.h"
-#include "utils.h"
+#include "md5/md5.h"
+#include "md5/utils.h"
 
 static void	md5_init(t_MD5Context *md5Context) {
 	bzero(md5Context, sizeof(t_MD5Context));

@@ -2,8 +2,8 @@
 // Created by Peer de Bakker on 7/27/22.
 //
 
-#ifndef FT_SSL_UTILS_H
-#define FT_SSL_UTILS_H
+#ifndef FT_SSL_UTILS_MD5_H
+#define FT_SSL_UTILS_MD5_H
 
 #include <stdint.h>
 #include <stddef.h>
@@ -33,4 +33,4 @@ uint32_t	four_chars_to_uint32_md5(const uint8_t *ptr);
 // print_hash.c
 void print_hash(const uint8_t *digest, size_t digest_length);
 
-#endif //FT_SSL_UTILS_H
+#endif //FT_SSL_UTILS_MD5_H

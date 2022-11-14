@@ -13,7 +13,7 @@ unsigned int	g_base64_flags = 0;
 static int	create_fd(const char* const pathname, int* fd_store, int open_flag) {
 	int fd;
 
-	fd = open(pathname, open_flag);
+	fd = open(pathname, open_flag, S_IRWXU);
 	if (fd == -1)
 		return (1);
 	*fd_store = fd;
