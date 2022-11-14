@@ -74,6 +74,7 @@ static int des_cfb_handler(const char* str, size_t length) {
 	}
 
 	clear_buffer(g_outfd, false);
+	dprintf(g_outfd, "\n");
 	free(base);
 	return (EXIT_SUCCESS);
 }
@@ -93,7 +94,6 @@ int des_cfb_fd(const int fd) {
 		return (EXIT_FAILURE);
 	}
 	return_status = des_cfb_handler(file, buf.st_size);
-	dprintf(g_outfd, "\n");
 	munmap(file, buf.st_size);
 	return (return_status);
 }

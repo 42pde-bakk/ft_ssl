@@ -94,7 +94,6 @@ int handle_stdin(t_handler handler, bool no_files_or_strings_given, const unsign
 		ret = handler.handle_string(result);
 		free(escaped_string);
 		free(result);
-		fprintf(stdout, "\n");
 		return ((int)ret);
 	}
 	return (EXIT_SUCCESS);
@@ -112,7 +111,6 @@ static int handle_file(t_handler handler, const int fd, const char *filename, co
 	if (!(flags & FLAG_QUIET) && (flags & FLAG_REVERSE) && handler.print_filename) {
 		fprintf(stdout, " %s", filename);
 	}
-	fprintf(stdout, "\n");
 	return (ret);
 }
 
@@ -129,7 +127,6 @@ static int handle_string(t_handler handler, char *str, const unsigned int flags)
 	if (!(flags & FLAG_QUIET) && (flags & FLAG_REVERSE) && handler.print_filename) {
 		fprintf(stdout, " %s", escaped_string);
 	}
-	fprintf(stdout, "\n");
 	free(escaped_string);
 	return (ret);
 }

@@ -32,7 +32,7 @@ int base64_string(const char* str) {
 	} else {
 		result = base64_encode_string(str, str_len, &output_len);
 	}
-	dprintf(g_outfd, "%s", result);
+	dprintf(g_outfd, "%s\n", result);
 	free(result);
 	return (EXIT_SUCCESS);
 }

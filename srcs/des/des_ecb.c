@@ -63,6 +63,7 @@ static int des_ecb_handler(const char* str, size_t length) {
 	}
 
 	clear_buffer(g_outfd, true);
+	dprintf(g_outfd, "\n");
 	free(base);
 	return (EXIT_SUCCESS);
 }
@@ -82,7 +83,6 @@ int des_ecb_fd(const int fd) {
 		return (EXIT_FAILURE);
 	}
 	return_status = des_ecb_handler(file, buf.st_size);
-	dprintf(g_outfd, "\n");
 
 	munmap(file, buf.st_size);
 	return (return_status);
