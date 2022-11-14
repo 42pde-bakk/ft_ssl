@@ -5,8 +5,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "sha256.h"
-#include "utils.h"
+#include "sha/sha256.h"
+#include "sha/utils.h"
 
 static void sha256_init(t_sha2Context* sha256Context, const uint32_t* hash_values) {
 	bzero(sha256Context, sizeof(t_sha2Context));

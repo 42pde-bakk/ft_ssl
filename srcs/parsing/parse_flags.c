@@ -5,7 +5,7 @@
 #include <getopt.h>
 #include <stdio.h>
 #include <ctype.h>
-#include "flags.h"
+#include "md5/flags.h"
 #include "vector.h"
 
 unsigned int parse_flags_md5_sha(int argc, char** argv, unsigned int* file_start_idx, t_ptrvector* string_vector) {

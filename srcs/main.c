@@ -9,8 +9,8 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <string.h>
-#include "flags.h"
-#include "utils.h"
+#include "md5/flags.h"
+#include "md5/utils.h"
 #include "vector.h"
 #include "libft.h"
 
@@ -33,7 +33,7 @@ static int	open_file(const char *filename) {
 	return (fd);
 }
 
-char	*read_stdin(const bool return_on_enter) {
+static char	*read_stdin(const bool return_on_enter) {
 	ssize_t ret,
 			total_read  = 0;
 	char	*result = calloc(1, sizeof(char));
@@ -70,7 +70,7 @@ char	*read_stdin(const bool return_on_enter) {
 	return (result);
 }
 
-int handle_stdin(t_handler handler, bool no_files_or_strings_given, const unsigned int flags) {
+static int handle_stdin(t_handler handler, bool no_files_or_strings_given, const unsigned int flags) {
 	ssize_t	ret;
 	char	*result;
 
@@ -84,7 +84,7 @@ int handle_stdin(t_handler handler, bool no_files_or_strings_given, const unsign
 			free(result);
 			return (EXIT_FAILURE);
 		}
-		if (ft_strncmp(handler.cmd, "md5", sizeof("md5")) == 0 || ft_strncmp(handler.cmd, "sha", 3) == 0) {
+		if (ft_strncmp(handler.cmd, "md5", 3) == 0 || ft_strncmp(handler.cmd, "sha", 3) == 0) {
 			if (!(flags & FLAG_QUIET)) {
 				fprintf(stdout, "(%s)= ", flags & FLAG_P ? escaped_string : "stdin");
 			} else if (flags & FLAG_P) {
@@ -94,6 +94,8 @@ int handle_stdin(t_handler handler, bool no_files_or_strings_given, const unsign
 		ret = handler.handle_string(result);
 		free(escaped_string);
 		free(result);
+		if (handler.print_filename)
+			fprintf(stdout, "\n");
 		return ((int)ret);
 	}
 	return (EXIT_SUCCESS);
@@ -111,6 +113,8 @@ static int handle_file(t_handler handler, const int fd, const char *filename, co
 	if (!(flags & FLAG_QUIET) && (flags & FLAG_REVERSE) && handler.print_filename) {
 		fprintf(stdout, " %s", filename);
 	}
+	if (handler.print_filename)
+		fprintf(stdout, "\n");
 	return (ret);
 }
 
@@ -128,6 +132,8 @@ static int handle_string(t_handler handler, char *str, const unsigned int flags)
 		fprintf(stdout, " %s", escaped_string);
 	}
 	free(escaped_string);
+	if (handler.print_filename)
+		fprintf(stdout, "\n");
 	return (ret);
 }
 
