@@ -161,6 +161,16 @@
       "command": "echo -n Zm9vYmFy | ./ft_ssl base64 -d",
       "expected_statuscode": 0,
       "expected_stdout": "foobar\n"
+    },
+    {
+      "command": "diff <(echo -n abc | openssl base64) <(echo -n abc | ./ft_ssl base64)",
+      "expected_statuscode": 0,
+      "expected_stdout": ""
+    },
+    {
+      "command": "echo \"All your base are belong to us. You have no chance make your time.\" | ./ft_ssl base64 | ./ft_ssl base64 -d",
+      "expected_statuscode": 0,
+      "expected_stdout": "\"All your base are belong to us. You have no chance make your time.\""
     }
   ],
   "DES-ECB": [
@@ -223,6 +233,11 @@
       "command": "echo -n \"multiple blocks chained together\" | ./ft_ssl des-ecb -K 6162636461626364 -a",
       "expected_statuscode": 0,
       "expected_stdout": "DOYaTvPcuHuTYW5nM1J3gQRT+mefdzpZjmjWsrQMcWwwxNg3obhMfw==\n"
+    },
+    {
+      "command": "echo -n \"foo bar\" | ./ft_ssl des-ecb -k \"$DES_KEY\" | ./ft_ssl des-ecb -d -K \"$DES_KEY\"",
+      "expected_statuscode": 0,
+      "expected_stdout": "foo bar\n"
     }
   ],
   "DES-CBC": [
