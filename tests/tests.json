@@ -145,12 +145,12 @@
     {
       "command": "echo 'dG90bw==' | ./ft_ssl base64 -d",
       "expected_statuscode": 0,
-      "expected_stdout": "toto\n"
+      "expected_stdout": "toto"
     },
     {
       "command": "echo 'dG 90b     w==' | ./ft_ssl base64 -d",
       "expected_statuscode": 0,
-      "expected_stdout": "toto\n"
+      "expected_stdout": "toto"
     },
     {
       "command": "echo -n foobar | ./ft_ssl base64 -e",
@@ -160,7 +160,7 @@
     {
       "command": "echo -n Zm9vYmFy | ./ft_ssl base64 -d",
       "expected_statuscode": 0,
-      "expected_stdout": "foobar\n"
+      "expected_stdout": "foobar"
     },
     {
       "command": "echo -n abc | ./ft_ssl base64",
@@ -168,7 +168,7 @@
       "expected_stdout": "YWJj\n"
     },
     {
-      "command": "echo -n \"All your base are belong to us. You have no chance make your time.\" | ./ft_ssl base64 | ./ft_ssl base64 -d",
+      "command": "echo \"All your base are belong to us. You have no chance make your time.\" | ./ft_ssl base64 | ./ft_ssl base64 -d",
       "expected_statuscode": 0,
       "expected_stdout": "All your base are belong to us. You have no chance make your time.\n"
     }
@@ -249,7 +249,7 @@
     {
       "command": "echo \"zqYWONX68rWNxl7msIdGC67Uh2HfVEBo\" | ./ft_ssl des-cbc -d -a -K 6162636461626364 -v 0011223344556677",
       "expected_statuscode": 0,
-      "expected_stdout": "one deep secret\n\n"
+      "expected_stdout": "one deep secret\n"
     },
     {
       "command": "echo \"one deep lake\" | ./ft_ssl des-cbc -a -K 6162636461626364 -v 0011223344556677",
@@ -259,7 +259,7 @@
     {
       "command": "echo \"zqYWONX68rUaawoBeV6+hA==\" | ./ft_ssl des-cbc -d -a -K 6162636461626364 -v 0011223344556677",
       "expected_statuscode": 0,
-      "expected_stdout": "one deep lake\n\n"
+      "expected_stdout": "one deep lake\n"
     },
     {
       "command": "echo \"42\" | ./ft_ssl des-cbc -K AB12CD34EF56AB78 -a -v 1A2B3C4D5E6F70DD",
@@ -269,7 +269,7 @@
     {
       "command": "echo \"2A6spYpmxbg=\" | ./ft_ssl des-cbc -K AB12CD34EF56AB78 -a -d -v 1A2B3C4D5E6F70DD",
       "expected_statuscode": 0,
-      "expected_stdout": "42\n\n"
+      "expected_stdout": "42\n"
     },
     {
       "command": "echo \"foo bar\" | ./ft_ssl des-cbc -K AB12CD34EF56AB78 -a -v 1A2B3C4D5E6F70DD",
@@ -279,7 +279,7 @@
     {
       "command": "echo \"tsX2mfUYFhzmmNNJTNS3mQ==\" | ./ft_ssl des-cbc -K AB12CD34EF56AB78 -a -d -v 1A2B3C4D5E6F70DD",
       "expected_statuscode": 0,
-      "expected_stdout": "foo bar\n\n"
+      "expected_stdout": "foo bar\n"
     }
   ],
   "Invalid": [
