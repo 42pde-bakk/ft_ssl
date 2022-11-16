@@ -11,6 +11,7 @@
 #include "libft.h"
 #include "des/des.h"
 #include "vector.h"
+#include <unistd.h>
 
 static t_uint64vector*	chunk_vector = NULL;
 

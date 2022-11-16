@@ -3,7 +3,6 @@
 //
 
 #include <stddef.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
@@ -13,6 +12,8 @@
 #include "des/des.h"
 #include "libft.h"
 #include "base64/base64.h"
+#include "ft_printf.h"
+#include <stdio.h>
 
 static int des_ecb_handler(const char* str, size_t length) {
 	const uint64_t	key = get_key();
@@ -44,7 +45,7 @@ static int des_ecb_handler(const char* str, size_t length) {
 			ciphertext = REV64(*(uint64_t *)(str + i));
 
 			plaintext = apply_des(ciphertext, key);
-//			dprintf(STDERR_FILENO, "Decrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
+			ft_dprintf(2, "Decrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
 			add_chunk_to_buffer(plaintext, false);
 		}
 
@@ -53,7 +54,7 @@ static int des_ecb_handler(const char* str, size_t length) {
 			plaintext = create_64bit_chunk_from_str(str + i);
 
 			ciphertext = apply_des(plaintext, key);
-//			dprintf(STDERR_FILENO, "Encrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
+			ft_dprintf(2, "Encrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
 			add_chunk_to_buffer(ciphertext, true);
 		}
 	}
@@ -63,7 +64,9 @@ static int des_ecb_handler(const char* str, size_t length) {
 	}
 
 	clear_buffer(g_outfd, true);
-	dprintf(g_outfd, "\n");
+	if (g_des_flags & FLAG_BASE64 && g_des_flags & FLAG_ENCRYPT) {
+		ft_dprintf(g_outfd, "\n");
+	}
 	free(base);
 	return (EXIT_SUCCESS);
 }
@@ -75,11 +78,11 @@ int des_ecb_fd(const int fd) {
 
 	ft_memset(&buf, 0, sizeof(buf));
 	if (fstat(fd, &buf) == -1 || buf.st_size <= 0 || S_ISDIR(buf.st_mode)) {
-		fprintf(stderr, "Error opening file.\n");
+		ft_dprintf(STDERR_FILENO, "Error opening file.\n");
 		return (EXIT_FAILURE);
 	}
 	if ((file = mmap(NULL, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
-		fprintf(stderr, "Error reading file.\n");
+		ft_dprintf(STDERR_FILENO, "Error reading file.\n");
 		return (EXIT_FAILURE);
 	}
 	return_status = des_ecb_handler(file, buf.st_size);
@@ -89,7 +92,7 @@ int des_ecb_fd(const int fd) {
 }
 
 int des_ecb_string(const char* str) {
-	return (des_ecb_handler(str, ft_strlen(str)));
+	return des_ecb_handler(str, ft_strlen(str));
 }
 
 
@@ -138,18 +141,18 @@ void	test() {
 	};
 	const unsigned int flags_backup = g_des_flags;
 	uint64_t res = 0x9474B8E8C73BCA7D;
-	printf("\n");
+	ft_printf("\n");
 	for (size_t i = 0; i < 16; i++) {
 		g_des_flags = 0;
 		if (i % 2 == 0) {
 			g_des_flags |= FLAG_ENCRYPT;
 			res = apply_des(res, res);
-			printf("E: %016lx\n", res);
+			ft_printf("E: %016lx\n", res);
 		}
 		else {
 			g_des_flags |= FLAG_DECRYPT;
 			res = apply_des(res, res);
-			printf("D: %016lx\n", res);
+			ft_printf("D: %016lx\n", res);
 		}
 		assert(res == expected_outcomes[i]);
 	}

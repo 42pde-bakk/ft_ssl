@@ -3,11 +3,12 @@
 //
 #include <stdint.h>
 #include <stddef.h>
-#include <stdio.h>
 #include "libft.h"
 #include "base64/base64.h"
+#include "ft_printf.h"
 #include <sys/stat.h>
 #include <sys/mman.h>
+#include <stdlib.h>
 
 uint32_t	combine_three_uint8s(const uint8_t* data, size_t i, size_t datalen) {
 	uint32_t grand = ((uint32_t)data[i]) << 16;
@@ -65,11 +66,11 @@ char *base64_encode_file(const int fd) {
 
 	ft_memset(&buf, 0, sizeof(buf));
 	if (fstat(fd, &buf) == -1 || buf.st_size <= 0 || S_ISDIR(buf.st_mode)) {
-		fprintf(stderr, "Error opening file.\n");
+		ft_dprintf(STDERR_FILENO, "Error opening file.\n");
 		exit(EXIT_FAILURE);
 	}
 	if ((file = mmap(NULL, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
-		fprintf(stderr, "Error reading file.\n");
+		ft_dprintf(STDERR_FILENO, "Error reading file.\n");
 		exit(EXIT_FAILURE);
 	}
 	result = base64_encode_string(file, buf.st_size, &outlen);

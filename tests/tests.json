@@ -163,14 +163,14 @@
       "expected_stdout": "foobar\n"
     },
     {
-      "command": "diff <(echo -n abc | openssl base64) <(echo -n abc | ./ft_ssl base64)",
+      "command": "echo -n abc | ./ft_ssl base64",
       "expected_statuscode": 0,
-      "expected_stdout": ""
+      "expected_stdout": "YWJj\n"
     },
     {
-      "command": "echo \"All your base are belong to us. You have no chance make your time.\" | ./ft_ssl base64 | ./ft_ssl base64 -d",
+      "command": "echo -n \"All your base are belong to us. You have no chance make your time.\" | ./ft_ssl base64 | ./ft_ssl base64 -d",
       "expected_statuscode": 0,
-      "expected_stdout": "\"All your base are belong to us. You have no chance make your time.\""
+      "expected_stdout": "All your base are belong to us. You have no chance make your time.\n"
     }
   ],
   "DES-ECB": [
@@ -180,9 +180,9 @@
       "expected_stdout": "YZF3QKaabXU=\n"
     },
     {
-      "command": "echo YZF3QKaabXU= | ./ft_ssl des-ecb -K 6162636461626364 -a -d -n",
+      "command": "echo \"YZF3QKaabXU=\" | ./ft_ssl des-ecb -K 6162636461626364 -a -d -n",
       "expected_statuscode": 0,
-      "expected_stdout": "foo bar\n\n"
+      "expected_stdout": "foo bar\n"
     },
     {
       "command": "echo \"foo bar\" | ./ft_ssl des-ecb -K 6162636461626364 -a",
@@ -192,7 +192,7 @@
     {
       "command": "echo \"YZF3QKaabXUwxNg3obhMfw==\" | ./ft_ssl des-ecb -K 6162636461626364 -a -d",
       "expected_statuscode": 0,
-      "expected_stdout": "foo bar\n\n"
+      "expected_stdout": "foo bar\n"
     },
     {
       "command": "echo \"foo bad\" | ./ft_ssl des-ecb -K 6162636461626364 -an",
@@ -202,7 +202,7 @@
     {
       "command": "echo \"PPlElcr60EQ=\" | ./ft_ssl des-ecb -K 6162636461626364 -and",
       "expected_statuscode": 0,
-      "expected_stdout": "foo bad\n\n"
+      "expected_stdout": "foo bad\n"
     },
     {
       "command": "echo \"foo bad\" | ./ft_ssl des-ecb -K 6162636461626364 -a",
@@ -212,7 +212,7 @@
     {
       "command": "echo \"PPlElcr60EQwxNg3obhMfw==\" | ./ft_ssl des-ecb -K 6162636461626364 -a -d",
       "expected_statuscode": 0,
-      "expected_stdout": "foo bad\n\n"
+      "expected_stdout": "foo bad\n"
     },
     {
       "command": "echo \"42\" | ./ft_ssl des-ecb -K 6162636461626364 -a",
@@ -222,7 +222,7 @@
     {
       "command": "echo \"2EQzf0CtEPU=\" | ./ft_ssl des-ecb -K 6162636461626364 -ad",
       "expected_statuscode": 0,
-      "expected_stdout": "42\n\n"
+      "expected_stdout": "42\n"
     },
     {
       "command": "echo -n \"multiple blocks chained together\" | ./ft_ssl des-ecb -K 6162636461626364 -a -n",
@@ -237,7 +237,7 @@
     {
       "command": "echo -n \"foo bar\" | ./ft_ssl des-ecb -k \"$DES_KEY\" | ./ft_ssl des-ecb -d -K \"$DES_KEY\"",
       "expected_statuscode": 0,
-      "expected_stdout": "foo bar\n"
+      "expected_stdout": "foo bar"
     }
   ],
   "DES-CBC": [

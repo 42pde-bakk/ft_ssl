@@ -3,7 +3,7 @@
 //
 
 #include <stddef.h>
-#include <stdio.h>
+#include "ft_printf.h"
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
@@ -22,12 +22,12 @@ static int des_cbc_handler(const char* str, size_t length) {
 	char*			padded_str = NULL;
 
 	if (!(g_des_flags & FLAG_INITVECTOR) || !g_initialization_vector) {
-		dprintf(STDERR_FILENO, "iv undefined\n");
+		ft_dprintf(STDERR_FILENO, "iv undefined\n");
 		return (EXIT_FAILURE);
 	}
 	iv = create_64bit_chunk_from_hexstr(g_initialization_vector);
 	if (g_des_flags & FLAG_SHOW_KEY)
-		dprintf(STDERR_FILENO, "iv =%016lX\n", iv);
+		ft_dprintf(STDERR_FILENO, "iv =%016lX\n", iv);
 
 	if (!(g_des_flags & FLAG_NO_PADDING) && g_des_flags & FLAG_ENCRYPT) {
 		const uint8_t pad_amount = 8 - (length % 8);
@@ -53,7 +53,7 @@ static int des_cbc_handler(const char* str, size_t length) {
 
 			plaintext = apply_des(ciphertext, key) ^ iv;
 			add_chunk_to_buffer(plaintext, false);
-//			dprintf(STDERR_FILENO, "Decrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
+//			ft_dprintf(STDERR_FILENO, "Decrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
 			iv = ciphertext;
 		}
 
@@ -63,7 +63,7 @@ static int des_cbc_handler(const char* str, size_t length) {
 
 			ciphertext = apply_des(plaintext ^ iv, key);
 			add_chunk_to_buffer(ciphertext, true);
-//			dprintf(STDERR_FILENO, "Encrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
+//			ft_dprintf(STDERR_FILENO, "Encrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
 			iv = ciphertext;
 		}
 	}
@@ -73,7 +73,9 @@ static int des_cbc_handler(const char* str, size_t length) {
 	}
 
 	clear_buffer(g_outfd, true);
-	dprintf(g_outfd, "\n");
+	if (g_des_flags & FLAG_BASE64 && g_des_flags & FLAG_ENCRYPT) {
+		ft_dprintf(g_outfd, "\n");
+	}
 	free(base);
 	return (EXIT_SUCCESS);
 }
@@ -85,11 +87,11 @@ int des_cbc_fd(const int fd) {
 
 	ft_memset(&buf, 0, sizeof(buf));
 	if (fstat(fd, &buf) == -1 || buf.st_size <= 0 || S_ISDIR(buf.st_mode)) {
-		fprintf(stderr, "Error opening file.\n");
+		ft_dprintf(STDERR_FILENO, "Error opening file.\n");
 		return (EXIT_FAILURE);
 	}
 	if ((file = mmap(NULL, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED) {
-		fprintf(stderr, "Error reading file.\n");
+		ft_dprintf(STDERR_FILENO, "Error reading file.\n");
 		return (EXIT_FAILURE);
 	}
 	return_status = des_cbc_handler(file, buf.st_size);
