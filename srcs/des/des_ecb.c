@@ -13,7 +13,6 @@
 #include "libft.h"
 #include "base64/base64.h"
 #include "ft_printf.h"
-#include <stdio.h>
 
 static int des_ecb_handler(const char* str, size_t length) {
 	const uint64_t	key = get_key();

@@ -53,7 +53,7 @@ uint64_t	get_key() {
 		}
 		return (key);
 	}
-	if (g_des_flags & FLAG_PASSWORD && g_key != NULL) {
+	if (g_des_flags & FLAG_PASSWORD && g_password != NULL) {
 		key = create_64bit_chunk_from_hexstr(g_password);
 	} else {
 		pass = getpass("enter des encryption password:");
