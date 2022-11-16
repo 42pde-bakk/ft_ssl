@@ -17,7 +17,7 @@ int base64_fd(const int fd) {
 	} else {
 		result = base64_decode_file(fd);
 	}
-	ft_dprintf(g_outfd, "%s\n", result);
+	ft_dprintf(g_outfd, "%s", result);
 	free(result);
 	return (EXIT_SUCCESS);
 }
@@ -32,7 +32,7 @@ int base64_string(const char* str) {
 	} else {
 		result = base64_encode_string(str, str_len, &output_len);
 	}
-	ft_dprintf(g_outfd, "%s\n", result);
+	ft_dprintf(g_outfd, "%s", result);
 	free(result);
 	return (EXIT_SUCCESS);
 }
