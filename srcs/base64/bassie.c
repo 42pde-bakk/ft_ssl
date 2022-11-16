@@ -18,6 +18,9 @@ int base64_fd(const int fd) {
 		result = base64_decode_file(fd);
 	}
 	ft_dprintf(g_outfd, "%s", result);
+	if (g_base64_flags & FLAG_ENCRYPT) {
+		ft_dprintf(g_outfd, "\n");
+	}
 	free(result);
 	return (EXIT_SUCCESS);
 }
@@ -33,6 +36,9 @@ int base64_string(const char* str) {
 		result = base64_encode_string(str, str_len, &output_len);
 	}
 	ft_dprintf(g_outfd, "%s", result);
+	if (g_base64_flags & FLAG_ENCRYPT) {
+		ft_dprintf(g_outfd, "\n");
+	}
 	free(result);
 	return (EXIT_SUCCESS);
 }
