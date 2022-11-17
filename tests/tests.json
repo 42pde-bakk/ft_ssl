@@ -282,6 +282,34 @@
       "expected_stdout": "foo bar\n"
     }
   ],
+  "DES-CFB": [
+    {
+      "command": "echo foobar | ./ft_ssl des-cfb -K AB12CD34EF56AB78 -v 1A2B3C4D5E6F70DD | ./ft_ssl des-cfb -K AB12CD34EF56AB78 -v 1A2B3C4D5E6F70DD -d",
+      "expected_statuscode": 0,
+      "expected_stdout": "foobar\n"
+    }
+  ],
+  "DES-CTR": [
+    {
+      "command": "echo foobar | ./ft_ssl des-ctr -K AB12CD34EF56AB78 -v 1A2B3C4D5E6F70DD | ./ft_ssl des-ctr -K AB12CD34EF56AB78 -v 1A2B3C4D5E6F70DD -d",
+      "expected_statuscode": 0,
+      "expected_stdout": "foobar\n"
+    }
+  ],
+  "DES-OFB": [
+    {
+      "command": "echo foobar | ./ft_ssl des-ofb -K AB12CD34EF56AB78 -v 1A2B3C4D5E6F70DD | ./ft_ssl des-ofb -K AB12CD34EF56AB78 -v 1A2B3C4D5E6F70DD -d",
+      "expected_statuscode": 0,
+      "expected_stdout": "foobar\n"
+    }
+  ],
+  "DES-PCBC": [
+    {
+      "command": "echo foobar | ./ft_ssl des-pcbc -K AB12CD34EF56AB78 -v 1A2B3C4D5E6F70DD | ./ft_ssl des-pcbc -K AB12CD34EF56AB78 -v 1A2B3C4D5E6F70DD -d",
+      "expected_statuscode": 0,
+      "expected_stdout": "foobar\n"
+    }
+  ],
   "Invalid": [
     {
       "command": "./ft_ssl",

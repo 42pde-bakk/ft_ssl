@@ -48,22 +48,18 @@ static int des_ofb_handler(const char* str, size_t length) {
 			str = base;
 			length = newdatalen;
 		}
-		unsigned int tmpflags = g_des_flags;
-		g_des_flags = FLAG_ENCRYPT;
 		for (size_t i = 0; i < length; i += CHUNK_SIZE_IN_BYTES) {
 			ciphertext = REV64(*(uint64_t *)(str + i));
 
-			iv = apply_des(iv, key);
+			iv = apply_des(iv, key, FLAG_ENCRYPT);
 			plaintext = iv ^ ciphertext;
-			add_chunk_to_buffer(plaintext, true);
+			add_chunk_to_buffer(plaintext, false);
 		}
-		g_des_flags = tmpflags;
-
 	} else { // FLAG_ENCRYPT
 		for (size_t i = 0; i < length; i += CHUNK_SIZE_IN_BYTES) {
 			plaintext = create_64bit_chunk_from_str(str + i);
 
-			iv = apply_des(iv, key);
+			iv = apply_des(iv, key, FLAG_ENCRYPT);
 			ciphertext = plaintext ^ iv;
 			add_chunk_to_buffer(ciphertext, true);
 		}
@@ -73,7 +69,7 @@ static int des_ofb_handler(const char* str, size_t length) {
 		free(padded_str);
 	}
 
-	clear_buffer(g_outfd, false);
+	clear_buffer(g_outfd, true);
 	if (g_des_flags & FLAG_BASE64 && g_des_flags & FLAG_ENCRYPT) {
 		ft_dprintf(g_outfd, "\n");
 	}
