@@ -51,7 +51,7 @@ static int des_cbc_handler(const char* str, size_t length) {
 		for (size_t i = 0; i < length; i += CHUNK_SIZE_IN_BYTES) {
 			ciphertext = REV64(*(uint64_t *)(str + i));
 
-			plaintext = apply_des(ciphertext, key) ^ iv;
+			plaintext = apply_des(ciphertext, key, FLAG_DECRYPT) ^ iv;
 			add_chunk_to_buffer(plaintext, false);
 //			ft_dprintf(STDERR_FILENO, "Decrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
 			iv = ciphertext;
@@ -61,7 +61,7 @@ static int des_cbc_handler(const char* str, size_t length) {
 		for (size_t i = 0; i < length; i += CHUNK_SIZE_IN_BYTES) {
 			plaintext = create_64bit_chunk_from_str(str + i);
 
-			ciphertext = apply_des(plaintext ^ iv, key);
+			ciphertext = apply_des(plaintext ^ iv, key, FLAG_ENCRYPT);
 			add_chunk_to_buffer(ciphertext, true);
 //			ft_dprintf(STDERR_FILENO, "Encrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
 			iv = ciphertext;

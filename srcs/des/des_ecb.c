@@ -43,7 +43,7 @@ static int des_ecb_handler(const char* str, size_t length) {
 		for (size_t i = 0; i < length; i += CHUNK_SIZE_IN_BYTES) {
 			ciphertext = REV64(*(uint64_t *)(str + i));
 
-			plaintext = apply_des(ciphertext, key);
+			plaintext = apply_des(ciphertext, key, FLAG_DECRYPT);
 			ft_dprintf(2, "Decrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
 			add_chunk_to_buffer(plaintext, false);
 		}
@@ -52,7 +52,7 @@ static int des_ecb_handler(const char* str, size_t length) {
 		for (size_t i = 0; i < length; i += CHUNK_SIZE_IN_BYTES) {
 			plaintext = create_64bit_chunk_from_str(str + i);
 
-			ciphertext = apply_des(plaintext, key);
+			ciphertext = apply_des(plaintext, key, FLAG_ENCRYPT);
 			ft_dprintf(2, "Encrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
 			add_chunk_to_buffer(ciphertext, true);
 		}
@@ -145,12 +145,12 @@ void	test() {
 		g_des_flags = 0;
 		if (i % 2 == 0) {
 			g_des_flags |= FLAG_ENCRYPT;
-			res = apply_des(res, res);
+			res = apply_des(res, res, 0);
 			ft_printf("E: %016lx\n", res);
 		}
 		else {
 			g_des_flags |= FLAG_DECRYPT;
-			res = apply_des(res, res);
+			res = apply_des(res, res, 0);
 			ft_printf("D: %016lx\n", res);
 		}
 		assert(res == expected_outcomes[i]);
