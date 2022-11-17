@@ -9,7 +9,7 @@
  * Each index is the bit position in the plain-text block
  * Each value is which index's value will overwrite it
  */
-static const uint32_t	permutations[] = {
+static const unsigned int	permutations[] = {
 		16,  7, 20, 21,
 		29, 12, 28, 17,
 		1, 15, 23, 26,
