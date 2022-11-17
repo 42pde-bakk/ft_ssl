@@ -6,7 +6,7 @@
 #include <stddef.h>
 
 /* Permuted Choice 2 Table */
-static uint32_t PC2[] = {
+static const unsigned int PC2[] = {
 		14, 17, 11, 24,  1,  5,
 		3, 28, 15,  6, 21, 10,
 		23, 19, 12,  4, 26,  8,

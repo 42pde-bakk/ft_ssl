@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdio.h>
 
-static const uint32_t s_boxing_table[8][4][16] = {
+static const unsigned int s_boxing_table[8][4][16] = {
 		{
 				/* S1 */
 				{14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7},

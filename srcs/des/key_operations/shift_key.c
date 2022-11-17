@@ -5,9 +5,8 @@
 #include <stdint.h>
 #include <stddef.h>
 #define LOWERMASK 0x0fffffff
-#define UPPERMASK 0x1
 
-static const uint32_t shift_amounts[] = {
+static const unsigned int shift_amounts[] = {
 		1,  1,  2,  2,  2,  2,  2,  2,
 		1,  2,  2,  2,  2,  2,  2,  1
 };

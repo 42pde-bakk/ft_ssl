@@ -9,7 +9,7 @@
  * Each index is the bit position in the plain-text block
  * Each value is which index's value will overwrite it
  */
-static const int	key_permutations_table[] = {
+static const unsigned int	key_permutations_table[] = {
 		57, 49, 41, 33, 25, 17,  9,
 		1, 58, 50, 42, 34, 26, 18,
 		10,  2, 59, 51, 43, 35, 27,

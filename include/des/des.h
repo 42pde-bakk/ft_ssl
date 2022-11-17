@@ -13,7 +13,7 @@
 /*
  * srcs/des/des.c
  */
-uint64_t	apply_des(uint64_t input, uint64_t key);
+uint64_t apply_des(uint64_t input, uint64_t key, int mode);
 
 /*
  * srcs/des/msg_operations

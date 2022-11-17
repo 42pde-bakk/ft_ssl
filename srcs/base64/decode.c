@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include "libft.h"
 #include "base64/base64.h"
+#include <stdlib.h>
 
 static bool	is_base64_char(char c) {
 	return (ft_isalnum(c) || c == '+' || c == '/');

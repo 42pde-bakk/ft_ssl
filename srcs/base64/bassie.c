@@ -3,7 +3,7 @@
 //
 
 #include <stddef.h>
-#include <stdio.h>
+#include "ft_printf.h"
 #include <stdlib.h>
 #include "base64/flags.h"
 #include "base64/base64.h"
@@ -17,7 +17,10 @@ int base64_fd(const int fd) {
 	} else {
 		result = base64_decode_file(fd);
 	}
-	dprintf(g_outfd, "%s\n", result);
+	ft_dprintf(g_outfd, "%s", result);
+	if (g_base64_flags & FLAG_ENCRYPT) {
+		ft_dprintf(g_outfd, "\n");
+	}
 	free(result);
 	return (EXIT_SUCCESS);
 }
@@ -32,7 +35,10 @@ int base64_string(const char* str) {
 	} else {
 		result = base64_encode_string(str, str_len, &output_len);
 	}
-	dprintf(g_outfd, "%s\n", result);
+	ft_dprintf(g_outfd, "%s", result);
+	if (g_base64_flags & FLAG_ENCRYPT) {
+		ft_dprintf(g_outfd, "\n");
+	}
 	free(result);
 	return (EXIT_SUCCESS);
 }

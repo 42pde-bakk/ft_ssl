@@ -6,7 +6,7 @@
 #include "des/flags.h"
 #include <stdint.h>
 
-uint64_t apply_des(uint64_t input, uint64_t key) {
+uint64_t apply_des(uint64_t input, uint64_t key, const int mode) {
 	uint64_t	key56 = produce_56bit_key(key);
 	uint64_t	sub_keys[ROUNDS];
 	uint64_t	result;
@@ -37,7 +37,7 @@ uint64_t apply_des(uint64_t input, uint64_t key) {
 		// Now the 48-bit key is XOR with 48-bit RPT and the resulting output is given to the next step
 		// Which is the S-Box substitution.
 
-		if (g_des_flags & FLAG_DECRYPT) {
+		if (mode == FLAG_DECRYPT) {
 			expanded_rpt ^= sub_keys[ROUNDS - 1 - i];
 		} else {
 			expanded_rpt ^= sub_keys[i];

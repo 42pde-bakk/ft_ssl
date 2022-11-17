@@ -9,7 +9,7 @@
  * Each index is the bit position in the plain-text block
  * Each value is which index's value will overwrite it
  */
-static const int	IP_table[] = {
+static const unsigned int	IP_table[] = {
 	58,50,42,34,26,18,10,2,
 	60,52,44,36,28,20,12,4,
 	62,54,46,38,30,22,14,6,
