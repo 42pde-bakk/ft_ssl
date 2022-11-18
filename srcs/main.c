@@ -33,7 +33,7 @@ static int	open_file(const char *filename) {
 	return (fd);
 }
 
-static char	*read_stdin(const bool return_on_enter) {
+static char	*read_stdin() {
 	ssize_t ret,
 			total_read  = 0;
 	char	*result = calloc(1, sizeof(char));
@@ -56,9 +56,6 @@ static char	*read_stdin(const bool return_on_enter) {
 			return (NULL);
 		}
 		ft_bzero(tmp, BUFSIZ + 1);
-		if (return_on_enter) {
-			break ;
-		}
 	}
 	free(tmp);
 	if (ret < 0 || total_read == 0) {
@@ -75,7 +72,7 @@ static int handle_stdin(t_handler handler, bool no_files_or_strings_given, const
 	char	*result;
 
 	if ((!isatty(STDIN_FILENO)) && (flags & FLAG_P || no_files_or_strings_given)) {
-		result = read_stdin(false);
+		result = read_stdin();
 		if (!result) {
 			return (EXIT_FAILURE);
 		}
