@@ -48,7 +48,7 @@ static int des_ecb_handler(const char* str, size_t length) {
 			ciphertext = REV64(*(uint64_t *)(str + i));
 
 			plaintext = apply_des(ciphertext, key, FLAG_DECRYPT);
-			ft_dprintf(2, "Decrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
+//			ft_dprintf(2, "Decrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
 			add_chunk_to_buffer(plaintext, false);
 		}
 
@@ -57,7 +57,7 @@ static int des_ecb_handler(const char* str, size_t length) {
 			plaintext = create_64bit_chunk_from_str(str + i);
 
 			ciphertext = apply_des(plaintext, key, FLAG_ENCRYPT);
-			ft_dprintf(2, "Encrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
+//			ft_dprintf(2, "Encrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
 			add_chunk_to_buffer(ciphertext, true);
 		}
 	}
