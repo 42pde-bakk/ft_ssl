@@ -21,6 +21,10 @@ static int des_ecb_handler(const char* str, size_t length) {
 	char*			base = NULL;
 	char*			padded_str = NULL;
 
+	if (ft_strncmp(str, "Salted__", CHUNK_SIZE_IN_BYTES) == 0) {
+		str += 2 * CHUNK_SIZE_IN_BYTES;
+	}
+
 	if (!(g_des_flags & FLAG_NO_PADDING) && g_des_flags & FLAG_ENCRYPT) {
 		const uint8_t pad_amount = 8 - (length % 8);
 		padded_str = ft_calloc(length + pad_amount, sizeof(char));

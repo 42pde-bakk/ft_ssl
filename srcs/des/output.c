@@ -30,7 +30,7 @@ uint64_t REV64(uint64_t x) {
 	return (y);
 }
 
-static void create_str_from_64bit_chunk_and_output(uint64_t chunk, const int fd, const size_t write_len) {
+void create_str_from_64bit_chunk_and_output(uint64_t chunk, const int fd, const size_t write_len) {
 	char	arr[9];
 
 	ft_bzero(arr, sizeof(arr));
