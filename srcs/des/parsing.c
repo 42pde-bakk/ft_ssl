@@ -11,6 +11,7 @@
 #include "libft.h"
 #include <sys/random.h>
 #include <stdlib.h>
+#include "ft_printf.h"
 
 uint64_t	create_64bit_chunk_from_str(const char* const str) {
 	uint64_t	chunk = 0;
@@ -65,6 +66,11 @@ uint64_t	get_key() {
 	} else {
 		salt = generate_random_salt();
 	}
+	if (g_des_flags & FLAG_ENCRYPT) {
+//		add_chunk_to_buffer(create_64bit_chunk_from_str("Salted__"), true);
+//		add_chunk_to_buffer(salt, true);
+	}
+
 	key = pbkdf(key, salt);
 	if (g_des_flags & FLAG_SHOW_KEY) {
 		dprintf(STDERR_FILENO,"salt=%016lX\n", salt);

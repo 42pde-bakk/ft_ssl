@@ -21,6 +21,10 @@ static int des_pcbc_handler(const char* str, size_t length) {
 	char*			base = NULL;
 	char*			padded_str = NULL;
 
+	if (ft_strncmp(str, "Salted__", CHUNK_SIZE_IN_BYTES) == 0) {
+		str += 2 * CHUNK_SIZE_IN_BYTES;
+	}
+
 	if (!(g_des_flags & FLAG_INITVECTOR) || !g_initialization_vector) {
 		ft_dprintf(STDERR_FILENO, "iv undefined\n");
 		return (EXIT_FAILURE);

@@ -21,6 +21,10 @@ static int des_cfb_handler(const char* str, size_t length) {
 	char*			base = NULL;
 	char*			padded_str = NULL;
 
+	if (ft_strncmp(str, "Salted__", CHUNK_SIZE_IN_BYTES) == 0) {
+		str += 2 * CHUNK_SIZE_IN_BYTES;
+	}
+
 	if (!(g_des_flags & FLAG_INITVECTOR) || !g_initialization_vector) {
 		ft_dprintf(STDERR_FILENO, "iv undefined\n");
 		return (EXIT_FAILURE);
@@ -52,7 +56,7 @@ static int des_cfb_handler(const char* str, size_t length) {
 			ciphertext = REV64(*(uint64_t *)(str + i));
 
 			plaintext = apply_des(iv, key, FLAG_ENCRYPT) ^ ciphertext;
-			ft_dprintf(2, "Decrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
+//			ft_dprintf(2, "Decrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
 			add_chunk_to_buffer(plaintext, false);
 			iv = plaintext;
 		}
@@ -61,7 +65,7 @@ static int des_cfb_handler(const char* str, size_t length) {
 			plaintext = create_64bit_chunk_from_str(str + i);
 
 			ciphertext = apply_des(iv, key, FLAG_ENCRYPT) ^ plaintext;
-			ft_dprintf(2, "Encrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
+//			ft_dprintf(2, "Encrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
 			add_chunk_to_buffer(ciphertext, true);
 			iv = ciphertext;
 		}

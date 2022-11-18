@@ -10,8 +10,6 @@
 #include "vector.h"
 #include <fcntl.h>
 
-const char*	g_infile = NULL;
-const char*	g_outfile = NULL;
 const char*	g_key = NULL;
 const char*	g_password = NULL;
 const char*	g_salt = NULL;
@@ -63,9 +61,8 @@ unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx
 				break ;
 			case 'i':
 				g_des_flags |= FLAG_INPUTFILE;
-				g_infile = optarg;
 				if (create_fd(optarg, &g_infd, O_RDONLY)) {
-					fprintf(stderr, "Error opening infile '%s'.\n", g_outfile);
+					fprintf(stderr, "Error opening infile '%s'.\n", optarg);
 					return ((unsigned int)-1);
 				}
 				break ;
@@ -80,9 +77,8 @@ unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx
 					return ((unsigned int)-1);
 				}
 				g_des_flags |= FLAG_OUTPUTFILE;
-				g_outfile = optarg;
-				if (create_fd(g_outfile, &g_outfd, O_WRONLY | O_CREAT | O_TRUNC)) {
-					fprintf(stderr, "Error opening outfile '%s'.\n", g_outfile);
+				if (create_fd(optarg, &g_outfd, O_WRONLY | O_CREAT | O_TRUNC)) {
+					fprintf(stderr, "Error opening outfile '%s'.\n", optarg);
 					return ((unsigned int)-1);
 				}
 				break ;
