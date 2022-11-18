@@ -55,7 +55,7 @@ uint64_t	get_key() {
 		return (key);
 	}
 	if (g_des_flags & FLAG_PASSWORD && g_password != NULL) {
-		key = create_64bit_chunk_from_hexstr(g_password);
+		key = create_64bit_chunk_from_str(g_password);
 	} else {
 		pass = getpass("enter des encryption password:");
 		key = create_64bit_chunk_from_str(pass);
@@ -67,8 +67,8 @@ uint64_t	get_key() {
 		salt = generate_random_salt();
 	}
 	if (g_des_flags & FLAG_ENCRYPT) {
-//		add_chunk_to_buffer(create_64bit_chunk_from_str("Salted__"), true);
-//		add_chunk_to_buffer(salt, true);
+		add_chunk_to_buffer(create_64bit_chunk_from_str("Salted__"), true);
+		add_chunk_to_buffer(salt, true);
 	}
 
 	key = pbkdf(key, salt);
