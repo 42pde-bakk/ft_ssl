@@ -72,6 +72,7 @@ uint64_t	get_key() {
 	}
 
 	key = pbkdf(key, salt);
+	pbkdf_1(g_password, g_salt, 1, 0, 0);
 	if (g_des_flags & FLAG_SHOW_KEY) {
 		dprintf(STDERR_FILENO,"salt=%016lX\n", salt);
 		dprintf(STDERR_FILENO,"key=%016lX\n", key);

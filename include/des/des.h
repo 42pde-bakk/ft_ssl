@@ -37,6 +37,7 @@ uint64_t	shift_sub_key(uint64_t permuted_key);
  * srcs/des/pbkdf.c
  */
 uint64_t	pbkdf(uint64_t password, uint64_t salt);
+void	pbkdf_1(const char* pass, const char* salt, size_t iter, uint64_t* output_key, uint64_t* output_iv);
 
 /*
  * srcs/des/parsing.c
