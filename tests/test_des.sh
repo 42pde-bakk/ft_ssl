@@ -45,7 +45,7 @@ echo "Make sure they really tell you what is going on 'under the hood' when you 
   | openssl des-cbc -K "BABE101010FACADE" -iv "77696E6B66616365" -provider=legacy | \
   ./ft_ssl des-cbc -k "BABE101010FACADE" -v "77696E6B66616365" -d
 
-echo "houdoe" | openssl des-ecb -p -pass "pass::password" -S D09F26526B82A403 -a
+echo "bomb" | openssl des-ecb -p -pass "pass::password" -S D09F26526B82A403 -a
 # *** WARNING : deprecated key derivation used.
 # Using -iter or -pbkdf2 would be better.
 # salt=D09F26526B82A403
