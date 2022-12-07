@@ -15,10 +15,15 @@
 
 uint64_t	create_64bit_chunk_from_str(const char* const str) {
 	uint64_t	chunk = 0;
+	bool		reached_end = false;
 
 	for (size_t i = 0; i < 8; i++) {
 		chunk <<= 8;
-		chunk |= (uint64_t)str[i];
+		if (!reached_end)
+			chunk |= (uint64_t)str[i];
+		if (str[i] == '\0') {
+			reached_end = true;
+		}
 	}
 	return (chunk);
 }
@@ -45,7 +50,7 @@ static uint64_t	generate_random_salt() {
 uint64_t	get_key() {
 	uint64_t	key;
 	uint64_t	salt;
-	char		*pass;
+	uint64_t	iv;
 
 	if (g_des_flags & FLAG_KEY && g_key != NULL) {
 		key = create_64bit_chunk_from_hexstr(g_key);
@@ -56,8 +61,9 @@ uint64_t	get_key() {
 	}
 	if (g_des_flags & FLAG_PASSWORD && g_password != NULL) {
 		key = create_64bit_chunk_from_str(g_password);
+		printf("key = %016lX, reversed its %016lX\n", key, REV64(key));
 	} else {
-		pass = getpass("enter des encryption password:");
+		char*	pass = getpass("enter des encryption password:");
 		key = create_64bit_chunk_from_str(pass);
 	}
 
@@ -71,8 +77,7 @@ uint64_t	get_key() {
 		add_chunk_to_buffer(salt, true);
 	}
 
-	key = pbkdf(key, salt);
-	pbkdf_1(g_password, g_salt, 1, 0, 0);
+	pbkdf_1(key, salt, 1, &key, &iv);
 	if (g_des_flags & FLAG_SHOW_KEY) {
 		dprintf(STDERR_FILENO,"salt=%016lX\n", salt);
 		dprintf(STDERR_FILENO,"key=%016lX\n", key);
