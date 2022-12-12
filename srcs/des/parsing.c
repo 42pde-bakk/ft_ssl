@@ -83,8 +83,7 @@ uint64_t	get_key() {
 #if PBKDF_VERSION == 1
 	pbkdf_1(password, salt, 1, &key, &iv);
 #elif PBKDF_VERSION == 2
-	printf("salt = %016lX\n", salt);
-	pbkdf_2((char *)password, salt, 10000, NULL, NULL);
+	pbkdf_2((char *)password, salt, 10000, &key, &iv);
 #else
 	perror("INVALID PBKDF VERSION");
 	exit(1);

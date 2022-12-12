@@ -33,11 +33,6 @@ static char *compute_block_sized_key(char *password) {
 	else {
 		ft_memcpy(block_sized_key, password, password_length);
 	}
-//	printf("block_sized_key:\n");
-//	for (size_t i = 0; i < BLOCK_SIZE; i++) {
-//		printf("%d ", (int)block_sized_key[i]);
-//	}
-//	printf("\n");
 	return (block_sized_key);
 }
 
@@ -47,9 +42,6 @@ char *hmac(char *key, const char *msg, size_t msg_length) {
 	char	*padded_msg = ft_calloc(BLOCK_SIZE + msg_length + 1, sizeof(char));
 	char	*hashed_padded_msg = ft_calloc(SHA256_DIGEST_SIZE + 1, sizeof(char));
 	char	*result = ft_calloc(SHA256_DIGEST_SIZE, sizeof(char));
-
-//	printf("keylen=%zu, msglen=%zu, block_size=%d, output_size=%d\n", ft_strlen(key), msg_length, BLOCK_SIZE, SHA256_DIGEST_SIZE);
-//	printf("msg = %016lX\n", *(uint64_t *)msg);
 
 	if (!padded_msg || !hashed_padded_msg || !result) {
 		free(padded_msg);

@@ -11,38 +11,30 @@
 static const size_t keylen = 16;
 
 int pbkdf_2(char *pass, uint64_t salt, size_t iter, uint64_t *kkkey, uint64_t *iv) {
-	char	padded_salt[12];
-	char	block[SHA256_DIGEST_SIZE];
-	char	*hmac_result;
-	char	*hmac_result_2;
+	char			padded_salt[12];
+	unsigned char	block[SHA256_DIGEST_SIZE];
+	unsigned char	*hmac_result;
+	unsigned char	*hmac_result_2;
 	size_t	blocks;
 	size_t	pos = 0;
 	char	*key = calloc(100, 1);
 
-	printf("pass = %s, passlen=%zu, salt=%s (%016lX), saltlen=%zu, keylen = %zu\n", pass, ft_strlen(pass), (char*)&salt, salt, 8lu, keylen);
 	blocks = keylen / SHA256_DIGEST_SIZE + 1;
 	salt = REV64(salt);
 
 	ft_memcpy(padded_salt, &salt, 8);
-	printf("blocks = %zu, padded_salt = %016lX\n", blocks, *(uint64_t*)padded_salt);
 
 	for (uint32_t i = 1; i <= blocks; i++) {
-//		*((uint32_t*)(padded_salt + saltlen)) = little_endian() ? byteswap32(i) : i;
 		*((uint32_t*)(padded_salt + 8)) = REV32(i);
-		printf("padded_salt (with added i) = %08X\n", *(uint32_t *)(padded_salt+8));
 
-		hmac_result = hmac(pass, padded_salt, 12);
+		hmac_result = (unsigned char *)hmac(pass, padded_salt, 12);
 		if (!hmac_result) {
 			return (-1);
 		}
 		ft_memcpy(block, hmac_result, SHA256_DIGEST_SIZE);
 
-		iter = 2;
 		for (size_t j = 2; j <= iter; j++) {
-			hmac_result_2 = hmac(pass, hmac_result, SHA256_DIGEST_SIZE);
-			for (size_t BAM = 0; BAM < SHA256_DIGEST_SIZE; BAM++) {
-				printf("hmac_result_2[%zu] = %#hhx\n", BAM, hmac_result_2[BAM]);
-			}
+			hmac_result_2 = (unsigned char *)hmac(pass, (char *)hmac_result, SHA256_DIGEST_SIZE);
 			free(hmac_result);
 			if (!hmac_result_2) {
 				return (-1);
@@ -63,8 +55,7 @@ int pbkdf_2(char *pass, uint64_t salt, size_t iter, uint64_t *kkkey, uint64_t *i
 		}
 		pos += SHA256_DIGEST_SIZE;
 	}
-	printf("key = %016lX\n", *(uint64_t *)key);
-	(void)iv;
-	(void)kkkey;
+	*kkkey = REV64(*(uint64_t *)key);
+	*iv = REV64(*(uint64_t *)(key + 16));
 	return (0);
 }
