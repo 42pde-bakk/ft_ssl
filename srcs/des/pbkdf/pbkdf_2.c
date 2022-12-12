@@ -17,7 +17,7 @@ int pbkdf_2(char *pass, uint64_t salt, size_t iter, uint64_t *kkkey, uint64_t *i
 	unsigned char	*hmac_result_2;
 	size_t	blocks;
 	size_t	pos = 0;
-	char	*key = calloc(100, 1);
+	char	*key = calloc(32, 1);
 
 	blocks = keylen / SHA256_DIGEST_SIZE + 1;
 	salt = REV64(salt);
@@ -27,14 +27,14 @@ int pbkdf_2(char *pass, uint64_t salt, size_t iter, uint64_t *kkkey, uint64_t *i
 	for (uint32_t i = 1; i <= blocks; i++) {
 		*((uint32_t*)(padded_salt + 8)) = REV32(i);
 
-		hmac_result = (unsigned char *)hmac(pass, padded_salt, 12);
+		hmac_result = hmac(pass, padded_salt, 12);
 		if (!hmac_result) {
 			return (-1);
 		}
 		ft_memcpy(block, hmac_result, SHA256_DIGEST_SIZE);
 
 		for (size_t j = 2; j <= iter; j++) {
-			hmac_result_2 = (unsigned char *)hmac(pass, (char *)hmac_result, SHA256_DIGEST_SIZE);
+			hmac_result_2 = hmac(pass, (char *)hmac_result, SHA256_DIGEST_SIZE);
 			free(hmac_result);
 			if (!hmac_result_2) {
 				return (-1);
@@ -57,5 +57,6 @@ int pbkdf_2(char *pass, uint64_t salt, size_t iter, uint64_t *kkkey, uint64_t *i
 	}
 	*kkkey = REV64(*(uint64_t *)key);
 	*iv = REV64(*(uint64_t *)(key + 16));
+	free(key);
 	return (0);
 }

@@ -36,12 +36,12 @@ static char *compute_block_sized_key(char *password) {
 	return (block_sized_key);
 }
 
-char *hmac(char *key, const char *msg, size_t msg_length) {
+unsigned char * hmac(char *pass, const char *msg, size_t msg_length) {
 	char* block_sized_key;
 	t_sha2Context sha2Context;
 	char	*padded_msg = ft_calloc(BLOCK_SIZE + msg_length + 1, sizeof(char));
 	char	*hashed_padded_msg = ft_calloc(SHA256_DIGEST_SIZE + 1, sizeof(char));
-	char	*result = ft_calloc(SHA256_DIGEST_SIZE, sizeof(char));
+	unsigned char	*result = ft_calloc(SHA256_DIGEST_SIZE, sizeof(char));
 
 	if (!padded_msg || !hashed_padded_msg || !result) {
 		free(padded_msg);
@@ -49,7 +49,7 @@ char *hmac(char *key, const char *msg, size_t msg_length) {
 		free(result);
 		return (NULL);
 	}
-	block_sized_key = compute_block_sized_key(key);
+	block_sized_key = compute_block_sized_key(pass);
 	if (!block_sized_key) {
 		free(padded_msg);
 		free(hashed_padded_msg);
@@ -77,5 +77,6 @@ char *hmac(char *key, const char *msg, size_t msg_length) {
 	ft_memcpy(result, sha2Context.digest, SHA256_DIGEST_SIZE);
 	free(padded_msg);
 	free(hashed_padded_msg);
+	free(block_sized_key);
 	return (result);
 }

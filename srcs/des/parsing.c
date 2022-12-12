@@ -52,7 +52,6 @@ uint64_t	get_key() {
 				salt,
 				iv;
 	const char*		password;
-	(void)iv;
 
 	if (g_des_flags & FLAG_KEY && g_key != NULL) {
 		key = create_64bit_chunk_from_hexstr(g_key);
@@ -64,7 +63,6 @@ uint64_t	get_key() {
 	if (g_des_flags & FLAG_PASSWORD && g_password != NULL) {
 		password = g_password;
 		key = create_64bit_chunk_from_str(g_password);
-//		printf("key = %016lX, reversed its %016lX\n", key, REV64(key));
 	} else {
 		password = getpass("enter des encryption password:");
 		key = create_64bit_chunk_from_str(password);
@@ -84,6 +82,7 @@ uint64_t	get_key() {
 	pbkdf_1(password, salt, 1, &key, &iv);
 #elif PBKDF_VERSION == 2
 	pbkdf_2((char *)password, salt, 10000, &key, &iv);
+	printf("password now is %s\n", password);
 #else
 	perror("INVALID PBKDF VERSION");
 	exit(1);
