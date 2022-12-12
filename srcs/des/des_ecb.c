@@ -15,12 +15,13 @@
 #include "ft_printf.h"
 
 static int des_ecb_handler(const char* str, size_t length) {
-	const uint64_t	key = get_key();
-	uint64_t		ciphertext,
-					plaintext;
-	char*			base = NULL;
-	char*			padded_str = NULL;
+	uint64_t	key;
+	uint64_t	ciphertext,
+				plaintext;
+	char*		base = NULL;
+	char*		padded_str = NULL;
 
+	get_key(&key, NULL);
 	if (ft_strncmp(str, "Salted__", CHUNK_SIZE_IN_BYTES) == 0) {
 		str += 2 * CHUNK_SIZE_IN_BYTES;
 	}

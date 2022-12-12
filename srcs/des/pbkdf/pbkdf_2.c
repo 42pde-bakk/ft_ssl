@@ -56,7 +56,9 @@ int pbkdf_2(char *pass, uint64_t salt, size_t iter, uint64_t *kkkey, uint64_t *i
 		pos += SHA256_DIGEST_SIZE;
 	}
 	*kkkey = REV64(*(uint64_t *)key);
-	*iv = REV64(*(uint64_t *)(key + 16));
+	if (iv) {
+		*iv = REV64(*(uint64_t *)(key + 8));
+	}
 	free(key);
 	return (0);
 }

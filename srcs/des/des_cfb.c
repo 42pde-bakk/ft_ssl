@@ -14,13 +14,14 @@
 #include "base64/base64.h"
 
 static int des_cfb_handler(const char* str, size_t length) {
-	const uint64_t	key = get_key();
-	uint64_t		ciphertext,
-					plaintext,
-					iv;
-	char*			base = NULL;
-	char*			padded_str = NULL;
+	uint64_t	key,
+				iv;
+	uint64_t	ciphertext,
+				plaintext;
+	char*		base = NULL;
+	char*		padded_str = NULL;
 
+	get_key(&key, &iv);
 	if (ft_strncmp(str, "Salted__", CHUNK_SIZE_IN_BYTES) == 0) {
 		str += 2 * CHUNK_SIZE_IN_BYTES;
 	}
@@ -30,8 +31,6 @@ static int des_cfb_handler(const char* str, size_t length) {
 		return (EXIT_FAILURE);
 	}
 	iv = create_64bit_chunk_from_hexstr(g_initialization_vector);
-	if (g_des_flags & FLAG_SHOW_KEY)
-		ft_dprintf(STDERR_FILENO, "iv =%016lX\n", iv);
 
 	if (!(g_des_flags & FLAG_NO_PADDING) && g_des_flags & FLAG_ENCRYPT) {
 		const uint8_t pad_amount = 8 - (length % 8);

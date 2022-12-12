@@ -35,7 +35,7 @@ echo "what kind of lock takes no key?" | openssl des-ecb -K "00000000" -provider
 # YOU SHALL NOT PASS(word)!
 echo "$(curl 'https://www.peereboom.us/assl/assl/html/openssl.html') (https://www.peereboom.us/assl/assl/html/openssl.html'))" > original.html
 echo "password" > password_file # very secure
-openssl des-ecb -p -in original.html -out ciphertext.html -pass "pass::$(cat password_file)" -provider=legacy
+openssl des-ecb -p -in original.html -out ciphertext.html -pass "pass:$(cat password_file)" -provider=legacy
 # ./ft_ssl des-ecb -d -i ciphertext.html -o decrypted.html -p "$(cat password_file)" -s (Copy the salt used by OpenSSL here!)
 
 

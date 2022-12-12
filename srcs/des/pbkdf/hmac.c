@@ -3,7 +3,6 @@
 //
 
 #include <stdlib.h>
-#include <errno.h>
 #include <stdio.h>
 #include "libft.h"
 #include "sha/sha256.h"
@@ -17,7 +16,7 @@
 typedef t_sha2Context (*digest_func)(const char*, size_t);
 static const digest_func digest = sha256_return_string;
 
-static char *compute_block_sized_key(char *password) {
+static char*	compute_block_sized_key(char *password) {
 	char *block_sized_key = ft_calloc(BLOCK_SIZE + 1, sizeof(char));
 	const size_t password_length = ft_strlen(password);
 
@@ -36,7 +35,7 @@ static char *compute_block_sized_key(char *password) {
 	return (block_sized_key);
 }
 
-unsigned char * hmac(char *pass, const char *msg, size_t msg_length) {
+unsigned char*	hmac(char *pass, const char *msg, size_t msg_length) {
 	char* block_sized_key;
 	t_sha2Context sha2Context;
 	char	*padded_msg = ft_calloc(BLOCK_SIZE + msg_length + 1, sizeof(char));

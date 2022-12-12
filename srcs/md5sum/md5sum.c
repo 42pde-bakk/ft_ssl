@@ -107,13 +107,12 @@ int md5sum_string(const char* str) {
 	return (EXIT_SUCCESS);
 }
 
-t_MD5Context	md5sum_return_string(const char* str) {
+t_MD5Context md5sum_return_string(const char *str, size_t str_length) {
 	t_MD5Context	md5Context;
 
 	md5_init(&md5Context);
-	md5_update(&md5Context, (uint8_t *)str, strlen(str));
+	md5_update(&md5Context, (uint8_t *)str, str_length);
 	md5_finalize(&md5Context);
-//	print_hash(md5Context.digest, MD5_DIGEST_LENGTH);
 
 	return (md5Context);
 }

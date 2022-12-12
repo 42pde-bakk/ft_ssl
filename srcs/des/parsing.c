@@ -47,25 +47,23 @@ static uint64_t	generate_random_salt() {
 	return (bytes);
 }
 
-uint64_t	get_key() {
-	uint64_t	key,
-				salt,
-				iv;
-	const char*		password;
+int get_key(uint64_t *key, uint64_t *iv) {
+	uint64_t	salt;
+	const char*	password;
 
 	if (g_des_flags & FLAG_KEY && g_key != NULL) {
-		key = create_64bit_chunk_from_hexstr(g_key);
+		*key = create_64bit_chunk_from_hexstr(g_key);
 		if (g_des_flags & FLAG_SHOW_KEY) {
-			dprintf(STDERR_FILENO, "key=%016lX\n", key);
+			dprintf(STDERR_FILENO, "key=%016lX\n", *key);
 		}
-		return (key);
+		return (EXIT_SUCCESS);
 	}
 	if (g_des_flags & FLAG_PASSWORD && g_password != NULL) {
 		password = g_password;
-		key = create_64bit_chunk_from_str(g_password);
+		*key = create_64bit_chunk_from_str(g_password);
 	} else {
 		password = getpass("enter des encryption password:");
-		key = create_64bit_chunk_from_str(password);
+		*key = create_64bit_chunk_from_str(password);
 	}
 
 	if (g_des_flags & FLAG_SALT && g_salt != NULL) {
@@ -79,17 +77,18 @@ uint64_t	get_key() {
 	}
 
 #if PBKDF_VERSION == 1
-	pbkdf_1(password, salt, 1, &key, &iv);
+	pbkdf_1(password, salt, 1, key, iv);
 #elif PBKDF_VERSION == 2
-	pbkdf_2((char *)password, salt, 10000, &key, &iv);
-	printf("password now is %s\n", password);
+	pbkdf_2((char *)password, salt, 10000, key, iv);
 #else
 	perror("INVALID PBKDF VERSION");
 	exit(1);
 #endif
 	if (g_des_flags & FLAG_SHOW_KEY) {
 		dprintf(STDERR_FILENO,"salt=%016lX\n", salt);
-		dprintf(STDERR_FILENO,"key=%016lX\n", key);
+		dprintf(STDERR_FILENO,"key=%016lX\n", *key);
+		if (iv)
+			dprintf(STDERR_FILENO,"iv=%016lX\n", *iv);
 	}
-	return (key);
+	return (EXIT_SUCCESS);
 }
