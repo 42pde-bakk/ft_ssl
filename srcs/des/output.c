@@ -15,7 +15,22 @@
 
 static t_uint64vector*	chunk_vector = NULL;
 
-uint64_t REV64(uint64_t x) {
+uint64_t	REV32(uint32_t x) {
+	int				i = 0;
+	uint64_t		y = 0;
+	unsigned char	*ptr_x,
+					*ptr_y;
+	size_t			size = sizeof(x);
+
+	ptr_x = (unsigned char *)&x;
+	ptr_y = (unsigned char *)&y;
+	while (--size)
+		ptr_y[i++] = ptr_x[size];
+	ptr_y[i++] = ptr_x[size];
+	return (y);
+}
+
+uint64_t	REV64(uint64_t x) {
 	int				i = 0;
 	uint64_t		y = 0;
 	unsigned char	*ptr_x,

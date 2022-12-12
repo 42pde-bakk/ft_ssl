@@ -7,6 +7,7 @@
 
 #define CHUNK_SIZE_IN_BYTES 8 // Bytes, so 64 bits
 #define ROUNDS 16
+#define PBKDF_VERSION 2
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -37,8 +38,10 @@ uint64_t	shift_sub_key(uint64_t permuted_key);
  * srcs/des/pbkdf.c
  */
 uint64_t	pbkdf(uint64_t password, uint64_t salt);
-void	pbkdf_1(const char *pass, uint64_t salt, const size_t iter, uint64_t* output_key, uint64_t* output_iv);
-
+void	pbkdf_1(const char *pass, uint64_t salt, size_t iter, uint64_t* output_key, uint64_t* output_iv);
+char * hmac(char *key, const char *msg);
+int
+pbkdf_2(char *pass, uint64_t salt, size_t iter, uint64_t *key, uint64_t *iv);
 /*
  * srcs/des/parsing.c
  */
@@ -49,7 +52,8 @@ uint64_t	get_key();
 /*
  * srcs/des/output.c
  */
-uint64_t	REV64(uint64_t x);;
+uint64_t	REV64(uint64_t x);
+uint64_t	REV32(uint32_t x);
 void	add_chunk_to_buffer(uint64_t chunk, bool should_reverse);
 void	clear_buffer(int fd, bool reverse_decode);
 void create_str_from_64bit_chunk_and_output(uint64_t chunk, int fd, size_t write_len);

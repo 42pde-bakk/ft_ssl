@@ -52,6 +52,7 @@ uint64_t	get_key() {
 				salt,
 				iv;
 	const char*		password;
+	(void)iv;
 
 	if (g_des_flags & FLAG_KEY && g_key != NULL) {
 		key = create_64bit_chunk_from_hexstr(g_key);
@@ -62,11 +63,11 @@ uint64_t	get_key() {
 	}
 	if (g_des_flags & FLAG_PASSWORD && g_password != NULL) {
 		password = g_password;
-//		key = create_64bit_chunk_from_str(g_password);
+		key = create_64bit_chunk_from_str(g_password);
 //		printf("key = %016lX, reversed its %016lX\n", key, REV64(key));
 	} else {
 		password = getpass("enter des encryption password:");
-//		key = create_64bit_chunk_from_str(pass);
+		key = create_64bit_chunk_from_str(password);
 	}
 
 	if (g_des_flags & FLAG_SALT && g_salt != NULL) {
@@ -74,12 +75,20 @@ uint64_t	get_key() {
 	} else {
 		salt = generate_random_salt();
 	}
-//	if (g_des_flags & FLAG_ENCRYPT) {
-//		add_chunk_to_buffer(create_64bit_chunk_from_str("Salted__"), true);
-//		add_chunk_to_buffer(salt, true);
-//	}
+	if (g_des_flags & FLAG_ENCRYPT) {
+		add_chunk_to_buffer(create_64bit_chunk_from_str("Salted__"), true);
+		add_chunk_to_buffer(salt, true);
+	}
 
+#if PBKDF_VERSION == 1
 	pbkdf_1(password, salt, 1, &key, &iv);
+#elif PBKDF_VERSION == 2
+	printf("salt = %016lX\n", salt);
+	pbkdf_2((char *)password, salt, 10000, NULL, NULL);
+#else
+	perror("INVALID PBKDF VERSION");
+	exit(1);
+#endif
 	if (g_des_flags & FLAG_SHOW_KEY) {
 		dprintf(STDERR_FILENO,"salt=%016lX\n", salt);
 		dprintf(STDERR_FILENO,"key=%016lX\n", key);

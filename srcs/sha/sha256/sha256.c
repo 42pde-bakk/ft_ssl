@@ -121,6 +121,16 @@ int sha256_string(const char* str) {
 	return (EXIT_SUCCESS);
 }
 
+t_sha2Context sha256_return_string(const char *str, const size_t length) {
+	t_sha2Context sha256Context;
+
+	sha256_init(&sha256Context, sha256_h);
+	sha256_update(&sha256Context, (uint8_t *)str, length);
+
+	sha256_finalize(&sha256Context);
+	return (sha256Context);
+}
+
 int sha256_file(int fd) {
 	t_sha2Context sha256Context;
 	ssize_t ret;
