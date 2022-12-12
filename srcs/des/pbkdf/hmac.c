@@ -33,26 +33,35 @@ static char *compute_block_sized_key(char *password) {
 	else {
 		ft_memcpy(block_sized_key, password, password_length);
 	}
+//	printf("block_sized_key:\n");
+//	for (size_t i = 0; i < BLOCK_SIZE; i++) {
+//		printf("%d ", (int)block_sized_key[i]);
+//	}
+//	printf("\n");
 	return (block_sized_key);
 }
 
-char*	hmac(char *key, const char *msg) {
+char *hmac(char *key, const char *msg, size_t msg_length) {
 	char* block_sized_key;
 	t_sha2Context sha2Context;
-	const size_t msg_length = ft_strlen(msg);
-	printf("msg_length = %zu\n", msg_length);
 	char	*padded_msg = ft_calloc(BLOCK_SIZE + msg_length + 1, sizeof(char));
 	char	*hashed_padded_msg = ft_calloc(SHA256_DIGEST_SIZE + 1, sizeof(char));
+	char	*result = ft_calloc(SHA256_DIGEST_SIZE, sizeof(char));
 
-	if (!padded_msg || !hashed_padded_msg) {
+//	printf("keylen=%zu, msglen=%zu, block_size=%d, output_size=%d\n", ft_strlen(key), msg_length, BLOCK_SIZE, SHA256_DIGEST_SIZE);
+//	printf("msg = %016lX\n", *(uint64_t *)msg);
+
+	if (!padded_msg || !hashed_padded_msg || !result) {
 		free(padded_msg);
 		free(hashed_padded_msg);
+		free(result);
 		return (NULL);
 	}
 	block_sized_key = compute_block_sized_key(key);
 	if (!block_sized_key) {
 		free(padded_msg);
 		free(hashed_padded_msg);
+		free(result);
 		return (NULL);
 	}
 	for (size_t i = 0; i < BLOCK_SIZE; i++) {
@@ -61,15 +70,10 @@ char*	hmac(char *key, const char *msg) {
 	for (size_t i = 0; i < msg_length; i++) {
 		padded_msg[BLOCK_SIZE + i] = msg[i];
 	}
-	for (size_t i = 0; i < 10; i++) {
-		printf("padded_msg,i=%zu => %016lX\n", i, *(uint64_t *)(padded_msg + 8 * i));
-	}
-	printf("step 1: padded_msg = %016lX %016lX\n", *(uint64_t *)padded_msg, *(uint64_t *)(padded_msg + 8));
+
 	sha2Context = digest(padded_msg, BLOCK_SIZE + msg_length);
 	free(padded_msg);
 	hashed_padded_msg = ft_memcpy(hashed_padded_msg, sha2Context.digest, SHA256_DIGEST_SIZE);
-	printf("step 1: padded_msg_hash = %016lX %016lX\n", *(uint64_t *)hashed_padded_msg, *(uint64_t *)(hashed_padded_msg + 8));
-
 	padded_msg = ft_calloc(BLOCK_SIZE + SHA256_DIGEST_SIZE + 1, sizeof(char));
 	for (size_t i = 0; i < BLOCK_SIZE; i++) {
 		padded_msg[i] = (char)(block_sized_key[i] ^ 0x5c);
@@ -77,8 +81,7 @@ char*	hmac(char *key, const char *msg) {
 	for (size_t i = 0; i < SHA256_DIGEST_SIZE; i++) {
 		padded_msg[BLOCK_SIZE + i] = hashed_padded_msg[i];
 	}
-	sha2Context = digest(padded_msg, BLOCK_SIZE + msg_length);
-	char*	result = ft_calloc(SHA256_DIGEST_SIZE, sizeof(char));
+	sha2Context = digest(padded_msg, BLOCK_SIZE + SHA256_DIGEST_SIZE);
 	ft_memcpy(result, sha2Context.digest, SHA256_DIGEST_SIZE);
 	free(padded_msg);
 	free(hashed_padded_msg);

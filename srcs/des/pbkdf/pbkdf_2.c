@@ -22,9 +22,6 @@ int pbkdf_2(char *pass, uint64_t salt, size_t iter, uint64_t *kkkey, uint64_t *i
 	printf("pass = %s, passlen=%zu, salt=%s (%016lX), saltlen=%zu, keylen = %zu\n", pass, ft_strlen(pass), (char*)&salt, salt, 8lu, keylen);
 	blocks = keylen / SHA256_DIGEST_SIZE + 1;
 	salt = REV64(salt);
-//	if (keylen % SHA256_DIGEST_SIZE) {
-//		blocks++;
-//	}
 
 	ft_memcpy(padded_salt, &salt, 8);
 	printf("blocks = %zu, padded_salt = %016lX\n", blocks, *(uint64_t*)padded_salt);
@@ -34,16 +31,18 @@ int pbkdf_2(char *pass, uint64_t salt, size_t iter, uint64_t *kkkey, uint64_t *i
 		*((uint32_t*)(padded_salt + 8)) = REV32(i);
 		printf("padded_salt (with added i) = %08X\n", *(uint32_t *)(padded_salt+8));
 
-		hmac_result = hmac(pass, padded_salt);
-		printf("tmp = %s\n", hmac_result);
+		hmac_result = hmac(pass, padded_salt, 12);
 		if (!hmac_result) {
 			return (-1);
 		}
 		ft_memcpy(block, hmac_result, SHA256_DIGEST_SIZE);
 
-		(void)iter;
-		for (size_t j = 2; j <= 2; j++) {
-			hmac_result_2 = hmac(pass, hmac_result);
+		iter = 2;
+		for (size_t j = 2; j <= iter; j++) {
+			hmac_result_2 = hmac(pass, hmac_result, SHA256_DIGEST_SIZE);
+			for (size_t BAM = 0; BAM < SHA256_DIGEST_SIZE; BAM++) {
+				printf("hmac_result_2[%zu] = %#hhx\n", BAM, hmac_result_2[BAM]);
+			}
 			free(hmac_result);
 			if (!hmac_result_2) {
 				return (-1);

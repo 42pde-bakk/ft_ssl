@@ -39,7 +39,7 @@ uint64_t	shift_sub_key(uint64_t permuted_key);
  */
 uint64_t	pbkdf(uint64_t password, uint64_t salt);
 void	pbkdf_1(const char *pass, uint64_t salt, size_t iter, uint64_t* output_key, uint64_t* output_iv);
-char * hmac(char *key, const char *msg);
+char *hmac(char *key, const char *msg, size_t msg_length);
 int
 pbkdf_2(char *pass, uint64_t salt, size_t iter, uint64_t *key, uint64_t *iv);
 /*
