@@ -73,6 +73,10 @@ void add_chunk_to_buffer(uint64_t chunk, bool should_reverse) {
 }
 
 uint8_t	remove_padding() {
+	if (chunk_vector == NULL) {
+		dprintf(2, "Please don't decrypt binary data with the -a flag.\n");
+		exit(1);
+	}
 	uint64_t	*last_chunk = &chunk_vector->arr[chunk_vector->size - 1];
 	uint8_t		pad_amount = *last_chunk & 0x000000FF;
 

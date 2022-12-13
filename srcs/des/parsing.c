@@ -56,6 +56,12 @@ int get_key(uint64_t *key, uint64_t *iv) {
 		if (g_des_flags & FLAG_SHOW_KEY) {
 			dprintf(STDERR_FILENO, "key=%016lX\n", *key);
 		}
+		if ((g_des_flags & FLAG_INITVECTOR) && g_initialization_vector && iv) {
+			*iv = create_64bit_chunk_from_hexstr(g_initialization_vector);
+		} else {
+			dprintf(2, "iv undefined\n");
+			exit(1);
+		}
 		return (EXIT_SUCCESS);
 	}
 	if (g_des_flags & FLAG_PASSWORD && g_password != NULL) {
@@ -72,18 +78,18 @@ int get_key(uint64_t *key, uint64_t *iv) {
 		salt = generate_random_salt();
 	}
 	if (g_des_flags & FLAG_ENCRYPT) {
-		add_chunk_to_buffer(create_64bit_chunk_from_str("Salted__"), true);
+		add_chunk_to_buffer(create_64bit_chunk_from_str(DES_SALT_MAGIC), true);
 		add_chunk_to_buffer(salt, true);
 	}
 
-#if PBKDF_VERSION == 1
-	pbkdf_1(password, salt, 1, key, iv);
-#elif PBKDF_VERSION == 2
-	pbkdf_2((char *)password, salt, 10000, key, iv);
-#else
-	perror("INVALID PBKDF VERSION");
-	exit(1);
-#endif
+	if (pbkdf_version == 1) {
+		pbkdf_1(password, salt, 1, key, iv);
+	} else {
+		pbkdf_2((char *)password, salt, 10000, key, iv);
+	}
+	if ((g_des_flags & FLAG_INITVECTOR) && g_initialization_vector && iv) {
+		*iv = create_64bit_chunk_from_hexstr(g_initialization_vector);
+	}
 	if (g_des_flags & FLAG_SHOW_KEY) {
 		dprintf(STDERR_FILENO,"salt=%016lX\n", salt);
 		dprintf(STDERR_FILENO,"key=%016lX\n", *key);

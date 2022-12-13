@@ -25,7 +25,7 @@ extern const char*	g_key;
 extern const char*	g_password;
 extern const char*	g_salt;
 extern const char*	g_initialization_vector;
-
+extern int	pbkdf_version;
 extern int 	g_infd ;
 extern int	g_outfd;
 

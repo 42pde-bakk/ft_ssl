@@ -41,7 +41,7 @@ def run_testcases(test_cases: list, test_name: str) -> int:
 			return_status = 1
 		print(f'[{test_outcome}] on "{test_case["command"]}"')
 		if return_status:
-			break
+			exit(1)
 	return return_status
 
 

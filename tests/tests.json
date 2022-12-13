@@ -238,6 +238,36 @@
       "command": "echo -n \"foo bar\" | ./ft_ssl des-ecb -k \"$DES_KEY\" | ./ft_ssl des-ecb -d -K \"$DES_KEY\"",
       "expected_statuscode": 0,
       "expected_stdout": "foo bar"
+    },
+    {
+      "command": "echo \"U2FsdGVkX1/QnyZSa4KkAzBnagTvAxPnf8DewKkKzO8=\" | ./ft_ssl des-ecb -p \"password\" -s D09F26526B82A403 -ad",
+      "expected_statuscode": 0,
+      "expected_stdout": "adventofcode\n"
+    },
+    {
+      "command": "echo \"adventofcode\" | ./ft_ssl des-ecb -p \"password\" -s D09F26526B82A403 -a",
+      "expected_statuscode": 0,
+      "expected_stdout": "U2FsdGVkX1/QnyZSa4KkAzBnagTvAxPnf8DewKkKzO8=\n"
+    },
+    {
+      "command": "echo \"adventofcode\" | ./ft_ssl des-ecb -p \"password\" -s D09F26526B82A403 -a | openssl des-ecb -pass \"pass:password\" -S D09F26526B82A403 -a -d",
+      "expected_statuscode": 0,
+      "expected_stdout": "adventofcode\n"
+    },
+    {
+      "command": "echo \"adventofcode\" | ./ft_ssl des-ecb -p \"password\" -s D09F26526B82A403 | openssl des-ecb -pass \"pass:password\" -S D09F26526B82A403 -d",
+      "expected_statuscode": 0,
+      "expected_stdout": "adventofcode\n"
+    },
+    {
+      "command": "echo \"adventofcode\" | openssl des-ecb -pass \"pass:password\" -S D09F26526B82A403 -a | ./ft_ssl des-ecb -p \"password\" -s D09F26526B82A403 -a -d",
+      "expected_statuscode": 0,
+      "expected_stdout": "adventofcode\n"
+    },
+    {
+      "command": "echo \"adventofcode\" | openssl des-ecb -pass \"pass:password\" -S D09F26526B82A403 | ./ft_ssl des-ecb -p \"password\" -s D09F26526B82A403 -d",
+      "expected_statuscode": 0,
+      "expected_stdout": "adventofcode\n"
     }
   ],
   "DES-CBC": [

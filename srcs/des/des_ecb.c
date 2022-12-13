@@ -13,6 +13,7 @@
 #include "libft.h"
 #include "base64/base64.h"
 #include "ft_printf.h"
+#include <stdio.h>
 
 static int des_ecb_handler(const char* str, size_t length) {
 	uint64_t	key;
@@ -22,20 +23,21 @@ static int des_ecb_handler(const char* str, size_t length) {
 	char*		padded_str = NULL;
 
 	get_key(&key, NULL);
-	if (ft_strncmp(str, "Salted__", CHUNK_SIZE_IN_BYTES) == 0) {
-		str += 2 * CHUNK_SIZE_IN_BYTES;
-	}
-
 	if (!(g_des_flags & FLAG_NO_PADDING) && g_des_flags & FLAG_ENCRYPT) {
 		const uint8_t pad_amount = 8 - (length % 8);
 		padded_str = ft_calloc(length + pad_amount, sizeof(char));
 		ft_strlcpy(padded_str, str, length + 1);
 
 		for (uint8_t i = 0; i < pad_amount; i++) {
-			padded_str[length + i] = (char)pad_amount;
+			padded_str[length + i] = (char) pad_amount;
 		}
 		str = padded_str;
 		length += pad_amount;
+	}
+
+	if (ft_strncmp(str, DES_SALT_MAGIC, CHUNK_SIZE_IN_BYTES) == 0) {
+		str += 2 * CHUNK_SIZE_IN_BYTES;
+		length -= 2 * CHUNK_SIZE_IN_BYTES;
 	}
 
 	if (g_des_flags & FLAG_DECRYPT) {
@@ -44,6 +46,10 @@ static int des_ecb_handler(const char* str, size_t length) {
 			base = base64_decode_string(str, length, &newdatalen);
 			str = base;
 			length = newdatalen;
+		}
+		if (ft_strncmp(str, DES_SALT_MAGIC, CHUNK_SIZE_IN_BYTES) == 0) {
+			str += 2 * CHUNK_SIZE_IN_BYTES;
+			length -= 2 * CHUNK_SIZE_IN_BYTES;
 		}
 		for (size_t i = 0; i < length; i += CHUNK_SIZE_IN_BYTES) {
 			ciphertext = REV64(*(uint64_t *)(str + i));

@@ -7,9 +7,10 @@
 
 #define CHUNK_SIZE_IN_BYTES 8 // Bytes, so 64 bits
 #define ROUNDS 16
-#define PBKDF_VERSION 1
 #include <stdint.h>
 #include <stdbool.h>
+
+#define DES_SALT_MAGIC "Salted__"
 
 /*
  * srcs/des/des.c
