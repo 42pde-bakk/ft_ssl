@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 #include "ft_printf.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
@@ -14,25 +15,14 @@
 #include "base64/base64.h"
 
 static int des_cfb_handler(const char* str, size_t length) {
-	const uint64_t	key = get_key();
-	uint64_t		ciphertext,
-					plaintext,
-					iv;
-	char*			base = NULL;
-	char*			padded_str = NULL;
+	uint64_t	key,
+				iv;
+	uint64_t	ciphertext,
+				plaintext;
+	char*		base = NULL;
+	char*		padded_str = NULL;
 
-	if (ft_strncmp(str, "Salted__", CHUNK_SIZE_IN_BYTES) == 0) {
-		str += 2 * CHUNK_SIZE_IN_BYTES;
-	}
-
-	if (!(g_des_flags & FLAG_INITVECTOR) || !g_initialization_vector) {
-		ft_dprintf(STDERR_FILENO, "iv undefined\n");
-		return (EXIT_FAILURE);
-	}
-	iv = create_64bit_chunk_from_hexstr(g_initialization_vector);
-	if (g_des_flags & FLAG_SHOW_KEY)
-		ft_dprintf(STDERR_FILENO, "iv =%016lX\n", iv);
-
+	get_key(&key, &iv);
 	if (!(g_des_flags & FLAG_NO_PADDING) && g_des_flags & FLAG_ENCRYPT) {
 		const uint8_t pad_amount = 8 - (length % 8);
 		padded_str = ft_calloc(length + pad_amount, sizeof(char));
@@ -44,6 +34,10 @@ static int des_cfb_handler(const char* str, size_t length) {
 		str = padded_str;
 		length += pad_amount;
 	}
+	if (ft_strncmp(str, DES_SALT_MAGIC, CHUNK_SIZE_IN_BYTES) == 0) {
+		str += 2 * CHUNK_SIZE_IN_BYTES;
+		length -= 2 * CHUNK_SIZE_IN_BYTES;
+	}
 
 	if (g_des_flags & FLAG_DECRYPT) {
 		if (g_des_flags & FLAG_BASE64) {
@@ -52,6 +46,11 @@ static int des_cfb_handler(const char* str, size_t length) {
 			str = base;
 			length = newdatalen;
 		}
+		if (ft_strncmp(str, DES_SALT_MAGIC, CHUNK_SIZE_IN_BYTES) == 0) {
+			str += 2 * CHUNK_SIZE_IN_BYTES;
+			length -= 2 * CHUNK_SIZE_IN_BYTES;
+		}
+
 		for (size_t i = 0; i < length; i += CHUNK_SIZE_IN_BYTES) {
 			ciphertext = REV64(*(uint64_t *)(str + i));
 

@@ -64,12 +64,15 @@ def main():
 
 	for test_name in [
 		'MD5', 'SHA256', 'SHA224', 'BASE64',
-		'DES-ECB', 'DES-CBC', 'DES-CFB', 'DES-CTR', 'DES-OFB', 'DES-PCBC',
-		'Invalid'
+		'DES-ECB', 'DES-CBC', 'Invalid'
 	]:
 		ret |= run_testcases(test_file[test_name], test_name)
+	mandatory_ret = ret
+	for bonus_test_name in ['DES-CFB', 'DES-CTR', 'DES-OFB', 'DES-PCBC']:
+		run_testcases(test_file[bonus_test_name], bonus_test_name)
 
-	exit(ret)
+	exit(mandatory_ret)
 
 
-main()
+if __name__ == '__main__':
+	main()

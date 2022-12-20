@@ -8,6 +8,7 @@
 #include <ctype.h>
 #include "des/flags.h"
 #include "vector.h"
+#include "libft.h"
 #include <fcntl.h>
 
 const char*	g_key = NULL;
@@ -15,6 +16,7 @@ const char*	g_password = NULL;
 const char*	g_salt = NULL;
 const char*	g_initialization_vector = NULL;
 unsigned int	g_des_flags = 0;
+int	pbkdf_version = 1;
 
 static int	create_fd(const char* const pathname, int* fd_store, int open_flag) {
 	int fd;
@@ -39,6 +41,7 @@ static void	print_usage() {
 	fprintf(stderr, "\t-v, the initialization vector in hex is the next argument\n");
 	fprintf(stderr, "\t-P, print the iv/key\n");
 	fprintf(stderr, "\t-n, disable the size difference byte padding scheme\n");
+	fprintf(stderr, "\t-f, set pbkdf version (1 or 2)\n");
 	fprintf(stderr, "\t-h, display this summary\n");
 }
 
@@ -46,7 +49,7 @@ unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx
 	int opt;
 	(void)string_vector;
 
-	while ((opt = getopt(argc, argv, "+aDdhnEePi:k:K:o:p:s:v:")) != -1) {
+	while ((opt = getopt(argc, argv, "+aDdhnEePi:k:K:o:p:s:v:f:")) != -1) {
 		switch (opt) {
 			case 'a':
 				g_des_flags |= FLAG_BASE64;
@@ -99,6 +102,13 @@ unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx
 				break ;
 			case 'n':
 				g_des_flags |= FLAG_NO_PADDING;
+				break ;
+			case 'f':
+				pbkdf_version = ft_atoi(optarg);
+				if (pbkdf_version < 1 || pbkdf_version > 2) {
+					fprintf(stderr, "Invalid pbkdf version.\n");
+					return ((unsigned int)-1);
+				}
 				break ;
 			case 'h':
 				print_usage();

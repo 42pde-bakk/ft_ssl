@@ -15,10 +15,15 @@
 
 uint64_t	create_64bit_chunk_from_str(const char* const str) {
 	uint64_t	chunk = 0;
+	bool		reached_end = false;
 
 	for (size_t i = 0; i < 8; i++) {
 		chunk <<= 8;
-		chunk |= (uint64_t)str[i];
+		if (!reached_end)
+			chunk |= (uint64_t)str[i];
+		if (str[i] == '\0') {
+			reached_end = true;
+		}
 	}
 	return (chunk);
 }
@@ -42,23 +47,31 @@ static uint64_t	generate_random_salt() {
 	return (bytes);
 }
 
-uint64_t	get_key() {
-	uint64_t	key;
+int get_key(uint64_t *key, uint64_t *iv) {
 	uint64_t	salt;
-	char		*pass;
+	const char*	password;
 
 	if (g_des_flags & FLAG_KEY && g_key != NULL) {
-		key = create_64bit_chunk_from_hexstr(g_key);
+		*key = create_64bit_chunk_from_hexstr(g_key);
 		if (g_des_flags & FLAG_SHOW_KEY) {
-			dprintf(STDERR_FILENO, "key=%016lX\n", key);
+			dprintf(STDERR_FILENO, "key=%016lX\n", *key);
 		}
-		return (key);
+		if (iv) {
+			if ((g_des_flags & FLAG_INITVECTOR) && g_initialization_vector) {
+				*iv = create_64bit_chunk_from_hexstr(g_initialization_vector);
+			} else {
+				dprintf(2, "iv undefined\n");
+				exit(1);
+			}
+		}
+		return (EXIT_SUCCESS);
 	}
 	if (g_des_flags & FLAG_PASSWORD && g_password != NULL) {
-		key = create_64bit_chunk_from_hexstr(g_password);
+		password = g_password;
+		*key = create_64bit_chunk_from_str(g_password);
 	} else {
-		pass = getpass("enter des encryption password:");
-		key = create_64bit_chunk_from_str(pass);
+		password = getpass("enter des encryption password:");
+		*key = create_64bit_chunk_from_str(password);
 	}
 
 	if (g_des_flags & FLAG_SALT && g_salt != NULL) {
@@ -67,14 +80,23 @@ uint64_t	get_key() {
 		salt = generate_random_salt();
 	}
 	if (g_des_flags & FLAG_ENCRYPT) {
-//		add_chunk_to_buffer(create_64bit_chunk_from_str("Salted__"), true);
-//		add_chunk_to_buffer(salt, true);
+		add_chunk_to_buffer(create_64bit_chunk_from_str(DES_SALT_MAGIC), true);
+		add_chunk_to_buffer(salt, true);
 	}
 
-	key = pbkdf(key, salt);
-	if (g_des_flags & FLAG_SHOW_KEY) {
-		dprintf(STDERR_FILENO,"salt=%016lX\n", salt);
-		dprintf(STDERR_FILENO,"key=%016lX\n", key);
+	if (pbkdf_version == 1) {
+		pbkdf_1(password, salt, 1, key, iv);
+	} else {
+		pbkdf_2((char *)password, salt, 10000, key, iv);
 	}
-	return (key);
+	if ((g_des_flags & FLAG_INITVECTOR) && g_initialization_vector && iv) {
+		*iv = create_64bit_chunk_from_hexstr(g_initialization_vector);
+	}
+	if (g_des_flags & FLAG_SHOW_KEY) {
+		fprintf(stdout,"salt=%016lX\n", salt);
+		fprintf(stdout,"key=%016lX\n", *key);
+		if (iv)
+			fprintf(stdout,"iv=%016lX\n", *iv);
+	}
+	return (EXIT_SUCCESS);
 }

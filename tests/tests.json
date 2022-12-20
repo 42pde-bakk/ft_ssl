@@ -175,6 +175,68 @@
   ],
   "DES-ECB": [
     {
+      "command": "echo \"42\" | ./ft_ssl des-ecb -K 6162636461626364 -a | openssl des-ecb -K 6162636461626364 -a -d\n",
+      "expected_statuscode": 0,
+      "expected_stdout": "42\n",
+      "description": "Integration test using keys"
+    },
+    {
+      "command": "echo \"42\" | openssl des-ecb -K 6162636461626364 -a | ./ft_ssl des-ecb -K 6162636461626364 -a -d\n",
+      "expected_statuscode": 0,
+      "expected_stdout": "42\n",
+      "description": "Integration test using keys"
+    },
+    {
+      "command": "echo \"42\" | openssl des-ecb -pass \"pass:password\" -S D09F26526B82A403 -a | ./ft_ssl des-ecb -p \"password\" -s D09F26526B82A403 -a -d",
+      "expected_statuscode": 0,
+      "expected_stdout": "42\n",
+      "description": "Integration test using pbkdf 1"
+    },
+    {
+      "command": "echo \"42\" | openssl des-ecb -pass \"pass:password\" -S D09F26526B82A403 | ./ft_ssl des-ecb -p \"password\" -s D09F26526B82A403 -d",
+      "expected_statuscode": 0,
+      "expected_stdout": "42\n",
+      "description": "Integration test using pbkdf 1"
+    },
+    {
+      "command": "echo \"42\" | ./ft_ssl des-ecb -p \"password\" -s D09F26526B82A403 -a | openssl des-ecb -pass \"pass:password\" -S D09F26526B82A403 -d -a",
+      "expected_statuscode": 0,
+      "expected_stdout": "42\n",
+      "description": "Integration test using pbkdf 1"
+    },
+    {
+      "command": "echo \"42\" | ./ft_ssl des-ecb -p \"password\" -s D09F26526B82A403 | openssl des-ecb -pass \"pass:password\" -S D09F26526B82A403 -d",
+      "expected_statuscode": 0,
+      "expected_stdout": "42\n",
+      "description": "Integration test using pbkdf 1"
+    },
+    {
+      "command": "echo \"42\" | openssl des-ecb -pass \"pass:password\" -S D09F26526B82A403 -a -pbkdf2 | ./ft_ssl des-ecb -p \"password\" -s D09F26526B82A403 -a -d -f 2",
+      "expected_statuscode": 0,
+      "expected_stdout": "42\n",
+      "description": "Integration test using pbkdf 2"
+    },
+    {
+      "command": "echo \"42\" | openssl des-ecb -pass \"pass:password\" -S D09F26526B82A403 -pbkdf2 | ./ft_ssl des-ecb -p \"password\" -s D09F26526B82A403 -d -f 2",
+      "expected_statuscode": 0,
+      "expected_stdout": "42\n",
+      "description": "Integration test using pbkdf 2"
+    },
+    {
+      "command": "echo \"42\" | ./ft_ssl des-ecb -p \"password\" -s D09F26526B82A403 -a -f 2 | openssl des-ecb -pass \"pass:password\" -S D09F26526B82A403 -d -a -pbkdf2",
+      "expected_statuscode": 0,
+      "expected_stdout": "42\n",
+      "description": "Integration test using pbkdf 2"
+    },
+    {
+      "command": "echo \"42\" | ./ft_ssl des-ecb -p \"password\" -s D09F26526B82A403 -f 2 | openssl des-ecb -pass \"pass:password\" -S D09F26526B82A403 -d -pbkdf2",
+      "expected_statuscode": 0,
+      "expected_stdout": "42\n",
+      "description": "Integration test using pbkdf 2"
+    }
+  ],
+  "DES-ECB-EXTRA": [
+    {
       "command": "echo \"foo bar\" | ./ft_ssl des-ecb -K 6162636461626364 -an",
       "expected_statuscode": 0,
       "expected_stdout": "YZF3QKaabXU=\n"
@@ -227,7 +289,8 @@
     {
       "command": "echo -n \"multiple blocks chained together\" | ./ft_ssl des-ecb -K 6162636461626364 -a -n",
       "expected_statuscode": 0,
-      "expected_stdout": "DOYaTvPcuHuTYW5nM1J3gQRT+mefdzpZjmjWsrQMcWw=\n"
+      "expected_stdout": "DOYaTvPcuHuTYW5nM1J3gQRT+mefdzpZjmjWsrQMcWw=\n",
+      "description": "Integration test with pbkdf1"
     },
     {
       "command": "echo -n \"multiple blocks chained together\" | ./ft_ssl des-ecb -K 6162636461626364 -a",
@@ -238,9 +301,89 @@
       "command": "echo -n \"foo bar\" | ./ft_ssl des-ecb -k \"$DES_KEY\" | ./ft_ssl des-ecb -d -K \"$DES_KEY\"",
       "expected_statuscode": 0,
       "expected_stdout": "foo bar"
+    },
+    {
+      "command": "echo \"U2FsdGVkX1/QnyZSa4KkAzBnagTvAxPnf8DewKkKzO8=\" | ./ft_ssl des-ecb -p \"password\" -s D09F26526B82A403 -ad",
+      "expected_statuscode": 0,
+      "expected_stdout": "adventofcode\n"
+    },
+    {
+      "command": "echo \"adventofcode\" | ./ft_ssl des-ecb -p \"password\" -s D09F26526B82A403 -a",
+      "expected_statuscode": 0,
+      "expected_stdout": "U2FsdGVkX1/QnyZSa4KkAzBnagTvAxPnf8DewKkKzO8=\n"
+    },
+    {
+      "command": "echo \"adventofcode\" | ./ft_ssl des-ecb -p \"password\" -s D09F26526B82A403 -a | openssl des-ecb -pass \"pass:password\" -S D09F26526B82A403 -a -d",
+      "expected_statuscode": 0,
+      "expected_stdout": "adventofcode\n"
+    },
+    {
+      "command": "echo \"adventofcode\" | ./ft_ssl des-ecb -p \"password\" -s D09F26526B82A403 | openssl des-ecb -pass \"pass:password\" -S D09F26526B82A403 -d",
+      "expected_statuscode": 0,
+      "expected_stdout": "adventofcode\n"
+    },
+    {
+      "command": "echo \"adventofcode\" | openssl des-ecb -pass \"pass:password\" -S D09F26526B82A403 -a | ./ft_ssl des-ecb -p \"password\" -s D09F26526B82A403 -a -d",
+      "expected_statuscode": 0,
+      "expected_stdout": "adventofcode\n"
+    },
+    {
+      "command": "echo \"adventofcode\" | ./ft_ssl des-ecb -p \"password\" -s D09F26526B82A403 | openssl des-ecb -pass \"pass:password\" -S D09F26526B82A403 -d",
+      "expected_statuscode": 0,
+      "expected_stdout": "adventofcode\n"
     }
   ],
   "DES-CBC": [
+    {
+      "command": "echo \"42\" | ./ft_ssl des-cbc -p \"password\" -s D09F26526B82A403 -a | openssl des-cbc -pass \"pass:password\" -S D09F26526B82A403 -a -d",
+      "expected_statuscode": 0,
+      "expected_stdout": "42\n",
+      "Description:": "Integration test with openssl using pbkdf 1 and the -a option"
+    },
+    {
+      "command": "echo \"42\" | openssl des-cbc -pass \"pass:password\" -S D09F26526B82A403 -a | ./ft_ssl des-cbc -p \"password\" -s D09F26526B82A403 -a -d",
+      "expected_statuscode": 0,
+      "expected_stdout": "42\n",
+      "Description:": "Integration test with openssl using pbkdf 1 and the -a option"
+    },
+    {
+      "command": "echo \"42\" | ./ft_ssl des-cbc -p \"password\" -s D09F26526B82A403 | openssl des-cbc -pass \"pass:password\" -S D09F26526B82A403 -d",
+      "expected_statuscode": 0,
+      "expected_stdout": "42\n",
+      "Description:": "Integration test with openssl using pbkdf 1"
+    },
+    {
+      "command": "echo \"42\" | openssl des-cbc -pass \"pass:password\" -S D09F26526B82A403 | ./ft_ssl des-cbc -p \"password\" -s D09F26526B82A403 -d",
+      "expected_statuscode": 0,
+      "expected_stdout": "42\n",
+      "Description:": "Integration test with openssl using pbkdf 1"
+    },
+    {
+      "command": "echo \"42\" | ./ft_ssl des-cbc -p \"password\" -s D09F26526B82A403 -a -f 2 | openssl des-cbc -pass \"pass:password\" -S D09F26526B82A403 -a -d -pbkdf2",
+      "expected_statuscode": 0,
+      "expected_stdout": "42\n",
+      "Description:": "Integration test with openssl using pbkdf 2 and the -a option"
+    },
+    {
+      "command": "echo \"42\" | openssl des-cbc -pass \"pass:password\" -S D09F26526B82A403 -a -pbkdf2 | ./ft_ssl des-cbc -p \"password\" -s D09F26526B82A403 -a -d -f 2",
+      "expected_statuscode": 0,
+      "expected_stdout": "42\n",
+      "Description:": "Integration test with openssl using pbkdf 2 and the -a option"
+    },
+    {
+      "command": "echo \"42\" | ./ft_ssl des-cbc -p \"password\" -s D09F26526B82A403 -f 2| openssl des-cbc -pass \"pass:password\" -S D09F26526B82A403 -d -pbkdf2",
+      "expected_statuscode": 0,
+      "expected_stdout": "42\n",
+      "Description:": "Integration test with openssl using pbkdf 2"
+    },
+    {
+      "command": "echo \"42\" | openssl des-cbc -pass \"pass:password\" -S D09F26526B82A403 -pbkdf2 | ./ft_ssl des-cbc -p \"password\" -s D09F26526B82A403 -d -f 2",
+      "expected_statuscode": 0,
+      "expected_stdout": "42\n",
+      "Description:": "Integration test with openssl using pbkdf 2"
+    }
+  ],
+  "DES-CBC-EXTRA": [
     {
       "command": "echo \"one deep secret\" | ./ft_ssl des-cbc -a -K 6162636461626364 -v 0011223344556677",
       "expected_statuscode": 0,
@@ -284,9 +427,9 @@
   ],
   "DES-CFB": [
     {
-      "command": "echo foobar | ./ft_ssl des-cfb -K AB12CD34EF56AB78 -v 1A2B3C4D5E6F70DD | ./ft_ssl des-cfb -K AB12CD34EF56AB78 -v 1A2B3C4D5E6F70DD -d",
+      "command": "echo foobar | ./ft_ssl des-cfb -K AB12CD34EF56AB78 -v 1A2B3C4D5E6F70DD -a",
       "expected_statuscode": 0,
-      "expected_stdout": "foobar\n"
+      "expected_stdout": "o3i6qpTWjA==\n"
     }
   ],
   "DES-CTR": [

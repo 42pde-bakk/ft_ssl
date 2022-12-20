@@ -9,7 +9,7 @@
 #define SHA256_DIGEST_SIZE 32
 #define SHA224_DIGEST_SIZE 28
 
-#define SHA256_BLOCK_SIZE 256
+#define SHA256_BLOCK_SIZE 256 // in bits
 
 typedef struct s_sha2Context {
 	uint32_t 	h[8];
@@ -26,5 +26,7 @@ extern const uint32_t k_sha2[64];
 // shared/s0_s1.c
 uint32_t get_s0(uint32_t item);
 uint32_t get_s1(uint32_t item);
+
+t_sha2Context sha256_return_string(const char *str, size_t length);
 
 #endif //FT_SSL_SHA256_H

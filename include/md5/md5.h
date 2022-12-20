@@ -34,4 +34,6 @@ extern const uint32_t c0;
 extern const uint32_t d0;
 extern const uint32_t abcd[4];
 
+t_MD5Context md5sum_return_string(const char *str, size_t str_length);
+
 #endif //FT_SSL_MD5_H

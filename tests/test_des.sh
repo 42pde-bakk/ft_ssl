@@ -35,7 +35,7 @@ echo "what kind of lock takes no key?" | openssl des-ecb -K "00000000" -provider
 # YOU SHALL NOT PASS(word)!
 echo "$(curl 'https://www.peereboom.us/assl/assl/html/openssl.html') (https://www.peereboom.us/assl/assl/html/openssl.html'))" > original.html
 echo "password" > password_file # very secure
-openssl des-ecb -p -in original.html -out ciphertext.html -pass "pass::$(cat password_file)" -provider=legacy
+openssl des-ecb -p -in original.html -out ciphertext.html -pass "pass:$(cat password_file)" -provider=legacy
 # ./ft_ssl des-ecb -d -i ciphertext.html -o decrypted.html -p "$(cat password_file)" -s (Copy the salt used by OpenSSL here!)
 
 
@@ -44,3 +44,11 @@ openssl des-ecb -p -in original.html -out ciphertext.html -pass "pass::$(cat pas
 echo "Make sure they really tell you what is going on 'under the hood' when you use CBC mode, and how it is more secure than ECB" \
   | openssl des-cbc -K "BABE101010FACADE" -iv "77696E6B66616365" -provider=legacy | \
   ./ft_ssl des-cbc -k "BABE101010FACADE" -v "77696E6B66616365" -d
+
+echo "bomb" | openssl des-ecb -p -pass "pass:password" -S D09F26526B82A403 -a
+echo "bomb" | ./ft_ssl des-ecb -p "password" -s D09F26526B82A403 -a
+# *** WARNING : deprecated key derivation used.
+# Using -iter or -pbkdf2 would be better.
+# salt=D09F26526B82A403
+# key=C6D957E0078885B0
+# U2FsdGVkX1/QnyZSa4KkA9HIhmy6Gke4

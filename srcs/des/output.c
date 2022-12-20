@@ -15,7 +15,22 @@
 
 static t_uint64vector*	chunk_vector = NULL;
 
-uint64_t REV64(uint64_t x) {
+uint64_t	REV32(uint32_t x) {
+	int				i = 0;
+	uint64_t		y = 0;
+	unsigned char	*ptr_x,
+					*ptr_y;
+	size_t			size = sizeof(x);
+
+	ptr_x = (unsigned char *)&x;
+	ptr_y = (unsigned char *)&y;
+	while (--size)
+		ptr_y[i++] = ptr_x[size];
+	ptr_y[i++] = ptr_x[size];
+	return (y);
+}
+
+uint64_t	REV64(uint64_t x) {
 	int				i = 0;
 	uint64_t		y = 0;
 	unsigned char	*ptr_x,
@@ -58,6 +73,10 @@ void add_chunk_to_buffer(uint64_t chunk, bool should_reverse) {
 }
 
 uint8_t	remove_padding() {
+	if (chunk_vector == NULL) {
+		dprintf(2, "Please don't decrypt binary data with the -a flag.\n");
+		exit(1);
+	}
 	uint64_t	*last_chunk = &chunk_vector->arr[chunk_vector->size - 1];
 	uint8_t		pad_amount = *last_chunk & 0x000000FF;
 
