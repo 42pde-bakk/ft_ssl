@@ -41,7 +41,7 @@ def run_testcases(test_cases: list, test_name: str) -> int:
 			return_status = 1
 		print(f'[{test_outcome}] on "{test_case["command"]}"')
 		if return_status:
-			exit(1)
+			break
 	return return_status
 
 
@@ -64,12 +64,14 @@ def main():
 
 	for test_name in [
 		'MD5', 'SHA256', 'SHA224', 'BASE64',
-		'DES-ECB', 'DES-CBC', 'DES-CFB', 'DES-CTR', 'DES-OFB', 'DES-PCBC',
-		'Invalid'
+		'DES-ECB', 'DES-CBC', 'Invalid'
 	]:
 		ret |= run_testcases(test_file[test_name], test_name)
+	mandatory_ret = ret
+	for bonus_test_name in ['DES-CFB', 'DES-CTR', 'DES-OFB', 'DES-PCBC']:
+		run_testcases(test_file[bonus_test_name], bonus_test_name)
 
-	exit(ret)
+	exit(mandatory_ret)
 
 
 main()
