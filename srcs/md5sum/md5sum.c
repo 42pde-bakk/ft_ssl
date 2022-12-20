@@ -96,11 +96,11 @@ static void	md5_finalize(t_MD5Context *md5Context) {
 	}
 }
 
-int md5sum_string(const char* str) {
+int md5sum_string(const char *str, size_t length) {
 	t_MD5Context	md5Context;
 
 	md5_init(&md5Context);
-	md5_update(&md5Context, (uint8_t *)str, strlen(str));
+	md5_update(&md5Context, (uint8_t *)str, length);
 	md5_finalize(&md5Context);
 
 	print_hash(md5Context.digest, MD5_DIGEST_LENGTH);

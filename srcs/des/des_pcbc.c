@@ -99,6 +99,6 @@ int des_pcbc_fd(const int fd) {
 	return (return_status);
 }
 
-int des_pcbc_string(const char* str) {
-	return (des_pcbc_handler(str, ft_strlen(str)));
+int des_pcbc_string(const char *str, size_t length) {
+	return (des_pcbc_handler(str, length));
 }

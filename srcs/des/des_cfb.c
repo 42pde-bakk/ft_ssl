@@ -101,6 +101,6 @@ int des_cfb_fd(const int fd) {
 	return (return_status);
 }
 
-int des_cfb_string(const char* str) {
-	return (des_cfb_handler(str, ft_strlen(str)));
+int des_cfb_string(const char *str, size_t length) {
+	return (des_cfb_handler(str, length));
 }

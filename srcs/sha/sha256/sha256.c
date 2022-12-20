@@ -110,11 +110,11 @@ static void	sha256_finalize(t_sha2Context *sha256Context) {
 	}
 }
 
-int sha256_string(const char* str) {
+int sha256_string(const char *str, size_t length) {
 	t_sha2Context sha256Context;
 
 	sha256_init(&sha256Context, sha256_h);
-	sha256_update(&sha256Context, (uint8_t *)str, strlen(str));
+	sha256_update(&sha256Context, (uint8_t *)str, length);
 
 	sha256_finalize(&sha256Context);
 	print_hash(sha256Context.digest, SHA256_DIGEST_SIZE);
@@ -148,11 +148,11 @@ int sha256_file(int fd) {
 	return (EXIT_SUCCESS);
 }
 
-int sha224_string(const char* str) {
+int sha224_string(const char *str, size_t length) {
 	t_sha2Context sha256Context;
 
 	sha256_init(&sha256Context, sha224_h);
-	sha256_update(&sha256Context, (uint8_t *)str, strlen(str));
+	sha256_update(&sha256Context, (uint8_t *)str, length);
 
 	sha256_finalize(&sha256Context);
 	print_hash(sha256Context.digest, SHA224_DIGEST_SIZE);

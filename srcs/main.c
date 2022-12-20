@@ -33,47 +33,51 @@ static int	open_file(const char *filename) {
 	return (fd);
 }
 
-static char	*read_stdin() {
-	ssize_t ret,
-			total_read  = 0;
+static int	read_stdin(char **result_output, size_t* result_length) {
+	ssize_t ret;
 	char	*result = calloc(1, sizeof(char));
 	char	*tmp = calloc(BUFSIZ + 1, sizeof(char));
 
+	*result_length = 0;
 	if (!tmp || !result) {
 		free(result);
 		free(tmp);
-		return (NULL);
+		return (EXIT_FAILURE);
 	}
 	while ((ret = read(STDIN_FILENO, tmp, BUFSIZ)) > 0) {
 		if (ret > 0)
-			total_read += ret;
+			*result_length += ret;
 		char *tmp2 = result;
+		dprintf(2, "ret = %zu\n", ret);
 		result = ft_strjoin(result, tmp);
+		dprintf(2, "length = %zu\n", strlen(result));
 		free(tmp2);
 		if (!result) {
 			free(result);
 			free(tmp);
-			return (NULL);
+			return (EXIT_FAILURE);
 		}
 		ft_bzero(tmp, BUFSIZ + 1);
 	}
 	free(tmp);
-	if (ret < 0 || total_read == 0) {
+	if (ret < 0 || *result_length == 0) {
 		if (ret < 0)
 			perror("read");
 		free(result);
-		return (NULL);
+		return (EXIT_FAILURE);
 	}
-	return (result);
+	*result_output = result;
+	dprintf(2, "result_length = %zu\n", *result_length);
+	return (EXIT_SUCCESS);
 }
 
 static int handle_stdin(t_handler handler, bool no_files_or_strings_given, const unsigned int flags) {
 	ssize_t	ret;
 	char	*result;
+	size_t	result_length;
 
 	if ((!isatty(STDIN_FILENO)) && (flags & FLAG_P || no_files_or_strings_given)) {
-		result = read_stdin();
-		if (!result) {
+		if (read_stdin(&result, &result_length) == EXIT_FAILURE) {
 			return (EXIT_FAILURE);
 		}
 		char *escaped_string = get_escaped_string(result);
@@ -88,7 +92,7 @@ static int handle_stdin(t_handler handler, bool no_files_or_strings_given, const
 				fprintf(stdout, "%s", result);
 			}
 		}
-		ret = handler.handle_string(result);
+		ret = handler.handle_string(result, result_length);
 		free(escaped_string);
 		free(result);
 		if (handler.print_filename)
@@ -124,7 +128,7 @@ static int handle_string(t_handler handler, char *str, const unsigned int flags)
 		fprintf(stdout, "%s (%s) = ", upper, escaped_string);
 		free(upper);
 	}
-	ret = handler.handle_string(str);
+	ret = handler.handle_string(str, ft_strlen(str));
 	if (!(flags & FLAG_QUIET) && (flags & FLAG_REVERSE) && handler.print_filename) {
 		fprintf(stdout, " %s", escaped_string);
 	}

@@ -12,6 +12,7 @@
 #include "des/des.h"
 #include "libft.h"
 #include "base64/base64.h"
+#include <stdio.h>
 
 static int des_cbc_handler(const char* str, size_t length) {
 	uint64_t	key,
@@ -101,6 +102,6 @@ int des_cbc_fd(const int fd) {
 	return (return_status);
 }
 
-int des_cbc_string(const char* str) {
-	return (des_cbc_handler(str, ft_strlen(str)));
+int des_cbc_string(const char *str, size_t length) {
+	return (des_cbc_handler(str, length));
 }

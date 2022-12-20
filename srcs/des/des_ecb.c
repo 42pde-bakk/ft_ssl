@@ -101,8 +101,8 @@ int des_ecb_fd(const int fd) {
 	return (return_status);
 }
 
-int des_ecb_string(const char* str) {
-	return des_ecb_handler(str, ft_strlen(str));
+int des_ecb_string(const char *str, size_t length) {
+	return des_ecb_handler(str, length);
 }
 
 
