@@ -359,29 +359,28 @@
       "Description:": "Integration test with openssl using pbkdf 1"
     },
     {
-      "command": "echo \"42\" | ./ft_ssl des-cbc -p \"password\" -s D09F26526B82A403 -a | openssl des-cbc -pass \"pass:password\" -S D09F26526B82A403 -a -d",
+      "command": "echo \"42\" | ./ft_ssl des-cbc -p \"password\" -s D09F26526B82A403 -a -f 2 | openssl des-cbc -pass \"pass:password\" -S D09F26526B82A403 -a -d -pbkdf2",
       "expected_statuscode": 0,
       "expected_stdout": "42\n",
       "Description:": "Integration test with openssl using pbkdf 2 and the -a option"
     },
     {
-      "command": "echo \"42\" | openssl des-cbc -pass \"pass:password\" -S D09F26526B82A403 -a | ./ft_ssl des-cbc -p \"password\" -s D09F26526B82A403 -a -d",
+      "command": "echo \"42\" | openssl des-cbc -pass \"pass:password\" -S D09F26526B82A403 -a -pbkdf2 | ./ft_ssl des-cbc -p \"password\" -s D09F26526B82A403 -a -d -f 2",
       "expected_statuscode": 0,
       "expected_stdout": "42\n",
       "Description:": "Integration test with openssl using pbkdf 2 and the -a option"
     },
     {
-      "command": "echo \"42\" | ./ft_ssl des-cbc -p \"password\" -s D09F26526B82A403 | openssl des-cbc -pass \"pass:password\" -S D09F26526B82A403 -d",
+      "command": "echo \"42\" | ./ft_ssl des-cbc -p \"password\" -s D09F26526B82A403 -f 2| openssl des-cbc -pass \"pass:password\" -S D09F26526B82A403 -d -pbkdf2",
       "expected_statuscode": 0,
       "expected_stdout": "42\n",
       "Description:": "Integration test with openssl using pbkdf 2"
     },
     {
-      "command": "echo \"42\" | openssl des-cbc -pass \"pass:password\" -S D09F26526B82A403 | ./ft_ssl des-cbc -p \"password\" -s D09F26526B82A403 -d",
+      "command": "echo \"42\" | openssl des-cbc -pass \"pass:password\" -S D09F26526B82A403 -pbkdf2 | ./ft_ssl des-cbc -p \"password\" -s D09F26526B82A403 -d -f 2",
       "expected_statuscode": 0,
       "expected_stdout": "42\n",
       "Description:": "Integration test with openssl using pbkdf 2"
-
     }
   ],
   "DES-CBC-EXTRA": [
