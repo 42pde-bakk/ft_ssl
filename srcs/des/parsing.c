@@ -56,11 +56,13 @@ int get_key(uint64_t *key, uint64_t *iv) {
 		if (g_des_flags & FLAG_SHOW_KEY) {
 			dprintf(STDERR_FILENO, "key=%016lX\n", *key);
 		}
-		if ((g_des_flags & FLAG_INITVECTOR) && g_initialization_vector && iv) {
-			*iv = create_64bit_chunk_from_hexstr(g_initialization_vector);
-		} else {
-			dprintf(2, "iv undefined\n");
-			exit(1);
+		if (iv) {
+			if ((g_des_flags & FLAG_INITVECTOR) && g_initialization_vector) {
+				*iv = create_64bit_chunk_from_hexstr(g_initialization_vector);
+			} else {
+				dprintf(2, "iv undefined\n");
+				exit(1);
+			}
 		}
 		return (EXIT_SUCCESS);
 	}
@@ -91,10 +93,10 @@ int get_key(uint64_t *key, uint64_t *iv) {
 		*iv = create_64bit_chunk_from_hexstr(g_initialization_vector);
 	}
 	if (g_des_flags & FLAG_SHOW_KEY) {
-		dprintf(STDERR_FILENO,"salt=%016lX\n", salt);
-		dprintf(STDERR_FILENO,"key=%016lX\n", *key);
+		fprintf(stdout,"salt=%016lX\n", salt);
+		fprintf(stdout,"key=%016lX\n", *key);
 		if (iv)
-			dprintf(STDERR_FILENO,"iv=%016lX\n", *iv);
+			fprintf(stdout,"iv=%016lX\n", *iv);
 	}
 	return (EXIT_SUCCESS);
 }
