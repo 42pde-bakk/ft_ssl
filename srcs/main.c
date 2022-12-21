@@ -48,9 +48,7 @@ static int	read_stdin(char **result_output, size_t* result_length) {
 		if (ret > 0)
 			*result_length += ret;
 		char *tmp2 = result;
-		dprintf(2, "ret = %zu\n", ret);
 		result = ft_strjoin(result, tmp);
-		dprintf(2, "length = %zu\n", strlen(result));
 		free(tmp2);
 		if (!result) {
 			free(result);
@@ -67,7 +65,6 @@ static int	read_stdin(char **result_output, size_t* result_length) {
 		return (EXIT_FAILURE);
 	}
 	*result_output = result;
-	dprintf(2, "result_length = %zu\n", *result_length);
 	return (EXIT_SUCCESS);
 }
 
