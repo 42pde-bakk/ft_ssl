@@ -16,19 +16,19 @@ unsigned int parse_flags_md5_sha(int argc, char** argv, unsigned int* file_start
 		switch (opt) {
 			case 'p':
 				flags |= FLAG_P;
-				break ;
+				break;
 			case 'q':
 				flags |= FLAG_QUIET;
-				break ;
+				break;
 			case 'r':
 				flags |= FLAG_REVERSE;
-				break ;
+				break;
 			case 's':
 				flags |= FLAG_STRING;
 				if (string_vector) {
 					ptrvector_pushback(string_vector, optarg);
 				}
-				break ;
+				break;
 			case '?':
 				if (optopt == 's')
 					fprintf(stderr, "Option -%c requires an argument.\n", optopt);
@@ -36,10 +36,10 @@ unsigned int parse_flags_md5_sha(int argc, char** argv, unsigned int* file_start
 					fprintf(stderr, "Unknown option `-%c'.\n", optopt);
 				else
 					fprintf(stderr, "Unknown option character `\\x%x'.\n", optopt);
-				return ((unsigned int)-1);
+				return ((unsigned int) -1);
 			default:
 				fprintf(stderr, "%s: invalid option -- '%c'\n", argv[0], optopt);
-				return ((unsigned int)-1);
+				return ((unsigned int) -1);
 		}
 	}
 	if (flags & FLAG_QUIET) {

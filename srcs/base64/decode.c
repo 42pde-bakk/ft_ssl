@@ -11,16 +11,16 @@
 #include "base64/base64.h"
 #include <stdlib.h>
 
-static bool	is_base64_char(char c) {
+static bool is_base64_char(char c) {
 	return (ft_isalnum(c) || c == '+' || c == '/');
 }
 
-char *base64_decode_string(const char *str, size_t datalen, size_t *outlen) {
+char* base64_decode_string(const char* str, size_t datalen, size_t* outlen) {
 	*outlen = datalen * 3 / 4;
-	uint8_t	*result = calloc(*outlen + 1, sizeof(char));
-	size_t	result_i = 0;
-	size_t	x = 0;
-	uint8_t	char_arr4[4],
+	uint8_t* result = calloc(*outlen + 1, sizeof(char));
+	size_t result_i = 0;
+	size_t x = 0;
+	uint8_t char_arr4[4],
 			char_arr3[3];
 
 	for (size_t i = 0; i < datalen && (is_base64_char(str[i]) || iswhitespace(str[i]) || str[i] == '='); i++) {
@@ -57,14 +57,14 @@ char *base64_decode_string(const char *str, size_t datalen, size_t *outlen) {
 		}
 	}
 	*outlen = result_i;
-	return ((char*)result);
+	return ((char*) result);
 }
 
-char *base64_decode_file(const int fd) {
-	size_t	outlen;
+char* base64_decode_file(const int fd) {
+	size_t outlen;
 	struct stat buf;
-	char*	file;
-	char*	result;
+	char* file;
+	char* result;
 
 	ft_memset(&buf, 0, sizeof(buf));
 	if (fstat(fd, &buf) == -1 || buf.st_size <= 0 || S_ISDIR(buf.st_mode)) {

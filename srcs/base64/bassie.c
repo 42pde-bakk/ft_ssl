@@ -10,7 +10,7 @@
 #include "libft.h"
 
 int base64_fd(const int fd) {
-	char*	result;
+	char* result;
 
 	if (g_base64_flags & FLAG_ENCRYPT) {
 		result = base64_encode_file(fd);
@@ -25,9 +25,9 @@ int base64_fd(const int fd) {
 	return (EXIT_SUCCESS);
 }
 
-int base64_string(const char *str, size_t length) {
-	char*	result;
-	size_t	output_len;
+int base64_string(const char* str, size_t length) {
+	char* result;
+	size_t output_len;
 
 	if (g_base64_flags & FLAG_DECRYPT) {
 		result = base64_decode_string(str, length, &output_len);

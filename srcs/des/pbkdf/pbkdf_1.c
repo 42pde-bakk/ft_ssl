@@ -13,15 +13,18 @@
  * Change these values to md5 values to match the openssl -md md5 flag.
  */
 typedef t_sha2Context digest_output;
-typedef t_sha2Context (*digest_func)(const char*, size_t);
+
+typedef t_sha2Context (* digest_func)(const char*, size_t);
+
 static const digest_func digest = sha256_return_string;
 static const size_t OUTPUT_LENGTH = SHA256_DIGEST_SIZE;
 
-void	pbkdf_1(const char *pass, uint64_t salt, const size_t total_iterations, uint64_t* output_key, uint64_t* output_iv) {
+void
+pbkdf_1(const char* pass, uint64_t salt, const size_t total_iterations, uint64_t* output_key, uint64_t* output_iv) {
 	digest_output data;
 	const size_t len = ft_strlen(pass);
 	const size_t total_length = len + 8 + OUTPUT_LENGTH;
-	char *block = ft_calloc(total_length + 1, sizeof(char));
+	char* block = ft_calloc(total_length + 1, sizeof(char));
 
 	if (!block) {
 		perror("malloc failed");
@@ -40,9 +43,9 @@ void	pbkdf_1(const char *pass, uint64_t salt, const size_t total_iterations, uin
 		ft_memcpy(block + OUTPUT_LENGTH + len, &salt, 8);
 		data = digest(block, total_length);
 	}
-	*output_key = REV64(*(uint64_t *)data.digest);
+	*output_key = REV64(*(uint64_t*) data.digest);
 	if (output_iv) {
-		*output_iv = REV64(*(uint64_t *)(data.digest + 8));
+		*output_iv = REV64(*(uint64_t*) (data.digest + 8));
 	}
 	free(block);
 }

@@ -7,6 +7,6 @@
 
 #include <stdarg.h>
 
-void	write_log(const char *format, ...);
+void write_log(const char* format, ...);
 
 #endif //FT_SSL_LOGGING_H

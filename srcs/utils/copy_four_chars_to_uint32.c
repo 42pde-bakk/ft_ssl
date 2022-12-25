@@ -3,8 +3,8 @@
 //
 #include <stdint.h>
 
-uint32_t	four_chars_to_uint32_sha256(const uint8_t *ptr) {
-	uint32_t ret ;
+uint32_t four_chars_to_uint32_sha256(const uint8_t* ptr) {
+	uint32_t ret;
 
 	ret = ptr[0] << 24 |
 		  ptr[1] << 16 |
@@ -14,8 +14,8 @@ uint32_t	four_chars_to_uint32_sha256(const uint8_t *ptr) {
 	return (ret);
 }
 
-uint32_t	four_chars_to_uint32_md5(const uint8_t *ptr) {
-	uint32_t ret ;
+uint32_t four_chars_to_uint32_md5(const uint8_t* ptr) {
+	uint32_t ret;
 
 	ret = ptr[3] << 24 |
 		  ptr[2] << 16 |

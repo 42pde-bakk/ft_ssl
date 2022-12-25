@@ -8,9 +8,10 @@
 #include <fcntl.h>
 #include "base64/flags.h"
 #include "vector.h"
-unsigned int	g_base64_flags = 0;
 
-static int	create_fd(const char* const pathname, int* fd_store, int open_flag) {
+unsigned int g_base64_flags = 0;
+
+static int create_fd(const char* const pathname, int* fd_store, int open_flag) {
 	int fd;
 
 	fd = open(pathname, open_flag, S_IRWXU);
@@ -20,7 +21,7 @@ static int	create_fd(const char* const pathname, int* fd_store, int open_flag) {
 	return (0);
 }
 
-static void	print_usage() {
+static void print_usage() {
 	fprintf(stderr, "base64:\nvAailable flags:\n");
 	fprintf(stderr, "\t-D or -d, decode mode\n");
 	fprintf(stderr, "\t-E or -e, encode mode (default)\n");
@@ -31,36 +32,36 @@ static void	print_usage() {
 
 unsigned int parse_flags_base64(int argc, char** argv, unsigned int* file_start_idx, t_ptrvector* string_vector) {
 	int opt;
-	(void)string_vector;
+	(void) string_vector;
 
 	while ((opt = getopt(argc, argv, "+dei:o:")) != -1) {
 		switch (opt) {
 			case 'D':
 			case 'd':
 				g_base64_flags |= FLAG_DECRYPT;
-				break ;
+				break;
 			case 'E':
 			case 'e':
 				g_base64_flags |= FLAG_ENCRYPT;
-				break ;
+				break;
 			case 'i':
 				g_base64_flags |= FLAG_INPUTFILE;
 				if (create_fd(optarg, &g_infd, O_RDONLY)) {
 					fprintf(stderr, "Error opening %s\n", optarg);
 					exit(EXIT_FAILURE);
 				}
-				break ;
+				break;
 			case 'o':
 				if (g_base64_flags & FLAG_OUTPUTFILE) {
 					fprintf(stderr, "You are not allowed to specify two outputfiles!\n");
-					return ((unsigned int)-1);
+					return ((unsigned int) -1);
 				}
 				g_base64_flags |= FLAG_OUTPUTFILE;
 				if (create_fd(optarg, &g_outfd, O_WRONLY | O_TRUNC | O_CREAT)) {
 					fprintf(stderr, "Error opening %s\n", optarg);
 					exit(EXIT_FAILURE);
 				}
-				break ;
+				break;
 			case '?':
 				if (optopt == 's')
 					fprintf(stderr, "Option -%c requires an argument.\n", optopt);
@@ -69,11 +70,11 @@ unsigned int parse_flags_base64(int argc, char** argv, unsigned int* file_start_
 				else
 					fprintf(stderr, "Unknown option character `\\x%x'.\n", optopt);
 				print_usage();
-				return ((unsigned int)-1);
+				return ((unsigned int) -1);
 			default:
 				fprintf(stderr, "%s: invalid option -- '%c'\n", argv[0], optopt);
 				print_usage();
-				return ((unsigned int)-1);
+				return ((unsigned int) -1);
 		}
 	}
 	if (g_base64_flags & FLAG_DECRYPT && g_base64_flags & FLAG_ENCRYPT) {

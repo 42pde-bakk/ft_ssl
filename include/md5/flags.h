@@ -7,10 +7,10 @@
 
 
 // MD5 and SHA256 flags
-#define FLAG_P					0b1000
-#define FLAG_QUIET				0b0100
-#define FLAG_REVERSE			0b0010
-#define FLAG_STRING				0b0001
+#define FLAG_P                    0b1000
+#define FLAG_QUIET                0b0100
+#define FLAG_REVERSE            0b0010
+#define FLAG_STRING                0b0001
 
 extern unsigned int g_flags;
 

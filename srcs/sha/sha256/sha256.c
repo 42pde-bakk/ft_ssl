@@ -15,7 +15,7 @@ static void sha256_init(t_sha2Context* sha256Context, const uint32_t* hash_value
 	}
 }
 
-static void	sha256_transform(t_sha2Context *sha256Context) {
+static void sha256_transform(t_sha2Context* sha256Context) {
 	uint32_t hash[8];
 	uint32_t w[64];
 
@@ -60,7 +60,7 @@ static void	sha256_transform(t_sha2Context *sha256Context) {
 	}
 }
 
-static void	sha256_update(t_sha2Context *sha256Context, const uint8_t *input_buffer, const size_t buffer_len) {
+static void sha256_update(t_sha2Context* sha256Context, const uint8_t* input_buffer, const size_t buffer_len) {
 	for (unsigned int i = 0; i < buffer_len; i++) {
 		sha256Context->data[sha256Context->data_len] = input_buffer[i];
 		sha256Context->data_len++;
@@ -73,7 +73,7 @@ static void	sha256_update(t_sha2Context *sha256Context, const uint8_t *input_buf
 	}
 }
 
-static void	sha256_finalize(t_sha2Context *sha256Context) {
+static void sha256_finalize(t_sha2Context* sha256Context) {
 	uint32_t i;
 	const uint32_t padding_length = (sha256Context->data_len < 56) ? 56 : 64;
 
@@ -96,7 +96,7 @@ static void	sha256_finalize(t_sha2Context *sha256Context) {
 	sha256Context->bitlen += sha256Context->data_len * 8; // 8 bits per byte
 	for (i = 0; i < 8; i++) {
 		const uint32_t bitshift = 8 * i;
-		sha256Context->data[63 - i] = (uint8_t)(sha256Context->bitlen >> bitshift);
+		sha256Context->data[63 - i] = (uint8_t) (sha256Context->bitlen >> bitshift);
 	}
 
 	sha256_transform(sha256Context);
@@ -105,27 +105,27 @@ static void	sha256_finalize(t_sha2Context *sha256Context) {
 	for (i = 0; i < 4; ++i) {
 		const uint32_t bitshift = 24 - i * 8;
 		for (uint32_t n = 0; n < 8; n++) {
-			sha256Context->digest[i + 4 * n] = (uint8_t)((sha256Context->h[n] >> bitshift) & 0xff);
+			sha256Context->digest[i + 4 * n] = (uint8_t) ((sha256Context->h[n] >> bitshift) & 0xff);
 		}
 	}
 }
 
-int sha256_string(const char *str, size_t length) {
+int sha256_string(const char* str, size_t length) {
 	t_sha2Context sha256Context;
 
 	sha256_init(&sha256Context, sha256_h);
-	sha256_update(&sha256Context, (uint8_t *)str, length);
+	sha256_update(&sha256Context, (uint8_t*) str, length);
 
 	sha256_finalize(&sha256Context);
 	print_hash(sha256Context.digest, SHA256_DIGEST_SIZE);
 	return (EXIT_SUCCESS);
 }
 
-t_sha2Context sha256_return_string(const char *str, const size_t length) {
+t_sha2Context sha256_return_string(const char* str, const size_t length) {
 	t_sha2Context sha256Context;
 
 	sha256_init(&sha256Context, sha256_h);
-	sha256_update(&sha256Context, (uint8_t *)str, length);
+	sha256_update(&sha256Context, (uint8_t*) str, length);
 
 	sha256_finalize(&sha256Context);
 	return (sha256Context);
@@ -134,13 +134,13 @@ t_sha2Context sha256_return_string(const char *str, const size_t length) {
 int sha256_file(int fd) {
 	t_sha2Context sha256Context;
 	ssize_t ret;
-	char	BUF[SHA256_BLOCK_SIZE + 1];
+	char BUF[SHA256_BLOCK_SIZE + 1];
 
 	sha256_init(&sha256Context, sha256_h);
 	bzero(BUF, sizeof(BUF));
 
 	while ((ret = read(fd, BUF, SHA256_BLOCK_SIZE)) > 0) {
-		sha256_update(&sha256Context, (uint8_t *)BUF, ret);
+		sha256_update(&sha256Context, (uint8_t*) BUF, ret);
 	}
 
 	sha256_finalize(&sha256Context);
@@ -148,11 +148,11 @@ int sha256_file(int fd) {
 	return (EXIT_SUCCESS);
 }
 
-int sha224_string(const char *str, size_t length) {
+int sha224_string(const char* str, size_t length) {
 	t_sha2Context sha256Context;
 
 	sha256_init(&sha256Context, sha224_h);
-	sha256_update(&sha256Context, (uint8_t *)str, length);
+	sha256_update(&sha256Context, (uint8_t*) str, length);
 
 	sha256_finalize(&sha256Context);
 	print_hash(sha256Context.digest, SHA224_DIGEST_SIZE);
@@ -162,13 +162,13 @@ int sha224_string(const char *str, size_t length) {
 int sha224_file(int fd) {
 	t_sha2Context sha256Context;
 	ssize_t ret;
-	char	BUF[SHA256_BLOCK_SIZE + 1];
+	char BUF[SHA256_BLOCK_SIZE + 1];
 
-	sha256_init(&sha256Context,sha224_h);
+	sha256_init(&sha256Context, sha224_h);
 	bzero(BUF, sizeof(BUF));
 
 	while ((ret = read(fd, BUF, SHA256_BLOCK_SIZE)) > 0) {
-		sha256_update(&sha256Context, (uint8_t *)BUF, ret);
+		sha256_update(&sha256Context, (uint8_t*) BUF, ret);
 	}
 
 	sha256_finalize(&sha256Context);

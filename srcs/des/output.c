@@ -13,32 +13,32 @@
 #include "vector.h"
 #include <unistd.h>
 
-static t_uint64vector*	chunk_vector = NULL;
+static t_uint64vector* chunk_vector = NULL;
 
-uint64_t	REV32(uint32_t x) {
-	int				i = 0;
-	uint64_t		y = 0;
-	unsigned char	*ptr_x,
-					*ptr_y;
-	size_t			size = sizeof(x);
+uint64_t REV32(uint32_t x) {
+	int i = 0;
+	uint64_t y = 0;
+	unsigned char* ptr_x,
+			* ptr_y;
+	size_t size = sizeof(x);
 
-	ptr_x = (unsigned char *)&x;
-	ptr_y = (unsigned char *)&y;
+	ptr_x = (unsigned char*) &x;
+	ptr_y = (unsigned char*) &y;
 	while (--size)
 		ptr_y[i++] = ptr_x[size];
 	ptr_y[i++] = ptr_x[size];
 	return (y);
 }
 
-uint64_t	REV64(uint64_t x) {
-	int				i = 0;
-	uint64_t		y = 0;
-	unsigned char	*ptr_x,
-					*ptr_y;
-	size_t			size = sizeof(x);
+uint64_t REV64(uint64_t x) {
+	int i = 0;
+	uint64_t y = 0;
+	unsigned char* ptr_x,
+			* ptr_y;
+	size_t size = sizeof(x);
 
-	ptr_x = (unsigned char *)&x;
-	ptr_y = (unsigned char *)&y;
+	ptr_x = (unsigned char*) &x;
+	ptr_y = (unsigned char*) &y;
 	while (--size)
 		ptr_y[i++] = ptr_x[size];
 	ptr_y[i++] = ptr_x[size];
@@ -46,12 +46,12 @@ uint64_t	REV64(uint64_t x) {
 }
 
 void create_str_from_64bit_chunk_and_output(uint64_t chunk, const int fd, const size_t write_len) {
-	char	arr[9];
+	char arr[9];
 
 	ft_bzero(arr, sizeof(arr));
 
 	for (size_t i = 0; i < 8; i++) {
-		arr[i] = (char)chunk;
+		arr[i] = (char) chunk;
 		chunk >>= 8;
 	}
 	if (write(fd, arr, write_len) == -1) {
@@ -72,13 +72,13 @@ void add_chunk_to_buffer(uint64_t chunk, bool should_reverse) {
 	uint64vector_pushback(chunk_vector, chunk);
 }
 
-uint8_t	remove_padding() {
+uint8_t remove_padding() {
 	if (chunk_vector == NULL) {
 		dprintf(2, "Please don't decrypt binary data with the -a flag.\n");
 		exit(1);
 	}
-	uint64_t	*last_chunk = &chunk_vector->arr[chunk_vector->size - 1];
-	uint8_t		pad_amount = *last_chunk & 0x000000FF;
+	uint64_t* last_chunk = &chunk_vector->arr[chunk_vector->size - 1];
+	uint8_t pad_amount = *last_chunk & 0x000000FF;
 
 	if (pad_amount == 0 || pad_amount > 8) {
 		dprintf(STDERR_FILENO, "Warning, invalid padding scheme, found %#hhx.\n", pad_amount);
@@ -88,7 +88,8 @@ uint8_t	remove_padding() {
 	for (size_t i = 0; i < pad_amount; i++) {
 		uint8_t c = (*last_chunk >> (8 * i)) & 0xFF;
 		if (c != pad_amount) {
-			dprintf(STDERR_FILENO, "Warning, invalid padding scheme, expected %#hhx, but found %#hhx.\n", pad_amount, c);
+			dprintf(STDERR_FILENO, "Warning, invalid padding scheme, expected %#hhx, but found %#hhx.\n", pad_amount,
+					c);
 			return (0);
 		}
 	}
@@ -111,7 +112,8 @@ void clear_buffer(const int fd, const bool reverse_decode) {
 	}
 	if (g_des_flags & FLAG_BASE64 && g_des_flags & FLAG_ENCRYPT) {
 		size_t newdatalen;
-		char* result = base64_encode_string((char *) chunk_vector->arr, chunk_vector->size * CHUNK_SIZE_IN_BYTES, &newdatalen);
+		char* result = base64_encode_string((char*) chunk_vector->arr, chunk_vector->size * CHUNK_SIZE_IN_BYTES,
+											&newdatalen);
 		dprintf(fd, "%s", result);
 		free(result);
 	} else {

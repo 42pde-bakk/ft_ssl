@@ -11,14 +11,14 @@
 #include "libft.h"
 #include <fcntl.h>
 
-const char*	g_key = NULL;
-const char*	g_password = NULL;
-const char*	g_salt = NULL;
-const char*	g_initialization_vector = NULL;
-unsigned int	g_des_flags = 0;
-int	pbkdf_version = 1;
+const char* g_key = NULL;
+const char* g_password = NULL;
+const char* g_salt = NULL;
+const char* g_initialization_vector = NULL;
+unsigned int g_des_flags = 0;
+int pbkdf_version = 1;
 
-static int	create_fd(const char* const pathname, int* fd_store, int open_flag) {
+static int create_fd(const char* const pathname, int* fd_store, int open_flag) {
 	int fd;
 
 	fd = open(pathname, open_flag, S_IRWXU);
@@ -28,7 +28,7 @@ static int	create_fd(const char* const pathname, int* fd_store, int open_flag) {
 	return (0);
 }
 
-static void	print_usage() {
+static void print_usage() {
 	fprintf(stderr, "Data Encryption Standard:\nAvailable flags:\n");
 	fprintf(stderr, "\t-a, decode/encode the input/output in base64, depending on the encryption mode\n");
 	fprintf(stderr, "\t-D or -d, decrypt mode\n");
@@ -47,69 +47,69 @@ static void	print_usage() {
 
 unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx, t_ptrvector* string_vector) {
 	int opt;
-	(void)string_vector;
+	(void) string_vector;
 
 	while ((opt = getopt(argc, argv, "+aDdhnEePi:k:K:o:p:s:v:f:")) != -1) {
 		switch (opt) {
 			case 'a':
 				g_des_flags |= FLAG_BASE64;
-				break ;
+				break;
 			case 'D':
 			case 'd':
 				g_des_flags |= FLAG_DECRYPT;
-				break ;
+				break;
 			case 'E':
 			case 'e':
 				g_des_flags |= FLAG_ENCRYPT;
-				break ;
+				break;
 			case 'i':
 				g_des_flags |= FLAG_INPUTFILE;
 				if (create_fd(optarg, &g_infd, O_RDONLY)) {
 					fprintf(stderr, "Error opening infile '%s'.\n", optarg);
-					return ((unsigned int)-1);
+					return ((unsigned int) -1);
 				}
-				break ;
+				break;
 			case 'K':
 			case 'k':
 				g_des_flags |= FLAG_KEY;
 				g_key = optarg;
-				break ;
+				break;
 			case 'o':
 				if (g_des_flags & FLAG_OUTPUTFILE) {
 					fprintf(stderr, "You are not allowed to specify two outputfiles!\n");
-					return ((unsigned int)-1);
+					return ((unsigned int) -1);
 				}
 				g_des_flags |= FLAG_OUTPUTFILE;
 				if (create_fd(optarg, &g_outfd, O_WRONLY | O_CREAT | O_TRUNC)) {
 					fprintf(stderr, "Error opening outfile '%s'.\n", optarg);
-					return ((unsigned int)-1);
+					return ((unsigned int) -1);
 				}
-				break ;
+				break;
 			case 'p':
 				g_des_flags |= FLAG_PASSWORD;
 				g_password = optarg;
-				break ;
+				break;
 			case 'P':
 				g_des_flags |= FLAG_SHOW_KEY;
-				break ;
+				break;
 			case 's':
 				g_des_flags |= FLAG_SALT;
 				g_salt = optarg;
-				break ;
+				break;
 			case 'v':
 				g_des_flags |= FLAG_INITVECTOR;
 				g_initialization_vector = optarg;
-				break ;
+				break;
 			case 'n':
 				g_des_flags |= FLAG_NO_PADDING;
-				break ;
+				break;
 			case 'f':
 				pbkdf_version = ft_atoi(optarg);
 				if (pbkdf_version < 1 || pbkdf_version > 2) {
 					fprintf(stderr, "Invalid pbkdf version.\n");
-					return ((unsigned int)-1);
+					return ((unsigned int) -1);
 				}
-				break ;
+				break;
 			case 'h':
 				print_usage();
 				exit(EXIT_SUCCESS);
@@ -121,11 +121,11 @@ unsigned int parse_flags_des(int argc, char** argv, unsigned int* file_start_idx
 				else
 					fprintf(stderr, "Unknown option character `\\x%x'.\n", optopt);
 				print_usage();
-				return ((unsigned int)-1);
+				return ((unsigned int) -1);
 			default:
 				fprintf(stderr, "%s: invalid option -- '%c'\n", argv[0], optopt);
 				print_usage();
-				return ((unsigned int)-1);
+				return ((unsigned int) -1);
 		}
 	}
 	if (!(g_des_flags & FLAG_DECRYPT))

@@ -9,18 +9,18 @@
 #include "md5/md5.h"
 #include "md5/utils.h"
 
-static void	md5_init(t_MD5Context *md5Context) {
+static void md5_init(t_MD5Context* md5Context) {
 	bzero(md5Context, sizeof(t_MD5Context));
 	for (uint8_t i = 0; i < 4; ++i) {
 		md5Context->buffer[i] = abcd[i];
 	}
 }
 
-static void	md5_step(t_MD5Context *md5Context, const uint32_t *input) {
-	uint32_t	A = md5Context->buffer[0],
-				B = md5Context->buffer[1],
-				C = md5Context->buffer[2],
-				D = md5Context->buffer[3];
+static void md5_step(t_MD5Context* md5Context, const uint32_t* input) {
+	uint32_t A = md5Context->buffer[0],
+			B = md5Context->buffer[1],
+			C = md5Context->buffer[2],
+			D = md5Context->buffer[3];
 
 	for (uint8_t i = 0; i < 64; i++) {
 		uint32_t f, g;
@@ -49,9 +49,9 @@ static void	md5_step(t_MD5Context *md5Context, const uint32_t *input) {
 	md5Context->buffer[3] += D;
 }
 
-static void	md5_update(t_MD5Context *md5Context, const uint8_t *input_buffer, const size_t buffer_len) {
-	uint32_t	input[MD5_DIGEST_LENGTH];
-	uint32_t	offset = md5Context->size % 64;
+static void md5_update(t_MD5Context* md5Context, const uint8_t* input_buffer, const size_t buffer_len) {
+	uint32_t input[MD5_DIGEST_LENGTH];
+	uint32_t offset = md5Context->size % 64;
 	md5Context->size += buffer_len;
 
 	for (uint64_t i = 0; i < buffer_len; ++i) {
@@ -68,10 +68,10 @@ static void	md5_update(t_MD5Context *md5Context, const uint8_t *input_buffer, co
 	}
 }
 
-static void	md5_finalize(t_MD5Context *md5Context) {
-	uint32_t	input[MD5_DIGEST_LENGTH];
-	uint32_t	offset = md5Context->size % 64;
-	uint32_t	padding_len;
+static void md5_finalize(t_MD5Context* md5Context) {
+	uint32_t input[MD5_DIGEST_LENGTH];
+	uint32_t offset = md5Context->size % 64;
+	uint32_t padding_len;
 
 	if (offset < 56) {
 		padding_len = 56 - offset;
@@ -89,43 +89,43 @@ static void	md5_finalize(t_MD5Context *md5Context) {
 
 	md5_step(md5Context, input);
 	for (uint8_t i = 0; i < 4; i++) {
-		md5Context->digest[(i * 4) + 0] = (uint8_t)((md5Context->buffer[i] & 0x000000FF));
-		md5Context->digest[(i * 4) + 1] = (uint8_t)((md5Context->buffer[i] & 0x0000FF00) >>  8);
-		md5Context->digest[(i * 4) + 2] = (uint8_t)((md5Context->buffer[i] & 0x00FF0000) >> 16);
-		md5Context->digest[(i * 4) + 3] = (uint8_t)((md5Context->buffer[i] & 0xFF000000) >> 24);
+		md5Context->digest[(i * 4) + 0] = (uint8_t) ((md5Context->buffer[i] & 0x000000FF));
+		md5Context->digest[(i * 4) + 1] = (uint8_t) ((md5Context->buffer[i] & 0x0000FF00) >> 8);
+		md5Context->digest[(i * 4) + 2] = (uint8_t) ((md5Context->buffer[i] & 0x00FF0000) >> 16);
+		md5Context->digest[(i * 4) + 3] = (uint8_t) ((md5Context->buffer[i] & 0xFF000000) >> 24);
 	}
 }
 
-int md5sum_string(const char *str, size_t length) {
-	t_MD5Context	md5Context;
+int md5sum_string(const char* str, size_t length) {
+	t_MD5Context md5Context;
 
 	md5_init(&md5Context);
-	md5_update(&md5Context, (uint8_t *)str, length);
+	md5_update(&md5Context, (uint8_t*) str, length);
 	md5_finalize(&md5Context);
 
 	print_hash(md5Context.digest, MD5_DIGEST_LENGTH);
 	return (EXIT_SUCCESS);
 }
 
-t_MD5Context md5sum_return_string(const char *str, size_t str_length) {
-	t_MD5Context	md5Context;
+t_MD5Context md5sum_return_string(const char* str, size_t str_length) {
+	t_MD5Context md5Context;
 
 	md5_init(&md5Context);
-	md5_update(&md5Context, (uint8_t *)str, str_length);
+	md5_update(&md5Context, (uint8_t*) str, str_length);
 	md5_finalize(&md5Context);
 
 	return (md5Context);
 }
 
 int md5sum_file(int fd) {
-	t_MD5Context	md5Context;
+	t_MD5Context md5Context;
 	ssize_t ret;
-	char	BUF[MD5_BLOCK_SIZE + 1];
+	char BUF[MD5_BLOCK_SIZE + 1];
 
 	md5_init(&md5Context);
 	bzero(BUF, sizeof(BUF));
 	while ((ret = read(fd, BUF, MD5_BLOCK_SIZE)) > 0) {
-		md5_update(&md5Context, (uint8_t *)BUF, ret);
+		md5_update(&md5Context, (uint8_t*) BUF, ret);
 	}
 	md5_finalize(&md5Context);
 

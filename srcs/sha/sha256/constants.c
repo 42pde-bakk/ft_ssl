@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 
-const uint32_t	sha256_h[8] = {
+const uint32_t sha256_h[8] = {
 		0x6a09e667,
 		0xbb67ae85,
 		0x3c6ef372,
@@ -15,7 +15,7 @@ const uint32_t	sha256_h[8] = {
 		0x5be0cd19
 };
 
-const uint32_t	sha224_h[8] = {
+const uint32_t sha224_h[8] = {
 		0xc1059ed8,
 		0x367cd507,
 		0x3070dd17,

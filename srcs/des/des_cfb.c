@@ -15,12 +15,12 @@
 #include "base64/base64.h"
 
 static int des_cfb_handler(const char* str, size_t length) {
-	uint64_t	key,
-				iv;
-	uint64_t	ciphertext,
-				plaintext;
-	char*		base = NULL;
-	char*		padded_str = NULL;
+	uint64_t key,
+			iv;
+	uint64_t ciphertext,
+			plaintext;
+	char* base = NULL;
+	char* padded_str = NULL;
 
 	get_key(&key, &iv);
 	if (!(g_des_flags & FLAG_NO_PADDING) && g_des_flags & FLAG_ENCRYPT) {
@@ -29,7 +29,7 @@ static int des_cfb_handler(const char* str, size_t length) {
 		ft_strlcpy(padded_str, str, length + 1);
 
 		for (uint8_t i = 0; i < pad_amount; i++) {
-			padded_str[length + i] = (char)pad_amount;
+			padded_str[length + i] = (char) pad_amount;
 		}
 		str = padded_str;
 		length += pad_amount;
@@ -52,7 +52,7 @@ static int des_cfb_handler(const char* str, size_t length) {
 		}
 
 		for (size_t i = 0; i < length; i += CHUNK_SIZE_IN_BYTES) {
-			ciphertext = REV64(*(uint64_t *)(str + i));
+			ciphertext = REV64(*(uint64_t*) (str + i));
 
 			plaintext = apply_des(iv, key, FLAG_ENCRYPT) ^ ciphertext;
 //			ft_dprintf(2, "Decrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
@@ -101,6 +101,6 @@ int des_cfb_fd(const int fd) {
 	return (return_status);
 }
 
-int des_cfb_string(const char *str, size_t length) {
+int des_cfb_string(const char* str, size_t length) {
 	return (des_cfb_handler(str, length));
 }

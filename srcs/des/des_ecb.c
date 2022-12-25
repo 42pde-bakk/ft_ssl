@@ -16,11 +16,11 @@
 #include <stdio.h>
 
 static int des_ecb_handler(const char* str, size_t length) {
-	uint64_t	key;
-	uint64_t	ciphertext,
-				plaintext;
-	char*		base = NULL;
-	char*		padded_str = NULL;
+	uint64_t key;
+	uint64_t ciphertext,
+			plaintext;
+	char* base = NULL;
+	char* padded_str = NULL;
 
 	get_key(&key, NULL);
 	if (!(g_des_flags & FLAG_NO_PADDING) && g_des_flags & FLAG_ENCRYPT) {
@@ -52,7 +52,7 @@ static int des_ecb_handler(const char* str, size_t length) {
 			length -= 2 * CHUNK_SIZE_IN_BYTES;
 		}
 		for (size_t i = 0; i < length; i += CHUNK_SIZE_IN_BYTES) {
-			ciphertext = REV64(*(uint64_t *)(str + i));
+			ciphertext = REV64(*(uint64_t*) (str + i));
 
 			plaintext = apply_des(ciphertext, key, FLAG_DECRYPT);
 //			ft_dprintf(2, "Decrypt: ciphertext = %016lX, plaintext = %016lX\n", ciphertext, plaintext);
@@ -82,9 +82,9 @@ static int des_ecb_handler(const char* str, size_t length) {
 }
 
 int des_ecb_fd(const int fd) {
-	struct stat	buf;
-	char		*file;
-	int			return_status;
+	struct stat buf;
+	char* file;
+	int return_status;
 
 	ft_memset(&buf, 0, sizeof(buf));
 	if (fstat(fd, &buf) == -1 || buf.st_size <= 0 || S_ISDIR(buf.st_mode)) {
@@ -101,7 +101,7 @@ int des_ecb_fd(const int fd) {
 	return (return_status);
 }
 
-int des_ecb_string(const char *str, size_t length) {
+int des_ecb_string(const char* str, size_t length) {
 	return des_ecb_handler(str, length);
 }
 
@@ -130,8 +130,8 @@ int des_ecb_string(const char *str, size_t length) {
 	* E: 95ec2578c2c433f0
 	* D: 1b1a2ddb4c642438  <-- X16
 */
-void	test() {
-	const uint64_t	expected_outcomes[16] = {
+void test() {
+	const uint64_t expected_outcomes[16] = {
 			0x8da744e0c94e5e17,
 			0x0cdb25e3ba3c6d79,
 			0x4784c4ba5006081f,
@@ -158,8 +158,7 @@ void	test() {
 			g_des_flags |= FLAG_ENCRYPT;
 			res = apply_des(res, res, 0);
 			ft_printf("E: %016lx\n", res);
-		}
-		else {
+		} else {
 			g_des_flags |= FLAG_DECRYPT;
 			res = apply_des(res, res, 0);
 			ft_printf("D: %016lx\n", res);

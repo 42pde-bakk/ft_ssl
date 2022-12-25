@@ -5,7 +5,7 @@
 #include "logging.h"
 #include <stdio.h>
 
-void	write_log(const char *format, ...) {
+void write_log(const char* format, ...) {
 #ifdef LOGGING
 	va_list	args;
 
@@ -14,6 +14,6 @@ void	write_log(const char *format, ...) {
 
 	va_end(args);
 #else
-	(void)format;
+	(void) format;
 #endif
 }

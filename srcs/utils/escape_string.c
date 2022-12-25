@@ -6,8 +6,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-static size_t	count_escapable_chars(const char *haystack) {
-	size_t	count = 0;
+static size_t count_escapable_chars(const char* haystack) {
+	size_t count = 0;
 	int i = 0;
 
 	while (haystack[i]) {
@@ -20,12 +20,12 @@ static size_t	count_escapable_chars(const char *haystack) {
 	return (count);
 }
 
-char	*get_escaped_string(char *str) {
-	const size_t	escapableCharsCount = count_escapable_chars(str);
-	const size_t	len = strlen(str) + escapableCharsCount + 1 + 2; // +2 for " at beginning and end
-	size_t	i = 0,
+char* get_escaped_string(char* str) {
+	const size_t escapableCharsCount = count_escapable_chars(str);
+	const size_t len = strlen(str) + escapableCharsCount + 1 + 2; // +2 for " at beginning and end
+	size_t i = 0,
 			i2 = 1;
-	char	*buffer;
+	char* buffer;
 
 	buffer = calloc(len, sizeof(char));
 	if (!buffer) {
@@ -38,27 +38,27 @@ char	*get_escaped_string(char *str) {
 			switch (str[i]) {
 				case '\a':
 					buffer[i2 + 1] = 'a';
-					break ;
+					break;
 				case '\b':
 					buffer[i2 + 1] = 'b';
-					break ;
+					break;
 				case '\t':
 					buffer[i2 + 1] = 't';
-					break ;
+					break;
 				case '\n':
 					buffer[i2 + 1] = 'n';
-					break ;
+					break;
 				case '\v':
 					buffer[i2 + 1] = 'v';
-					break ;
+					break;
 				case '\f':
 					buffer[i2 + 1] = 'f';
-					break ;
+					break;
 				case '\r':
 					buffer[i2 + 1] = 'r';
-					break ;
+					break;
 				default:
-					break ;
+					break;
 			}
 			i2 += 2;
 			i += 1;
